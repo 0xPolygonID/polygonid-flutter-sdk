@@ -174,6 +174,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_onchain_c
     as _i146;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/fetch_schema_use_case.dart'
     as _i238;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart'
+    as _i1053;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart'
     as _i340;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart'
@@ -1368,6 +1370,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i267.StacktraceManager>(),
       ),
     );
+    gh.factoryAsync<_i1053.GenerateAuthProofUseCase>(
+      () async => _i1053.GenerateAuthProofUseCase(
+        await getAsync<_i114.GetAuthInputsUseCase>(),
+        await getAsync<_i341.ProofRepository>(),
+        gh<_i267.StacktraceManager>(),
+      ),
+    );
     gh.factory<_i989.UpdateInteractionUseCase>(
       () => _i989.UpdateInteractionUseCase(
         gh<_i1012.InteractionRepository>(),
@@ -1408,16 +1417,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i816.UpdateIdentityUseCase>(),
       ),
     );
-    gh.factoryAsync<_i871.GetAuthTokenUseCase>(
-      () async => _i871.GetAuthTokenUseCase(
-        await getAsync<_i660.LoadCircuitUseCase>(),
-        gh<_i249.GetJWZUseCase>(),
-        gh<_i734.GetAuthChallengeUseCase>(),
-        await getAsync<_i114.GetAuthInputsUseCase>(),
-        await getAsync<_i310.ProveUseCase>(),
-        gh<_i267.StacktraceManager>(),
-      ),
-    );
     gh.factory<_i11.RestoreIdentityUseCase>(
       () => _i11.RestoreIdentityUseCase(
         gh<_i561.AddIdentityUseCase>(),
@@ -1425,6 +1424,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i26.IdentityRepository>(),
         gh<_i675.GetCurrentEnvDidIdentifierUseCase>(),
         gh<_i657.RestoreProfilesUseCase>(),
+      ),
+    );
+    gh.factoryAsync<_i871.GetAuthTokenUseCase>(
+      () async => _i871.GetAuthTokenUseCase(
+        gh<_i249.GetJWZUseCase>(),
+        gh<_i734.GetAuthChallengeUseCase>(),
+        await getAsync<_i1053.GenerateAuthProofUseCase>(),
+        gh<_i267.StacktraceManager>(),
       ),
     );
     gh.factoryAsync<_i102.FetchAndSaveClaimsUseCase>(
@@ -1495,6 +1502,7 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i341.ProofRepository>(),
         await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
         await getAsync<_i340.GenerateIden3commProofUseCase>(),
+        await getAsync<_i1053.GenerateAuthProofUseCase>(),
         await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
         gh<_i743.GetIdentityUseCase>(),
         gh<_i920.ProofGenerationStepsStreamManager>(),

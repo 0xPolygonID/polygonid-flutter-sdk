@@ -117,6 +117,17 @@ class Iden3commMocks {
     },
   };
 
+  static AuthorizationRequestMessage agenticAuthRequestMessage =
+      AuthorizationRequestMessage.fromJson(
+        Map<String, dynamic>.from(agenticAuthRequest),
+      );
+
+  static ZeroKnowledgeProofRequest agenticOnChainScopeRequest =
+      agenticAuthRequestMessage.body.scope[0];
+
+  static ZeroKnowledgeProofRequest agenticAuthScopeRequest =
+      agenticAuthRequestMessage.body.scope[1];
+
   static String authRequestJson =
       '''
 {

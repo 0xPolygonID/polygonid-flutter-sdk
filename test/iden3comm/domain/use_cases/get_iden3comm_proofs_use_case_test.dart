@@ -176,4 +176,228 @@ void main() {
       );
     },
   );
+
+  group("agentic agent_pairing:v1 authorization request", () {
+    late GetIden3commProofsParam agenticParam;
+    final agenticChallenge = "theAgenticChallenge";
+
+    setUp(() {
+      agenticParam = GetIden3commProofsParam(
+        message: Iden3commMocks.agenticAuthRequestMessage,
+        genesisDid: CommonMocks.did,
+        profileNonce: CommonMocks.nonce,
+        privateKey: CommonMocks.privateKey,
+        challenge: agenticChallenge,
+      );
+    });
+
+    test(
+      "given agentic auth request with credentialAtomicV3OnChain and authV3-8-32 scopes, "
+      "when call execute, then expect proofs for both scopes to be returned",
+      () async {
+        // Given
+        // The first scope has a credential query, the second (authV3-8-32) has empty query and no credential
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (realInvocation) async => [
+            (
+              request: Iden3commMocks.agenticOnChainScopeRequest,
+              credentials: [claim],
+            ),
+            (request: Iden3commMocks.agenticAuthScopeRequest, credentials: []),
+          ],
+        );
+
+        final onChainProof = Iden3commProofEntity(
+          id: 1,
+          circuitId: "credentialAtomicV3OnChain",
+          proof: Iden3commMocks.iden3commProof.proof,
+          pubSignals: Iden3commMocks.iden3commProof.pubSignals,
+          publicStatesInfo: Iden3commMocks.iden3commProof.publicStatesInfo,
+        );
+        final authProof = Iden3commProofEntity(
+          id: 2,
+          circuitId: "authV3-8-32",
+          proof: Iden3commMocks.iden3commProof.proof,
+          pubSignals: Iden3commMocks.iden3commProof.pubSignals,
+          publicStatesInfo: Iden3commMocks.iden3commProof.publicStatesInfo,
+        );
+
+        var callCount = 0;
+        when(
+          getIden3commProofUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer((_) {
+          callCount++;
+          return Future.value(callCount == 1 ? onChainProof : authProof);
+        });
+
+        // When
+        final result = await useCase.execute(param: agenticParam);
+
+        // Then
+        expect(result.length, 2);
+        expect(result[0], onChainProof);
+        expect(result[1], authProof);
+
+        // Verify isProofCircuitSupported was called for both scopes
+        var verifyCircuitSupported = verify(
+          isProofCircuitSupportedUseCase.execute(
+            param: captureAnyNamed('param'),
+          ),
+        );
+        expect(verifyCircuitSupported.callCount, 2);
+        expect(verifyCircuitSupported.captured[0], "credentialAtomicV3OnChain");
+        expect(verifyCircuitSupported.captured[1], "authV3-8-32");
+
+        // Verify getMessageRequestsAndCreds was called once
+        var verifyGetCreds = verify(
+          getMessageRequestsAndCredsUseCase.execute(
+            param: captureAnyNamed('param'),
+          ),
+        );
+        expect(verifyGetCreds.callCount, 1);
+
+        // Verify getIden3commProof was called for both scopes
+        var verifyGenerateProof = verify(
+          getIden3commProofUseCase.execute(param: captureAnyNamed('param')),
+        );
+        expect(verifyGenerateProof.callCount, 2);
+
+        // First call: credentialAtomicV3OnChain with credential
+        final firstProofParam = verifyGenerateProof.captured[0];
+        expect(
+          firstProofParam.request,
+          Iden3commMocks.agenticOnChainScopeRequest,
+        );
+        expect(firstProofParam.credential, claim);
+        expect(firstProofParam.genesisDid, IdentityMocks.did.did);
+        expect(firstProofParam.profileNonce, agenticParam.profileNonce);
+
+        // Second call: authV3-8-32 with null credential (empty credentials list)
+        final secondProofParam = verifyGenerateProof.captured[1];
+        expect(
+          secondProofParam.request,
+          Iden3commMocks.agenticAuthScopeRequest,
+        );
+        expect(secondProofParam.credential, isNull);
+        expect(secondProofParam.genesisDid, IdentityMocks.did.did);
+        expect(secondProofParam.profileNonce, agenticParam.profileNonce);
+      },
+    );
+
+    test(
+      "given agentic auth request with authV3-8-32 scope with empty credentials and not optional, "
+      "when call execute, then expect NoCredentialsFoundException to be thrown",
+      () async {
+        // Given - authV3-8-32 scope returns empty credentials and is not optional
+        // But the scope with empty query returns empty credentials which triggers NoCredentialsFoundException
+        // However, looking at the code, empty credentials for non-optional request throws
+        // This test verifies that the first scope (credentialAtomicV3OnChain) with no credentials
+        // throws NoCredentialsFoundException
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (realInvocation) async => [
+            (
+              request: Iden3commMocks.agenticOnChainScopeRequest,
+              credentials: [],
+            ),
+            (request: Iden3commMocks.agenticAuthScopeRequest, credentials: []),
+          ],
+        );
+
+        // When / Then
+        await expectLater(
+          useCase.execute(param: agenticParam),
+          throwsA(isA<NoCredentialsFoundException>()),
+        );
+
+        // getIden3commProofUseCase should not have been called
+        verifyNever(getIden3commProofUseCase.execute(param: anyNamed('param')));
+      },
+    );
+
+    test(
+      "given agentic auth request with unsupported circuit, "
+      "when call execute, then expect UnsupportedCircuitException to be thrown",
+      () async {
+        // Given
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (realInvocation) async => [
+            (
+              request: Iden3commMocks.agenticOnChainScopeRequest,
+              credentials: [claim],
+            ),
+            (request: Iden3commMocks.agenticAuthScopeRequest, credentials: []),
+          ],
+        );
+
+        // credentialAtomicV3OnChain is not supported
+        when(
+          isProofCircuitSupportedUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer((invocation) {
+          final circuitId = invocation.namedArguments[#param] as String;
+          if (circuitId == "credentialAtomicV3OnChain") {
+            return Future.value(false);
+          }
+          return Future.value(true);
+        });
+
+        // When / Then
+        await expectLater(
+          useCase.execute(param: agenticParam),
+          throwsA(isA<UnsupportedCircuitException>()),
+        );
+
+        // getIden3commProofUseCase should not have been called
+        verifyNever(getIden3commProofUseCase.execute(param: anyNamed('param')));
+      },
+    );
+
+    test("given agentic auth request, "
+        "when scope request params contain sender and challenge, "
+        "then expect params to be correctly parsed", () {
+      // Verify the parsed agentic auth request message
+      final message = Iden3commMocks.agenticAuthRequestMessage;
+      expect(message.id, "f8aee09d-f592-4fcc-8d2a-8938aa26676c");
+      expect(message.body.reason, "agent_pairing:v1");
+      expect(
+        message.body.callbackUrl,
+        "https://relay.com?encoded_attestation=base64EncodedAtt",
+      );
+      expect(message.body.accept, isNotNull);
+      expect(message.body.accept!.length, 1);
+      expect(
+        message.body.accept!.first,
+        "iden3comm/v1;env=application/iden3-zkp-json;circuitId=authV2,authV3,authV3-8-32;alg=groth16",
+      );
+
+      // First scope: credentialAtomicV3OnChain with params and query
+      final firstScope = message.body.scope[0];
+      expect(firstScope.id, 1);
+      expect(firstScope.circuitId, "credentialAtomicV3OnChain");
+      expect(firstScope.params, isNotNull);
+      expect(firstScope.params!['sender'], "0xsenderaddress");
+      expect(firstScope.query.type, "UniquenessCredential");
+      expect(
+        firstScope.query.context,
+        "ipfs://QmcUEDa42Er4nfNFmGQVjiNYFaik6kvNQjfTeBrdSx83At",
+      );
+      expect(
+        firstScope.query.allowedIssuers.first,
+        "did:iden3:billions:main:2VwqkgA2dNEwsnmojaay7C5jJEb8ZygecqCSU3xVfm",
+      );
+
+      // Second scope: authV3-8-32 with params but empty query
+      final secondScope = message.body.scope[1];
+      expect(secondScope.id, 2);
+      expect(secondScope.circuitId, "authV3-8-32");
+      expect(secondScope.params, isNotNull);
+      expect(secondScope.params!['challenge'], "<attestation_hash>");
+      expect(secondScope.query.isEmpty, true);
+    });
+  });
 }

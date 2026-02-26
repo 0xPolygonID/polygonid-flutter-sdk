@@ -6,15 +6,14 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
-import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
@@ -52,6 +51,7 @@ class GetIden3commProofUseCase
   final ProofRepository _proofRepository;
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
   final GenerateIden3commProofUseCase _generateIden3commProofUseCase;
+  final GenerateAuthProofUseCase _generateAuthProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
@@ -63,6 +63,7 @@ class GetIden3commProofUseCase
     this._proofRepository,
     this._getMessageRequestsAndCredsUseCase,
     this._generateIden3commProofUseCase,
+    this._generateAuthProofUseCase,
     this._isProofCircuitSupported,
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
@@ -94,14 +95,6 @@ class GetIden3commProofUseCase
       String circuitId = request.circuitId;
       final circuitData = await _proofRepository.loadCircuitFiles(circuitId);
 
-      String? challenge;
-      String? privKey;
-      final parsedCircuitId = CircuitId.fromId(circuitId);
-      if (parsedCircuitId.isOnChain) {
-        challenge = param.challenge;
-        privKey = param.privateKey;
-      }
-
       var identityEntity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
           genesisDid: param.genesisDid,
@@ -110,13 +103,15 @@ class GetIden3commProofUseCase
       );
 
       if (circuitId.startsWith('auth')) {
-        return Authenticate().generateAuthProof(
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-          request: request,
-          profileNonce: param.profileNonce,
-          identityEntity: identityEntity,
-          proofRepo: _proofRepository,
+        return _generateAuthProofUseCase.execute(
+          param: GenerateAuthProofParam(
+            genesisDid: param.genesisDid,
+            privateKey: param.privateKey,
+            profileNonce: param.profileNonce,
+            requestId: request.id,
+            circuitId: request.circuitId,
+            challenge: request.params?['challenge'] ?? '',
+          ),
         );
       }
 
@@ -138,8 +133,8 @@ class GetIden3commProofUseCase
         credential: credential,
         request: request,
         circuitData: circuitData,
-        privateKey: privKey,
-        challenge: challenge,
+        privateKey: param.privateKey,
+        challenge: param.challenge,
         config: param.config,
         verifierId: param.verifierDid,
         linkNonce: param.linkNonce,

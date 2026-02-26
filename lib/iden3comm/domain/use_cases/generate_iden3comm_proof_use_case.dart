@@ -38,9 +38,7 @@ class GenerateIden3commProofParam {
   final CredentialEntity credential;
   final ZeroKnowledgeProofRequest request;
   final CircuitDataEntity circuitData;
-
-  /// FIXME: remove nullables
-  final String? privateKey;
+  final String privateKey;
   final String? challenge;
 
   final EnvConfigEntity? config;
@@ -57,7 +55,7 @@ class GenerateIden3commProofParam {
     required this.credential,
     required this.request,
     required this.circuitData,
-    this.privateKey,
+    required this.privateKey,
     this.challenge,
     this.config,
     this.verifierId,
@@ -113,24 +111,9 @@ class GenerateIden3commProofUseCase
 
     Stopwatch stopwatch = Stopwatch()..start();
 
-    final circuitId = param.request.circuitId;
-
-    // TODO (moria): remove this with v3 circuit release
-    if (circuitId.startsWith(CircuitId.v3CircuitPrefix) &&
-        !circuitId.endsWith(CircuitId.currentCircuitBetaPostfix)) {
-      _stacktraceManager.addError(
-        "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
-      );
-      throw CircuitNotDownloadedException(
-        circuit: circuitId,
-        errorMessage:
-            "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
-      );
-    }
-
-    final parsedCircuitId = CircuitId.fromId(circuitId);
+    final parsedCircuitId = CircuitId.fromId(param.request.circuitId);
     if (parsedCircuitId.isOnChain) {
-      //on chain start
+      // on chain start
       _stacktraceManager.addTrace(
         "[GenerateIden3commProofUseCase] OnChain ${param.request.circuitId}",
       );
@@ -168,7 +151,7 @@ class GenerateIden3commProofUseCase
         key: authClaimNode.hash,
         type: TreeType.claims,
         did: param.did,
-        encryptionKey: encryptionKey!,
+        encryptionKey: encryptionKey,
       );
       _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] incProof");
       logger().i("GENERATION PROOF incProof executed in ${stopwatch.elapsed}");
@@ -190,7 +173,7 @@ class GenerateIden3commProofUseCase
       treeState = await _getLatestStateUseCase.execute(
         param: GetLatestStateParam(
           did: param.did,
-          encryptionKey: param.privateKey!,
+          encryptionKey: param.privateKey,
         ),
       );
       _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] treeState");
@@ -201,7 +184,7 @@ class GenerateIden3commProofUseCase
       logger().i("GENERATION PROOF gistProof executed in ${stopwatch.elapsed}");
 
       signature = await _signMessageUseCase.execute(
-        param: SignMessageParam(param.privateKey!, param.challenge!),
+        param: SignMessageParam(param.privateKey, param.challenge!),
       );
       _stacktraceManager.addTrace("[GenerateIden3commProofUseCase] signature");
       //onchain end

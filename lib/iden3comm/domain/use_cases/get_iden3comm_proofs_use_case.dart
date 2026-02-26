@@ -92,8 +92,11 @@ class GetIden3commProofsUseCase
 
         // if there are no credentials for the request
         if (credentials.isEmpty) {
-          // if the request is optional, continue to the next request
-          if (request.isOptional) {
+          // if the query is empty (e.g., auth-type scopes like authV3-8-32),
+          // allow proceeding with null credential
+          if (request.query.isEmpty) {
+            // skip throwing, credential will be null below
+          } else if (request.isOptional) {
             continue;
           } else {
             // if the request is not optional, throw an error
