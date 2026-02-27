@@ -108,8 +108,10 @@ class ZeroKnowledgeProofRequest {
       query = ZeroKnowledgeProofQuery.fromJson(queryJson);
     }
 
+    final id = json['id'] is int ? json['id'] : int.parse(json['id']);
+
     return ZeroKnowledgeProofRequest(
-      id: json['id'],
+      id: id,
       circuitId: json['circuitId'],
       optional: json['optional'],
       query: query,
