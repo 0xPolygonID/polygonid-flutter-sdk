@@ -967,6 +967,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
         circuitId: circuitId,
+        challenge: challenge,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
