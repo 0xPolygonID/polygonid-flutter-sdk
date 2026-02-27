@@ -772,6 +772,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         pushToken: pushToken,
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
+        challenge: challenge,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
