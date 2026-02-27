@@ -244,6 +244,16 @@ class GenerateIden3commProofUseCase
 
     final inputs = json.encode(generateInputsResponse.inputs);
 
+    final circuitId =
+        generateInputsResponse.circuitId ?? param.circuitData.circuitId;
+
+    final CircuitDataEntity circuitData;
+    if (circuitId != param.circuitData.circuitId) {
+      circuitData = await _proofRepository.loadCircuitFiles(circuitId);
+    } else {
+      circuitData = param.circuitData;
+    }
+
     if (kDebugMode) {
       //just for debug
       logger().i('[GenerateIden3commProofUseCase] inputs: $inputs');
@@ -265,11 +275,11 @@ class GenerateIden3commProofUseCase
 
     try {
       ZKProofEntity proof = await _proveUseCase.execute(
-        param: ProveParam(inputs, param.circuitData),
+        param: ProveParam(inputs, circuitData),
       );
       return Iden3commProofEntity(
         id: param.request.id,
-        circuitId: param.circuitData.circuitId,
+        circuitId: circuitId,
         proof: proof.proof,
         pubSignals: proof.pubSignals,
         publicStatesInfo: generateInputsResponse.publicStatesInfo,

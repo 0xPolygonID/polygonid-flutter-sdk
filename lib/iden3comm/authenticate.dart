@@ -192,8 +192,6 @@ class Authenticate {
   }) async {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
-      List<Iden3commProofEntity> proofs = [];
-
       final proofRepository = await getItSdk.getAsync<ProofRepository>();
       _proofGenerationStepsStreamManager =
           getItSdk<ProofGenerationStepsStreamManager>();
@@ -267,6 +265,7 @@ class Authenticate {
         authClaimNonce: nonce,
       );
 
+      List<Iden3commProofEntity> proofs = [];
       // if there are proof requests and claims and they are the same length
       // then create the proof for every proof request
       if (requestsAndCredsLocal.isNotEmpty) {
