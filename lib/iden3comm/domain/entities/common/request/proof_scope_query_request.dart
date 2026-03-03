@@ -114,7 +114,9 @@ class ZeroKnowledgeProofQuery {
   final int? groupId;
   final String type;
 
-  // Local field to check if the query is empty.
+  /// Non-protocol local field to check if the query is empty.
+  /// For auth queries we have query mostly empty.
+  /// Introduced to don't break backwards compatibility and nullability.
   final bool isEmpty;
 
   const ZeroKnowledgeProofQuery({

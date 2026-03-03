@@ -76,32 +76,23 @@ class GetIden3commProofUseCase
     try {
       final request = param.request;
 
+      String circuitId = request.circuitId;
       bool isCircuitSupported = await _isProofCircuitSupported.execute(
-        param: request.circuitId,
+        param: circuitId,
       );
       if (!isCircuitSupported) {
         _stacktraceManager.addError(
-          "[GetIden3commProofsUseCase] Unsupported circuit: ${request.circuitId} for request: ${request.id}",
+          "[GetIden3commProofsUseCase] Unsupported circuit: $circuitId for request: ${request.id}",
         );
         throw UnsupportedCircuitException(
           proofRequest: request,
           errorMessage:
-              "Unsupported circuit: ${request.circuitId} for request: ${request.id}",
+              "Unsupported circuit: $circuitId for request: ${request.id}",
         );
       }
 
-      String circuitId = request.circuitId;
-      final circuitData = await _proofRepository.loadCircuitFiles(circuitId);
-
-      var identityEntity = await _getIdentityUseCase.execute(
-        param: GetIdentityParam(
-          genesisDid: param.genesisDid,
-          privateKey: param.privateKey,
-        ),
-      );
-
       if (circuitId.startsWith('auth')) {
-        final challenge = request.params?['challenge'];
+        final challenge = request.params?['challenge']?.toString();
         if (challenge == null) {
           throw NullAuthChallengeException(
             proofRequest: request,
@@ -120,6 +111,15 @@ class GetIden3commProofUseCase
           ),
         );
       }
+
+      final circuitData = await _proofRepository.loadCircuitFiles(circuitId);
+
+      var identityEntity = await _getIdentityUseCase.execute(
+        param: GetIdentityParam(
+          genesisDid: param.genesisDid,
+          privateKey: param.privateKey,
+        ),
+      );
 
       final credential = await _getCredential(param: param);
       BigInt claimSubjectProfileNonce = identityEntity.profiles.keys.firstWhere(

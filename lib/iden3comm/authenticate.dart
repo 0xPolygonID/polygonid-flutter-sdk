@@ -415,7 +415,7 @@ class Authenticate {
         final generateAuthProofUseCase = await getItSdk
             .getAsync<GenerateAuthProofUseCase>();
 
-        final challenge = request.params?['challenge'];
+        final challenge = request.params?['challenge']?.toString();
         if (challenge == null) {
           throw NullAuthChallengeException(
             proofRequest: request,

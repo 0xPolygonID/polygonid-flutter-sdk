@@ -110,7 +110,7 @@ class Iden3commMocks {
           "circuitId": "authV3-8-32",
           "params": {
             "challenge": "<attestation_hash>",
-            // build from attestatin data (same as in encoded attestation)
+            // build from attestation data (same as in encoded attestation)
           },
         },
       ],
