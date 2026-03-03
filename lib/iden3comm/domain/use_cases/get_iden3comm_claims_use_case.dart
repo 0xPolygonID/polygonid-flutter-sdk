@@ -53,13 +53,6 @@ class GetIden3commClaimsUseCase
       if (credential != null) {
         credentials.add(credential);
       } else if (requestAndCreds.request.query.isEmpty) {
-        //TODO @YARO this is the case for empty-query scopes, but we should find a better way to identify them than checking if the query is empty,
-        // because there might be cases where the query is not empty but still does not require credentials
-        // (e.g. a scope that only requires a signature of the request, without any credential).
-        // For now, we can assume that if the query is empty, then it does not require credentials,
-        // but we should revisit this logic in the future and find a more robust solution.
-        // PS this note was written by Copilot XD
-
         // Empty-query scopes (e.g. authV3/authV3-8-32) do not require
         // resolving a credential from wallet storage.
         continue;
