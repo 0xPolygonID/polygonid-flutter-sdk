@@ -5,6 +5,8 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
@@ -12,8 +14,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
 typedef RequestAndCredentials = ({
   ProofScopeRequest request,
@@ -21,21 +22,34 @@ typedef RequestAndCredentials = ({
 });
 
 class GetMessageRequestsAndCredsParam {
-  final Iden3Message? message;
+  final Iden3Message message;
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;
-  final List<ProofScopeRequest>? proofRequests;
   List<CredentialSortOrder> credentialSortOrderList;
 
   GetMessageRequestsAndCredsParam({
-    this.message,
-    this.proofRequests,
+    required this.message,
     required this.genesisDid,
     required this.profileNonce,
     required this.encryptionKey,
     this.credentialSortOrderList = const [],
   });
+
+  GetMessageRequestsAndCredsParam.fromRequest({
+    required ZeroKnowledgeProofRequest request,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.encryptionKey,
+    this.credentialSortOrderList = const [],
+  }) : message = AuthorizationRequestMessage(
+         from: '',
+         body: AuthorizationRequestMessageBody(
+           callbackUrl: '',
+           reason: '',
+           scope: [request],
+         ),
+       );
 }
 
 class GetMessageRequestsAndCredsUseCase
@@ -46,14 +60,14 @@ class GetMessageRequestsAndCredsUseCase
         > {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
-  final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
+  final ProofRepository _proofRepository;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetMessageRequestsAndCredsUseCase(
     this._iden3commCredentialRepository,
     this._getClaimsUseCase,
-    this._isProofCircuitSupported,
+    this._proofRepository,
     this._getProofRequestsUseCase,
     this._stacktraceManager,
   );
@@ -63,27 +77,9 @@ class GetMessageRequestsAndCredsUseCase
     required GetMessageRequestsAndCredsParam param,
   }) async {
     final requestCredentialPairs = <RequestAndCredentials>[];
-
-    List<ProofRequestEntity> requests;
-    if (param.proofRequests != null) {
-      // Simplified: map each scope to a future producing its ProofRequestEntity, preserving order
-      requests = await Future.wait(
-        param.proofRequests!.map((scope) async {
-          try {
-            final context = await _iden3commCredentialRepository.fetchSchema(
-              url: scope.query.context,
-            );
-            return ProofRequestEntity(scope, context);
-          } catch (_) {
-            return ProofRequestEntity(scope, {});
-          }
-        }),
-      );
-    } else if (param.message != null) {
-      requests = await _getProofRequestsUseCase.execute(param: param.message!);
-    } else {
-      throw ArgumentError("Either proofRequests or message must be provided.");
-    }
+    final requests = await _getProofRequestsUseCase.execute(
+      param: param.message,
+    );
 
     _stacktraceManager.addTrace(
       "[GetMessageRequestsAndCredsUseCase] requests: $requests",
@@ -101,8 +97,8 @@ class GetMessageRequestsAndCredsUseCase
       List<ProofRequestEntity> groupRequests = group.value;
       List<FilterEntity> filtersForQueryClaimDb = [];
       for (ProofRequestEntity request in groupRequests) {
-        bool supportedCircuit = await _isProofCircuitSupported.execute(
-          param: request.scope.circuitId,
+        bool supportedCircuit = await _proofRepository.isCircuitSupported(
+          circuitId: request.scope.circuitId,
         );
         if (!supportedCircuit) {
           continue;
@@ -127,9 +123,15 @@ class GetMessageRequestsAndCredsUseCase
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
+      // Skip credential search for empty query
+      if (request.scope.query.isEmpty) {
+        requestCredentialPairs.add((request: request.scope, credentials: []));
+        continue;
+      }
+
       // we check if circuit from the request is supported
-      bool supportedCircuit = await _isProofCircuitSupported.execute(
-        param: request.scope.circuitId,
+      bool supportedCircuit = await _proofRepository.isCircuitSupported(
+        circuitId: request.scope.circuitId,
       );
       if (!supportedCircuit) {
         requestCredentialPairs.add((request: request.scope, credentials: []));
@@ -187,21 +189,7 @@ class GetMessageRequestsAndCredsUseCase
             .map((e) => e["type"] as String)
             .toList();
 
-        final rawCircuitId = request.scope.circuitId;
-        // TODO (moria): remove this with v3 circuit release
-        if (rawCircuitId.startsWith(CircuitId.v3CircuitPrefix) &&
-            !rawCircuitId.endsWith(CircuitId.currentCircuitBetaPostfix)) {
-          _stacktraceManager.addTrace(
-            "V3 circuit beta version mismatch $rawCircuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
-          );
-          throw CircuitNotDownloadedException(
-            circuit: rawCircuitId,
-            errorMessage:
-                "V3 circuit beta version mismatch $rawCircuitId is not supported, current is ${CircuitId.currentCircuitBetaPostfix}",
-          );
-        }
-
-        CircuitId circuitId = CircuitId.fromId(rawCircuitId);
+        CircuitId circuitId = CircuitId.fromId(request.scope.circuitId);
 
         return circuitId.isAnyProofTypeSupported(proofTypes);
       }).toList();

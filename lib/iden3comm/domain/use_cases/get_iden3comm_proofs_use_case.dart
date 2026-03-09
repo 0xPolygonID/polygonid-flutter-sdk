@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -10,13 +9,10 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/util/generate_link_nonce.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
@@ -43,22 +39,18 @@ class GetIden3commProofsParam {
 
 class GetIden3commProofsUseCase
     extends FutureUseCase<GetIden3commProofsParam, List<Iden3commProofEntity>> {
-  final ProofRepository _proofRepository;
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
-  final GenerateIden3commProofUseCase _generateIden3commProofUseCase;
+  final GetIden3commProofUseCase _getIden3commProofUseCase;
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
-  final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
 
   final RefreshCredentialUseCase _refreshCredentialUseCase;
 
   GetIden3commProofsUseCase(
-    this._proofRepository,
     this._getMessageRequestsAndCredsUseCase,
-    this._generateIden3commProofUseCase,
+    this._getIden3commProofUseCase,
     this._isProofCircuitSupported,
-    this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
     this._refreshCredentialUseCase,
@@ -100,8 +92,11 @@ class GetIden3commProofsUseCase
 
         // if there are no credentials for the request
         if (credentials.isEmpty) {
-          // if the request is optional, continue to the next request
-          if (request.isOptional) {
+          // if the query is empty (e.g., auth-type scopes like authV3-8-32),
+          // allow proceeding with null credential
+          if (request.query.isEmpty) {
+            // skip throwing, credential will be null below
+          } else if (request.isOptional) {
             continue;
           } else {
             // if the request is not optional, throw an error
@@ -114,11 +109,11 @@ class GetIden3commProofsUseCase
             );
           }
         }
-        CredentialEntity claim = credentials.first;
+        CredentialEntity? credential = credentials.firstOrNull;
 
-        if (claim.expiration != null) {
-          claim = await _checkCredentialExpirationAndTryRefreshIfExpired(
-            claim: claim,
+        if (credential != null && credential.expiration != null) {
+          credential = await _checkCredentialExpirationAndTryRefreshIfExpired(
+            claim: credential,
             param: param,
           );
         }
@@ -126,77 +121,57 @@ class GetIden3commProofsUseCase
         bool isCircuitSupported = await _isProofCircuitSupported.execute(
           param: request.circuitId,
         );
-        bool isCorrectType = claim.type == request.query.type;
-
-        if (isCorrectType && isCircuitSupported) {
-          String circuitId = request.circuitId;
-          CircuitDataEntity circuitData = await _proofRepository
-              .loadCircuitFiles(circuitId);
-
-          String? challenge;
-          String? privKey;
-
-          final parsedCircuitId = CircuitId.fromId(circuitId);
-          if (parsedCircuitId.isOnChain) {
-            privKey = param.privateKey;
-            challenge = param.challenge;
-          }
-
-          var identityEntity = await _getIdentityUseCase.execute(
-            param: GetIdentityParam(
-              genesisDid: param.genesisDid,
-              privateKey: param.privateKey,
-            ),
+        if (!isCircuitSupported) {
+          final error =
+              "Unsupported circuit: ${request.circuitId} for request: ${request.id}";
+          _stacktraceManager.addError("[GetIden3commProofsUseCase] $error");
+          throw UnsupportedCircuitException(
+            proofRequest: request,
+            errorMessage: error,
           );
-
-          BigInt claimSubjectProfileNonce = identityEntity.profiles.keys
-              .firstWhere(
-                (k) =>
-                    identityEntity.profiles[k] ==
-                    claim.info["credentialSubject"]["id"],
-                orElse: () => GENESIS_PROFILE_NONCE,
-              );
-
-          int? groupId = request.query.groupId;
-          String linkNonce = "0";
-          // Check if groupId exists in the map
-          if (groupId != null) {
-            if (groupIdLinkNonceMap.containsKey(groupId)) {
-              // Use the existing linkNonce for this groupId
-              linkNonce = groupIdLinkNonceMap[groupId]!;
-            } else {
-              // Generate a new linkNonce for this groupId
-              linkNonce = generateLinkNonce();
-              groupIdLinkNonceMap[groupId] = linkNonce;
-            }
-          }
-
-          _proofGenerationStepsStreamManager.add(
-            "#${i + 1} creating proof for ${claim.type}",
-          );
-
-          // Generate proof param
-          GenerateIden3commProofParam proofParam = GenerateIden3commProofParam(
-            did: param.genesisDid,
-            profileNonce: param.profileNonce,
-            claimSubjectProfileNonce: claimSubjectProfileNonce,
-            credential: claim,
-            request: request,
-            circuitData: circuitData,
-            privateKey: privKey,
-            challenge: challenge,
-            config: param.config,
-            verifierId: param.message.from,
-            linkNonce: linkNonce,
-            transactionData: param.transactionData,
-          );
-
-          // Generate proof
-          Iden3commProofEntity proof = await _generateIden3commProofUseCase
-              .execute(param: proofParam);
-
-          proofs.add(proof);
         }
+
+        String circuitId = request.circuitId;
+
+        String? challenge;
+        if (CircuitId.fromId(circuitId).isOnChain) {
+          challenge = param.challenge;
+        }
+
+        int? groupId = request.query.groupId;
+        String linkNonce = "0";
+        // Check if groupId exists in the map
+        if (groupId != null) {
+          if (groupIdLinkNonceMap.containsKey(groupId)) {
+            // Use the existing linkNonce for this groupId
+            linkNonce = groupIdLinkNonceMap[groupId]!;
+          } else {
+            // Generate a new linkNonce for this groupId
+            linkNonce = generateLinkNonce();
+            groupIdLinkNonceMap[groupId] = linkNonce;
+          }
+        }
+
+        _proofGenerationStepsStreamManager.add(
+          "#${i + 1} creating proof for ${credential?.type ?? 'auth'}",
+        );
+
+        Iden3commProofEntity proof = await _getIden3commProofUseCase.execute(
+          param: GetIden3commProofParam(
+            request: request,
+            credential: credential,
+            verifierDid: param.message.from,
+            genesisDid: param.genesisDid,
+            profileNonce: param.profileNonce,
+            privateKey: param.privateKey,
+            linkNonce: linkNonce,
+            challenge: challenge,
+            transactionData: param.transactionData,
+            config: param.config,
+          ),
+        );
+
+        proofs.add(proof);
       }
 
       return proofs;

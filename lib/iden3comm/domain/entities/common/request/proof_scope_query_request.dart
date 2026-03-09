@@ -114,7 +114,12 @@ class ZeroKnowledgeProofQuery {
   final int? groupId;
   final String type;
 
-  ZeroKnowledgeProofQuery({
+  /// Non-protocol local field to check if the query is empty.
+  /// For auth queries we have query mostly empty.
+  /// Introduced to don't break backwards compatibility and nullability.
+  final bool isEmpty;
+
+  const ZeroKnowledgeProofQuery({
     required this.allowedIssuers,
     required this.context,
     this.credentialSubject,
@@ -122,31 +127,34 @@ class ZeroKnowledgeProofQuery {
     this.skipClaimRevocationCheck,
     this.groupId,
     required this.type,
-  });
+  }) : isEmpty = false;
+
+  const ZeroKnowledgeProofQuery.empty()
+    : allowedIssuers = const ['*'],
+      context = "",
+      credentialSubject = null,
+      proofType = null,
+      skipClaimRevocationCheck = null,
+      groupId = null,
+      type = '',
+      isEmpty = true;
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofScopeRulesQueryRequest]
-  factory ZeroKnowledgeProofQuery.fromJson(Map<String, dynamic>? json) {
-    if (json != null) {
-      return ZeroKnowledgeProofQuery(
-        allowedIssuers: List<String>.from(json['allowedIssuers']),
-        context: json['context'],
-        proofType: json['proofType'],
+  factory ZeroKnowledgeProofQuery.fromJson(Map<String, dynamic> json) {
+    return ZeroKnowledgeProofQuery(
+      allowedIssuers: List<String>.from(json['allowedIssuers']),
+      context: json['context'],
+      proofType: json['proofType'],
 
-        /// FIXME: flooring doubles without decimals to ints, this is because of protobuf
-        /// only use number_value for google.protobuf.Value and turn int to float
-        credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
-            ?.deepDoubleToInt(),
-        skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
-        groupId: json['groupId'],
-        type: json['type'],
-      );
-      //schema: schema);
-    } else {
-      throw "something went wrong";
-    }
+      credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
+          ?.deepDoubleToInt(),
+      skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
+      groupId: json['groupId'],
+      type: json['type'],
+    );
   }
 
   Map<String, dynamic> toJson() => {

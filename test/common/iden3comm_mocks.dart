@@ -74,16 +74,59 @@ class Iden3commMocks {
   "callbackUrl": "${CommonMocks.url}",
   "scope": [
     $proofScopeRequestJson, $otherProofScopeRequestJson
-  ],
-  "url": "${CommonMocks.url}",
-  "credentials": [
-    {
-      "id": "27887",
-      "description": "Authenticating with iden3"
-    }
   ]
 }
   ''';
+
+  static const agenticAuthRequest = {
+    "id": "f8aee09d-f592-4fcc-8d2a-8938aa26676c",
+    "typ": "application/iden3comm-plain-json",
+    "type": "https://iden3-communication.io/authorization/1.0/request",
+    "thid": "f8aee09d-f592-4fcc-8d2a-8938aa26676c",
+    "from": "did:iden3:billions:main:2VwqkgA2dNEwsnmojaay7C5jJEb8ZygecqsomeDID",
+    "body": {
+      "callbackUrl": "https://relay.com?encoded_attestation=base64EncodedAtt",
+      "reason": "agent_pairing:v1",
+      "accept": [
+        "iden3comm/v1;env=application/iden3-zkp-json;circuitId=authV2,authV3,authV3-8-32;alg=groth16",
+      ],
+      "scope": [
+        {
+          "id": 1,
+          "circuitId": "credentialAtomicV3OnChain",
+          "params": {
+            "sender": "0xsenderaddress", // relayer address
+          },
+          "query": {
+            "allowedIssuers": [
+              "did:iden3:billions:main:2VwqkgA2dNEwsnmojaay7C5jJEb8ZygecqCSU3xVfm",
+            ],
+            "context": "ipfs://QmcUEDa42Er4nfNFmGQVjiNYFaik6kvNQjfTeBrdSx83At",
+            "type": "UniquenessCredential",
+          },
+        },
+        {
+          "id": 2,
+          "circuitId": "authV3-8-32",
+          "params": {
+            "challenge": "<attestation_hash>",
+            // build from attestation data (same as in encoded attestation)
+          },
+        },
+      ],
+    },
+  };
+
+  static AuthorizationRequestMessage agenticAuthRequestMessage =
+      AuthorizationRequestMessage.fromJson(
+        Map<String, dynamic>.from(agenticAuthRequest),
+      );
+
+  static ZeroKnowledgeProofRequest agenticOnChainScopeRequest =
+      agenticAuthRequestMessage.body.scope[0];
+
+  static ZeroKnowledgeProofRequest agenticAuthScopeRequest =
+      agenticAuthRequestMessage.body.scope[1];
 
   static String authRequestJson =
       '''

@@ -48,13 +48,23 @@ class GetProofRequestsUseCase
       scopes = param.body.scope;
     }
 
-    if (scopes != null && scopes.isNotEmpty) {
-      for (ZeroKnowledgeProofRequest scope in scopes) {
+    if (scopes == null || scopes.isEmpty) {
+      return proofRequests;
+    }
+    for (ZeroKnowledgeProofRequest scope in scopes) {
+      if (scope.query.isEmpty) {
+        proofRequests.add(ProofRequestEntity(scope, {}));
+        continue;
+      }
+      try {
         var context = await _getProofQueryContextUseCase.execute(param: scope);
         _stacktraceManager.addTrace(
           "[GetProofRequestsUseCase] _getProofQueryContextUseCase: ${jsonEncode(context)}",
         );
         proofRequests.add(ProofRequestEntity(scope, context));
+      } catch (_) {
+        proofRequests.add(ProofRequestEntity(scope, {}));
+        continue;
       }
     }
 

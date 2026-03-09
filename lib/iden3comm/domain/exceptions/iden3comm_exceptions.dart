@@ -161,3 +161,14 @@ class UnsupportedCircuitException extends PolygonIdSDKException {
     super.error,
   });
 }
+
+class NullAuthChallengeException extends PolygonIdSDKException {
+  final ZeroKnowledgeProofRequest proofRequest;
+
+  NullAuthChallengeException({
+    required this.proofRequest,
+    required super.errorMessage,
+    super.error,
+  });
+}
+

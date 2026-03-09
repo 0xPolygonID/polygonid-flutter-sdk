@@ -3,17 +3,14 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
-import '../../../common/proof_mocks.dart';
 import 'get_auth_token_use_case_test.mocks.dart';
 
 // Data
@@ -24,136 +21,176 @@ final param = GetAuthTokenParam(
   message: CommonMocks.message,
   circuitId: CircuitId.authV2,
 );
-const result = "token";
 var exception = Exception();
 var getAuthTokenException = GetAuthTokenException(errorMessage: "Error");
 
 // Dependencies
-MockLoadCircuitUseCase loadCircuitUseCase = MockLoadCircuitUseCase();
 MockGetJWZUseCase getJWZUseCase = MockGetJWZUseCase();
 MockGetAuthChallengeUseCase getAuthChallengeUseCase =
     MockGetAuthChallengeUseCase();
-MockGetAuthInputsUseCase getAuthInputsUseCase = MockGetAuthInputsUseCase();
-MockProveUseCase proveUseCase = MockProveUseCase();
+MockGenerateAuthProofUseCase generateAuthProofUseCase =
+    MockGenerateAuthProofUseCase();
 MockStacktraceManager stacktraceManager = MockStacktraceManager();
 
 // Tested instance
 GetAuthTokenUseCase useCase = GetAuthTokenUseCase(
-  loadCircuitUseCase,
   getJWZUseCase,
   getAuthChallengeUseCase,
-  getAuthInputsUseCase,
-  proveUseCase,
+  generateAuthProofUseCase,
   stacktraceManager,
 );
 
 @GenerateMocks([
-  LoadCircuitUseCase,
   GetJWZUseCase,
   GetAuthChallengeUseCase,
-  GetAuthInputsUseCase,
-  ProveUseCase,
+  GenerateAuthProofUseCase,
   StacktraceManager,
 ])
 void main() {
   setUp(() {
+    reset(getJWZUseCase);
+    reset(getAuthChallengeUseCase);
+    reset(generateAuthProofUseCase);
+    reset(stacktraceManager);
+
     // Given
-    when(getJWZUseCase.execute(param: anyNamed('param'))).thenAnswer(
-        (realInvocation) => Future.value(Iden3commMocks.encodedJWZ));
-    when(getAuthChallengeUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.challenge));
-    when(getAuthInputsUseCase.execute(param: anyNamed('param'))).thenAnswer(
-        (realInvocation) => Future.value(CommonMocks.generateInputsResponse));
-    when(loadCircuitUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.circuitData));
-    when(proveUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.value(ProofMocks.zkProof));
+    when(
+      getJWZUseCase.execute(param: anyNamed('param')),
+    ).thenAnswer((realInvocation) => Future.value(Iden3commMocks.encodedJWZ));
+    when(
+      getAuthChallengeUseCase.execute(param: anyNamed('param')),
+    ).thenAnswer((realInvocation) => Future.value(CommonMocks.challenge));
+    when(generateAuthProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
+      (realInvocation) => Future.value(Iden3commMocks.iden3commProof),
+    );
   });
 
   test(
-      "Given a GetAuthTokenParam, when I call execute, then I expect a token String to be returned",
-      () async {
-    // When
-    expect(await useCase.execute(param: param), Iden3commMocks.encodedJWZ);
+    "Given a GetAuthTokenParam, when I call execute, then I expect a token String to be returned",
+    () async {
+      // When
+      expect(await useCase.execute(param: param), Iden3commMocks.encodedJWZ);
 
-    // Then
-    var verifyGetJWZ =
-        verify(getJWZUseCase.execute(param: captureAnyNamed('param')));
-    expect(verifyGetJWZ.callCount, 2);
-    expect(verifyGetJWZ.captured[0].message, param.message);
-    expect(verifyGetJWZ.captured[0].proof, null);
-    expect(verifyGetJWZ.captured[1].message, param.message);
-    expect(verifyGetJWZ.captured[1].proof, ProofMocks.zkProof);
+      // Then
+      var verifyGetJWZ = verify(
+        getJWZUseCase.execute(param: captureAnyNamed('param')),
+      );
+      expect(verifyGetJWZ.callCount, 2);
+      expect(verifyGetJWZ.captured[0].message, param.message);
+      expect(verifyGetJWZ.captured[0].proof, null);
+      expect(verifyGetJWZ.captured[0].circuitId, CircuitId.authV2);
+      expect(verifyGetJWZ.captured[1].message, param.message);
+      expect(verifyGetJWZ.captured[1].proof, Iden3commMocks.iden3commProof);
+      expect(verifyGetJWZ.captured[1].circuitId, CircuitId.authV2);
 
-    expect(
-        verify(getAuthChallengeUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first,
-        Iden3commMocks.encodedJWZ);
+      expect(
+        verify(
+          getAuthChallengeUseCase.execute(param: captureAnyNamed('param')),
+        ).captured.first,
+        Iden3commMocks.encodedJWZ,
+      );
 
-    var captureAuthInputs =
-        verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first;
-    expect(captureAuthInputs.genesisDid, CommonMocks.did);
-    expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
-
-    expect(
-        verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first,
-        "authV2");
-
-    var captureProve =
-        verify(proveUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first;
-    expect(captureProve.inputs, CommonMocks.inputs);
-    expect(captureProve.circuitData, ProofMocks.circuitData);
-  });
+      var captureAuthProof =
+          verify(
+                generateAuthProofUseCase.execute(
+                  param: captureAnyNamed('param'),
+                ),
+              ).captured.first
+              as GenerateAuthProofParam;
+      expect(captureAuthProof.genesisDid, CommonMocks.did);
+      expect(captureAuthProof.privateKey, CommonMocks.privateKey);
+      expect(captureAuthProof.profileNonce, CommonMocks.genesisNonce);
+      expect(captureAuthProof.requestId, 0);
+      expect(captureAuthProof.circuitId, CircuitId.authV2.id);
+      expect(captureAuthProof.challenge, CommonMocks.challenge);
+    },
+  );
 
   test(
-      "Given a GetAuthTokenParam, when I call execute and an error occurred, then I expect an exception to be thrown",
-      () async {
-    // Given
-    when(proveUseCase.execute(param: anyNamed('param')))
-        .thenAnswer((realInvocation) => Future.error(getAuthTokenException));
+    "Given a GetAuthTokenParam, when I call execute and generateAuthProof fails, then I expect an exception to be thrown",
+    () async {
+      // Given
+      when(
+        generateAuthProofUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.error(getAuthTokenException));
 
-    // When
-    await expectLater(
-        useCase.execute(param: param), throwsA(getAuthTokenException));
+      // When
+      await expectLater(
+        useCase.execute(param: param),
+        throwsA(getAuthTokenException),
+      );
 
-    // Then
-    var verifyGetJWZ =
-        verify(getJWZUseCase.execute(param: captureAnyNamed('param')));
-    expect(verifyGetJWZ.callCount, 1);
-    expect(verifyGetJWZ.captured[0].message, param.message);
-    expect(verifyGetJWZ.captured[0].proof, null);
+      // Then
+      var verifyGetJWZ = verify(
+        getJWZUseCase.execute(param: captureAnyNamed('param')),
+      );
+      expect(verifyGetJWZ.callCount, 1);
+      expect(verifyGetJWZ.captured[0].message, param.message);
+      expect(verifyGetJWZ.captured[0].proof, null);
 
-    expect(
-        verify(getAuthChallengeUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first,
-        Iden3commMocks.encodedJWZ);
+      expect(
+        verify(
+          getAuthChallengeUseCase.execute(param: captureAnyNamed('param')),
+        ).captured.first,
+        Iden3commMocks.encodedJWZ,
+      );
 
-    var captureAuthInputs =
-        verify(getAuthInputsUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first;
-    expect(captureAuthInputs.genesisDid, CommonMocks.did);
-    expect(captureAuthInputs.privateKey, CommonMocks.privateKey);
+      verify(
+        generateAuthProofUseCase.execute(param: anyNamed('param')),
+      ).called(1);
 
-    expect(
-        verify(loadCircuitUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first,
-        "authV2");
+      verifyNever(
+        getJWZUseCase.execute(
+          param: argThat(
+            predicate((p) => p is GetJWZParam && p.proof != null),
+            named: 'param',
+          ),
+        ),
+      );
+    },
+  );
 
-    var captureProve =
-        verify(proveUseCase.execute(param: captureAnyNamed('param')))
-            .captured
-            .first;
-    expect(captureProve.inputs, CommonMocks.inputs);
-    expect(captureProve.circuitData, ProofMocks.circuitData);
-  });
+  test(
+    "Given a GetAuthTokenParam, when I call execute and getAuthChallenge fails, then I expect a GetAuthTokenException to be thrown",
+    () async {
+      // Given
+      when(
+        getAuthChallengeUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+        useCase.execute(param: param),
+        throwsA(isA<GetAuthTokenException>()),
+      );
+
+      // Then
+      verify(getJWZUseCase.execute(param: anyNamed('param'))).called(1);
+      verify(
+        getAuthChallengeUseCase.execute(param: anyNamed('param')),
+      ).called(1);
+      verifyNever(generateAuthProofUseCase.execute(param: anyNamed('param')));
+    },
+  );
+
+  test(
+    "Given a GetAuthTokenParam, when I call execute and getJWZ fails on first call, then I expect a GetAuthTokenException to be thrown",
+    () async {
+      // Given
+      when(
+        getJWZUseCase.execute(param: anyNamed('param')),
+      ).thenAnswer((realInvocation) => Future.error(exception));
+
+      // When
+      await expectLater(
+        useCase.execute(param: param),
+        throwsA(isA<GetAuthTokenException>()),
+      );
+
+      // Then
+      verify(getJWZUseCase.execute(param: anyNamed('param'))).called(1);
+      verifyNever(getAuthChallengeUseCase.execute(param: anyNamed('param')));
+      verifyNever(generateAuthProofUseCase.execute(param: anyNamed('param')));
+    },
+  );
 }

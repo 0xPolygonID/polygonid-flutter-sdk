@@ -100,10 +100,18 @@ class ZeroKnowledgeProofRequest {
   /// @param [Map<String, dynamic>] json
   /// @returns [ZeroKnowledgeProofRequest]
   factory ZeroKnowledgeProofRequest.fromJson(Map<String, dynamic> json) {
-    ZeroKnowledgeProofQuery query =
-        ZeroKnowledgeProofQuery.fromJson(json['query']);
+    final queryJson = json['query'];
+    ZeroKnowledgeProofQuery query;
+    if (queryJson == null) {
+      query = ZeroKnowledgeProofQuery.empty();
+    } else {
+      query = ZeroKnowledgeProofQuery.fromJson(queryJson);
+    }
+
+    final id = json['id'] is int ? json['id'] : int.parse(json['id']);
+
     return ZeroKnowledgeProofRequest(
-      id: json['id'],
+      id: id,
       circuitId: json['circuitId'],
       optional: json['optional'],
       query: query,
@@ -112,13 +120,12 @@ class ZeroKnowledgeProofRequest {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'circuitId': circuitId,
-        if (optional != null) 'optional': optional,
-        'query': query.toJson(),
-        'params': params,
-      }..removeWhere(
-          (dynamic key, dynamic value) => key == null || value == null);
+    'id': id,
+    'circuitId': circuitId,
+    if (optional != null) 'optional': optional,
+    if (!query.isEmpty) 'query': query.toJson(),
+    'params': params,
+  }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>

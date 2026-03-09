@@ -212,6 +212,7 @@ abstract class PolygonIdSdkIden3comm {
     required String verifierDid,
     required String genesisDid,
     BigInt? profileNonce,
+    required String linkNonce,
     required String privateKey,
     String? challenge,
     EnvConfigEntity? config,
@@ -689,7 +690,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String verifierDid,
     required String genesisDid,
     BigInt? profileNonce,
-    String? linkNonce,
+    required String linkNonce,
     required String privateKey,
     String? challenge,
     EnvConfigEntity? config,
@@ -771,6 +772,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         pushToken: pushToken,
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
+        challenge: challenge,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
@@ -965,6 +967,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
         circuitId: circuitId,
+        challenge: challenge,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;

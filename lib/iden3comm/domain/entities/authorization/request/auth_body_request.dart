@@ -93,16 +93,19 @@ class AuthorizationRequestMessageBody implements JsonEncodable {
   /// @param [Map<String, dynamic>] json
   /// @returns [AuthorizationRequestMessageBody]
   factory AuthorizationRequestMessageBody.fromJson(Map<String, dynamic> json) {
-    final scope = (json['scope'] as List?)
+    final scope =
+        (json['scope'] as List?)
             ?.map((item) => ZeroKnowledgeProofRequest.fromJson(item))
             .toList() ??
         [];
 
-    final didDoc =
-        json['did_doc'] != null ? DIDDocument.fromJson(json['did_doc']) : null;
+    final didDoc = json['did_doc'] != null
+        ? DIDDocument.fromJson(json['did_doc'])
+        : null;
 
-    final accept =
-        (json['accept'] as List?)?.map((item) => item.toString()).toList();
+    final accept = (json['accept'] as List?)
+        ?.map((item) => item.toString())
+        .toList();
 
     return AuthorizationRequestMessageBody(
       callbackUrl: json['callbackUrl'],
@@ -115,11 +118,13 @@ class AuthorizationRequestMessageBody implements JsonEncodable {
   }
 
   Map<String, dynamic> toJson() => {
-        'callbackUrl': callbackUrl,
-        'reason': reason,
-        'message': message,
-        'scope': scope.map((item) => item.toJson()).toList(),
-      };
+    'callbackUrl': callbackUrl,
+    'reason': reason,
+    if (message != null) 'message': message,
+    'scope': scope.map((item) => item.toJson()).toList(),
+    if (didDoc != null) 'did_doc': didDoc?.toJson(),
+    if (accept != null) 'accept': accept,
+  };
 
   @override
   String toString() =>
