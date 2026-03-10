@@ -17,7 +17,16 @@ class UrlCircuitFileSource extends CircuitFileSource {
   /// URL to a `.zip` file that contains the `.wcd` and `.zkey` files.
   final String zipUrl;
 
-  const UrlCircuitFileSource({required this.zipUrl});
+  /// When `true`, the zip archive is downloaded and extracted immediately
+  /// upon registration via [CircuitRegistry.register] instead of being
+  /// fetched lazily the first time the circuit is needed for proof
+  /// generation.
+  final bool downloadImmediately;
+
+  const UrlCircuitFileSource({
+    required this.zipUrl,
+    this.downloadImmediately = false,
+  });
 }
 
 /// Circuit files are bundled as Flutter assets.

@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_u
 import 'package:polygonid_flutter_sdk/circuits/domain/check_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/remove_circuits_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 
 abstract class PolygonIdSdkCircuits {
@@ -34,7 +35,11 @@ abstract class PolygonIdSdkCircuits {
   ///
   /// This allows the SDK to locate circuit files for the given [circuitId]
   /// without requiring them to be in the default circuits directory.
-  void registerCircuitFile(String circuitId, CircuitFileSource source);
+  ///
+  /// If [source] is a [UrlCircuitFileSource] with
+  /// [UrlCircuitFileSource.downloadImmediately] set to `true`, the zip
+  /// archive is downloaded and extracted before this method returns.
+  Future<void> registerCircuitFile(String circuitId, CircuitFileSource source);
 
   /// Remove a previously registered circuit file source.
   void unregisterCircuitFile(String circuitId);
@@ -62,7 +67,10 @@ class Circuits implements PolygonIdSdkCircuits {
     this._cancelCircuitsDownloadUseCase,
     this._removeCircuitsUseCase,
     this._circuitRegistry,
-  );
+    CircuitsFilesDataSource circuitsFilesDataSource,
+  ) {
+    _circuitRegistry.setDownloader(circuitsFilesDataSource.downloadAndExtractZip);
+  }
 
   @override
   Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
@@ -104,8 +112,9 @@ class Circuits implements PolygonIdSdkCircuits {
   }
 
   @override
-  void registerCircuitFile(String circuitId, CircuitFileSource source) {
-    _circuitRegistry.register(circuitId, source);
+  Future<void> registerCircuitFile(
+      String circuitId, CircuitFileSource source) async {
+    await _circuitRegistry.register(circuitId, source);
   }
 
   @override

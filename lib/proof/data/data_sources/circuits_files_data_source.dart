@@ -153,7 +153,7 @@ class CircuitsFilesDataSource {
           basePath: directoryPath,
         )?.readAsBytesSync();
       case UrlCircuitFileSource(:final zipUrl):
-        await _downloadAndExtractZip(circuitId, zipUrl);
+        await downloadAndExtractZip(circuitId, zipUrl);
         return _readFileIfExists(
           circuitId,
           'wcd',
@@ -178,7 +178,7 @@ class CircuitsFilesDataSource {
           basePath: directoryPath,
         )?.path;
       case UrlCircuitFileSource(:final zipUrl):
-        await _downloadAndExtractZip(circuitId, zipUrl);
+        await downloadAndExtractZip(circuitId, zipUrl);
         return _readFileIfExists(circuitId, 'zkey', _zkeyFallbacks)?.path;
       case AssetCircuitFileSource(:final zkeyAssetPath):
         if (zkeyAssetPath == null) return null;
@@ -186,7 +186,11 @@ class CircuitsFilesDataSource {
     }
   }
 
-  Future<void> _downloadAndExtractZip(String circuitId, String zipUrl) async {
+  /// Downloads a zip archive from [zipUrl], extracts it into a subdirectory
+  /// named [circuitId] under the base [directory], and deletes the zip.
+  ///
+  /// This is a no-op when the circuit directory already contains files.
+  Future<void> downloadAndExtractZip(String circuitId, String zipUrl) async {
     final circuitDir = Directory(pathLib.join(directory.path, circuitId));
 
     // Skip if already extracted

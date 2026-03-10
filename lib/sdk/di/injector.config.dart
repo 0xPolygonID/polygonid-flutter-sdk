@@ -916,6 +916,7 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
         await getAsync<_i737.RemoveCircuitsUseCase>(),
         gh<_i819.CircuitRegistry>(),
+        await getAsync<_i540.CircuitsFilesDataSource>(),
       ),
     );
     gh.factory<_i734.GetAuthChallengeUseCase>(

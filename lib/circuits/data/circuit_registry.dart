@@ -5,18 +5,43 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 /// at runtime. Return `null` to fall back to the default resolution behavior.
 typedef CircuitResolver = Future<CircuitFileSource?> Function(String circuitId);
 
+/// A callback that downloads and extracts a zip archive for a circuit.
+typedef CircuitDownloader =
+    Future<void> Function(String circuitId, String zipUrl);
+
 /// Manages explicit circuit file registrations and an optional dynamic
 /// resolver for circuit IDs that are not known ahead of time.
 @injectable
 class CircuitRegistry {
   final Map<String, CircuitFileSource> _registrations = {};
   CircuitResolver? _resolver;
+  CircuitDownloader? _downloader;
 
   CircuitRegistry();
 
+  /// Inject the downloader that performs zip download + extraction.
+  ///
+  /// This is called once during SDK initialisation so that [register] can
+  /// trigger an immediate download for [UrlCircuitFileSource] sources that
+  /// have [UrlCircuitFileSource.downloadImmediately] set to `true`.
+  void setDownloader(CircuitDownloader? downloader) {
+    _downloader = downloader;
+  }
+
   /// Register a [CircuitFileSource] for the given [circuitId].
-  void register(String circuitId, CircuitFileSource source) {
+  ///
+  /// If [source] is a [UrlCircuitFileSource] with
+  /// [UrlCircuitFileSource.downloadImmediately] set to `true` and a
+  /// downloader has been configured via [setDownloader], the zip archive
+  /// is downloaded and extracted immediately.
+  Future<void> register(String circuitId, CircuitFileSource source) async {
     _registrations[circuitId] = source;
+
+    if (source is UrlCircuitFileSource &&
+        source.downloadImmediately &&
+        _downloader != null) {
+      await _downloader!(circuitId, source.zipUrl);
+    }
   }
 
   /// Remove a previously registered circuit file source.
