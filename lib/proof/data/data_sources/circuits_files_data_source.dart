@@ -2,160 +2,229 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as pathLib;
-import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
+import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
+import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 
+@injectable
 class CircuitsFilesDataSource {
   final Directory directory;
+  final CircuitRegistry? circuitRegistry;
+  final ZipDecoder _zipDecoder;
 
-  CircuitsFilesDataSource(this.directory);
+  CircuitsFilesDataSource(
+    this.directory,
+    this.circuitRegistry,
+    this._zipDecoder,
+  );
 
-  Directory? circuitDirectory(String circuitId) {
-    final dirContents = directory.listSync();
-    final circuitDir = dirContents.firstWhereOrNull(
-        (f) => f.path.endsWith(circuitId) && f is Directory) as Directory?;
-    return circuitDir;
-  }
+  // --- Public API ---
 
   Future<Uint8List> loadGraphFile(String circuitId) async {
-    final dirContents = directory.listSync();
-    File? graphFile = dirContents
-        .firstWhereOrNull((f) => f.name == '$circuitId.wcd') as File?;
-
-    if (graphFile != null && graphFile.existsSync()) {
-      return graphFile.readAsBytesSync();
+    // Try registry/resolver first
+    final source = await _resolveCircuit(circuitId);
+    if (source != null) {
+      final result = await _loadGraphFromSource(circuitId, source);
+      if (result != null) return result;
     }
 
-    final circuitDir = circuitDirectory(circuitId);
-    if (circuitDir != null) {
-      graphFile = circuitDir.listSync().firstWhereOrNull(
-          (f) => f.name == '$circuitId.wcd' || f.name == 'graph.wcd') as File?;
-      if (graphFile != null && graphFile.existsSync()) {
-        return graphFile.readAsBytesSync();
-      }
-    }
+    // Fallback: scan the default directory
+    final local = _readFileIfExists(circuitId, 'wcd', _graphFallbacks);
+    if (local != null) return local.readAsBytesSync();
 
+    // Last resort: bundled asset
     try {
-      final path = "assets/$circuitId.wcd";
-      final circuitGraphFile = await rootBundle.load(path);
-      return circuitGraphFile.buffer.asUint8List();
+      final data = await rootBundle.load('assets/$circuitId.wcd');
+      return data.buffer.asUint8List();
     } catch (_) {
       throw CircuitNotDownloadedException(
         circuit: circuitId,
         errorMessage:
-            "Circuit $circuitId not found at assets path \"assets/$circuitId.wcd\"",
+            'Circuit $circuitId not found at assets path "assets/$circuitId.wcd"',
       );
     }
   }
 
   Future<String> getZkeyFilePath(String circuitId) async {
-    final dirContents = directory.listSync();
-    File? zkeyFile = dirContents
-        .firstWhereOrNull((f) => f.name == '$circuitId.zkey') as File?;
-
-    if (zkeyFile != null && zkeyFile.existsSync()) {
-      return zkeyFile.path;
+    // Try registry/resolver first
+    final source = await _resolveCircuit(circuitId);
+    if (source != null) {
+      final result = await _resolveZkeyFromSource(circuitId, source);
+      if (result != null) return result;
     }
 
-    final circuitDir = circuitDirectory(circuitId);
-    if (circuitDir != null) {
-      zkeyFile = circuitDir.listSync().firstWhereOrNull((f) =>
-              f.name == '$circuitId.zkey' || f.name == 'circuit_final.zkey')
-          as File?;
-      if (zkeyFile != null && zkeyFile.existsSync()) {
-        return zkeyFile.path;
-      }
-    }
+    // Fallback: scan the default directory
+    final local = _readFileIfExists(circuitId, 'zkey', _zkeyFallbacks);
+    if (local != null) return local.path;
 
     throw CircuitNotDownloadedException(
       circuit: circuitId,
-      errorMessage: "Circuit $circuitId not downloaded or not found",
+      errorMessage: 'Circuit $circuitId not downloaded or not found',
     );
   }
 
-  ///
-  Future<bool> circuitsFilesExist({required String circuitsFileName}) async {
-    String fileName = '${circuitsFileName.trim()}.zip';
-    String path = directory.path;
-    var file = File('$path/$fileName');
-
-    return file.exists();
+  bool circuitsFilesExist({required String circuitsFileName}) {
+    return _zipFile(circuitsFileName).existsSync();
   }
 
-  Future<String> getPathToCircuitZipFile(
-      {required String circuitsFileName}) async {
-    String path = directory.path;
-    String fileName = '${circuitsFileName.trim()}.zip';
-
-    return '$path/$fileName';
+  String getPathToCircuitZipFile({required String circuitsFileName}) {
+    return _zipFile(circuitsFileName).path;
   }
 
-  Future<String> getPathToCircuitZipFileTemp(
-      {required String circuitsFileName}) async {
-    String path = directory.path;
-    String fileName = '${circuitsFileName.trim()}_temp.zip';
-
-    return '$path/$fileName';
+  String getPathToCircuitZipFileTemp({required String circuitsFileName}) {
+    return _zipFile(circuitsFileName, suffix: '_temp').path;
   }
 
-  Future<String> getPath() async {
-    return Future.value(directory.path);
-  }
+  String get path => directory.path;
 
-  Future<void> deleteFile(String pathToFile) async {
+  void deleteFile(String pathToFile) {
     try {
-      var file = File(pathToFile);
-      await file.delete();
+      File(pathToFile).deleteSync();
     } catch (_) {
-      // file not found? no problem, we don't need it
+      // file not found — nothing to clean up
     }
   }
 
-  void renameFile(String pathTofile, String newPathToFile) {
-    var file = File(pathTofile);
-    file.renameSync(newPathToFile);
+  // --- Private helpers ---
+
+  /// Candidate file names for graph (wcd) files, relative to a circuit folder.
+  /// `%s` is replaced with the circuitId.
+  static const _graphFallbacks = ['%s.wcd', 'graph.wcd'];
+
+  /// Candidate file names for zkey files, relative to a circuit folder.
+  static const _zkeyFallbacks = ['%s.zkey', 'circuit_final.zkey'];
+
+  /// Builds the path for a zip file in the base directory.
+  File _zipFile(String circuitsFileName, {String suffix = ''}) {
+    final name = '${circuitsFileName.trim()}$suffix.zip';
+    return File(pathLib.join(directory.path, name));
   }
 
-  void writeZipFile({
-    required String pathToFile,
-    required List<int> zipBytes,
+  /// Resolves the circuit source from the registry (if available).
+  Future<CircuitFileSource?> _resolveCircuit(String circuitId) =>
+      circuitRegistry?.resolveCircuit(circuitId) ?? Future.value(null);
+
+  /// Searches for a file using standard naming conventions:
+  /// 1. `<basePath>/$circuitId.<ext>`
+  /// 2. `<basePath>/$circuitId/<fallback>` for each fallback pattern
+  File? _readFileIfExists(
+    String circuitId,
+    String ext,
+    List<String> subDirFallbacks, {
+    String? basePath,
   }) {
-    var file = File(pathToFile);
-    file.writeAsBytesSync(
-      zipBytes,
-      mode: FileMode.append,
-    );
+    final base = basePath ?? directory.path;
+    if (!Directory(base).existsSync()) return null;
+
+    // Rule 1: directly in basePath
+    final direct = File(pathLib.join(base, '$circuitId.$ext'));
+    if (direct.existsSync()) return direct;
+
+    // Rules 2+: inside a subfolder named circuitId
+    final subDir = Directory(pathLib.join(base, circuitId));
+    if (!subDir.existsSync()) return null;
+
+    for (final pattern in subDirFallbacks) {
+      final file = File(
+        pathLib.join(subDir.path, pattern.replaceAll('%s', circuitId)),
+      );
+      if (file.existsSync()) return file;
+    }
+
+    return null;
   }
 
-  int zipFileSize({required String pathToFile}) {
-    var file = File(pathToFile);
-    return file.lengthSync();
-  }
+  // --- Registry-based resolution ---
 
-  Future<void> writeCircuitsFileFromZip({
-    required String path,
-    required String zipPath,
-  }) async {
-    // Decode zip file
-    final zipDecoder = getItSdk.get<ZipDecoder>();
-    final inputFileStream = InputFileStream(zipPath);
-    final archive = zipDecoder.decodeStream(inputFileStream);
-
-    for (var archiveFile in archive) {
-      var filename = pathLib.join(path, pathLib.basename(archiveFile.name));
-      if (archiveFile.isFile) {
-        var outFile = File(filename);
-        outFile = await outFile.create(recursive: true);
-
-        archiveFile.writeContent(OutputFileStream(filename));
-      }
+  Future<Uint8List?> _loadGraphFromSource(
+    String circuitId,
+    CircuitFileSource source,
+  ) async {
+    switch (source) {
+      case LocalPathCircuitFileSource(:final directoryPath):
+        return _readFileIfExists(
+          circuitId,
+          'wcd',
+          _graphFallbacks,
+          basePath: directoryPath,
+        )?.readAsBytesSync();
+      case UrlCircuitFileSource(:final zipUrl):
+        await _downloadAndExtractZip(circuitId, zipUrl);
+        return _readFileIfExists(
+          circuitId,
+          'wcd',
+          _graphFallbacks,
+        )?.readAsBytesSync();
+      case AssetCircuitFileSource(:final wcdAssetPath):
+        final data = await rootBundle.load(wcdAssetPath);
+        return data.buffer.asUint8List();
     }
   }
-}
 
-extension on FileSystemEntity {
-  String get name => pathLib.basename(path);
+  Future<String?> _resolveZkeyFromSource(
+    String circuitId,
+    CircuitFileSource source,
+  ) async {
+    switch (source) {
+      case LocalPathCircuitFileSource(:final directoryPath):
+        return _readFileIfExists(
+          circuitId,
+          'zkey',
+          _zkeyFallbacks,
+          basePath: directoryPath,
+        )?.path;
+      case UrlCircuitFileSource(:final zipUrl):
+        await _downloadAndExtractZip(circuitId, zipUrl);
+        return _readFileIfExists(circuitId, 'zkey', _zkeyFallbacks)?.path;
+      case AssetCircuitFileSource(:final zkeyAssetPath):
+        if (zkeyAssetPath == null) return null;
+        return _copyAssetToCache(circuitId, zkeyAssetPath, 'zkey');
+    }
+  }
+
+  Future<void> _downloadAndExtractZip(String circuitId, String zipUrl) async {
+    final circuitDir = Directory(pathLib.join(directory.path, circuitId));
+
+    // Skip if already extracted
+    if (circuitDir.existsSync() && circuitDir.listSync().isNotEmpty) return;
+
+    final zipPath = pathLib.join(directory.path, '$circuitId.zip');
+    await Dio().download(zipUrl, zipPath);
+
+    final archive = _zipDecoder.decodeStream(InputFileStream(zipPath));
+
+    await circuitDir.create(recursive: true);
+    for (final archiveFile in archive) {
+      if (!archiveFile.isFile) continue;
+      final outPath = pathLib.join(
+        circuitDir.path,
+        pathLib.basename(archiveFile.name),
+      );
+      await File(outPath).create(recursive: true);
+      archiveFile.writeContent(OutputFileStream(outPath));
+    }
+
+    // Clean up the zip
+    deleteFile(zipPath);
+  }
+
+  Future<String> _copyAssetToCache(
+    String circuitId,
+    String assetPath,
+    String ext,
+  ) async {
+    final cachedFile = File(
+      pathLib.join(directory.path, circuitId, '$circuitId.$ext'),
+    );
+    if (cachedFile.existsSync()) return cachedFile.path;
+
+    final data = await rootBundle.load(assetPath);
+    await cachedFile.parent.create(recursive: true);
+    await cachedFile.writeAsBytes(data.buffer.asUint8List());
+    return cachedFile.path;
+  }
 }

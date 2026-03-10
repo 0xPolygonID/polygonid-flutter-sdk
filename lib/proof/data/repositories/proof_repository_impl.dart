@@ -1,6 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
+import 'package:path/path.dart' as pathLib;
+import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -14,7 +19,6 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_download_
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart';
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
@@ -27,18 +31,19 @@ import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart'
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/gist_proof_cache.dart';
-import 'package:polygonid_flutter_sdk/proof/proof_from_smart_contract.dart';
 
 class ProofRepositoryImpl extends ProofRepository {
   final WitnessDataSource _witnessDataSource;
   final ProverLibDataSource _proverLibDataSource;
   final LibPolygonIdCoreProofDataSource _libPolygonIdCoreProofDataSource;
   final GistMTProofDataSource _gistProofDataSource;
-  final ProofCircuitDataSource _proofCircuitDataSource;
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
-  final CircuitsFilesDataSource _circuitsFilesDataSource;
+  final CircuitsFilesDataSource _circuitsFilesDS;
+  final CircuitRegistry? _circuitRegistry;
   final GetEnvUseCase _getEnvUseCase;
+  final ZipDecoder _zipDecoder;
+
   final StacktraceManager _stacktraceManager;
 
   // FIXME: those mappers shouldn't be used here as they are part of Credential
@@ -49,25 +54,23 @@ class ProofRepositoryImpl extends ProofRepository {
     this._proverLibDataSource,
     this._libPolygonIdCoreProofDataSource,
     this._gistProofDataSource,
-    this._proofCircuitDataSource,
     this._localContractFilesDataSource,
     this._circuitsDownloadDataSource,
     this._claimMapper,
-    this._circuitsFilesDataSource,
+    this._circuitsFilesDS,
+    this._circuitRegistry,
     this._getEnvUseCase,
+    this._zipDecoder,
     this._stacktraceManager,
   );
 
   @override
   Future<CircuitDataEntity> loadCircuitFiles(String circuitId) async {
-    final circuitDatFile =
-        await _circuitsFilesDataSource.loadGraphFile(circuitId);
-    final zkeyFilePath = await _circuitsFilesDataSource.getZkeyFilePath(
-      circuitId,
-    );
+    final graphFile = await _circuitsFilesDS.loadGraphFile(circuitId);
+    final zkeyFilePath = await _circuitsFilesDS.getZkeyFilePath(circuitId);
     final circuitDataEntity = CircuitDataEntity(
       circuitId,
-      circuitDatFile,
+      graphFile,
       zkeyFilePath,
     );
     return circuitDataEntity;
@@ -108,8 +111,9 @@ class ProofRepositoryImpl extends ProofRepository {
     _stacktraceManager.addTrace("getProofInputs treeState: $treeState");
     _stacktraceManager.addTrace("getProofInputs challenge: $challenge");
     _stacktraceManager.addTrace("getProofInputs signature: $signature");
-    _stacktraceManager
-        .addTrace("getProofInputs credential: ${credentialDto.info}");
+    _stacktraceManager.addTrace(
+      "getProofInputs credential: ${credentialDto.info}",
+    );
     _stacktraceManager.addTrace("getProofInputs request: $proofScopeRequest");
     _stacktraceManager.addTrace("getProofInputs circuitId: $circuitId");
 
@@ -137,7 +141,8 @@ class ProofRepositoryImpl extends ProofRepository {
       );
     } on CoreLibraryException catch (error) {
       _stacktraceManager.addTrace(
-          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}");
+        "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}",
+      );
       throw CredentialRevokedException(
         credentialId: id,
         errorMessage: error.errorMessage,
@@ -147,7 +152,8 @@ class ProofRepositoryImpl extends ProofRepository {
       );
     } on PolygonIdSDKException catch (error) {
       _stacktraceManager.addTrace(
-          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}");
+        "[calculateAtomicQueryInputs/libPolygonIdCoreProof] exception ${error.errorMessage}",
+      );
       rethrow;
     } catch (e) {
       throw NullAtomicQueryInputsException(
@@ -159,7 +165,8 @@ class ProofRepositoryImpl extends ProofRepository {
 
     if (res.inputs.isEmpty) {
       _stacktraceManager.addTrace(
-          "[calculateAtomicQueryInputs/libPolygonIdCoreProof] Empty inputs result");
+        "[calculateAtomicQueryInputs/libPolygonIdCoreProof] Empty inputs result",
+      );
       throw NullAtomicQueryInputsException(
         id: id,
         errorMessage: "Empty inputs result",
@@ -176,7 +183,8 @@ class ProofRepositoryImpl extends ProofRepository {
     required String inputs,
   }) async {
     _stacktraceManager.addTrace(
-        "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
+      "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}",
+    );
     final circuitType = CircuitId.fromString(circuitData.circuitId);
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
@@ -218,12 +226,14 @@ class ProofRepositoryImpl extends ProofRepository {
       );
 
       _stacktraceManager.logTrace(
-          "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms");
+        "[ProveUseCase][MainFlow] proof generated in ${stopwatch.elapsedMilliseconds} ms",
+      );
       logger().i("[ProveUseCase] proof: $proof");
 
       if (proof == null || proof.isEmpty) {
-        _stacktraceManager
-            .addTrace("[prove] NullProofException, proof is null");
+        _stacktraceManager.addTrace(
+          "[prove] NullProofException, proof is null",
+        );
         throw NullProofException(
           circuit: circuitData.circuitId,
           errorMessage: "Empty proof result",
@@ -246,7 +256,18 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<bool> isCircuitSupported({required String circuitId}) async {
     final circuitType = CircuitId.fromString(circuitId);
-    return _proofCircuitDataSource.isCircuitSupported(circuitId: circuitType);
+
+    if (CircuitId.predefined.contains(circuitType)) {
+      return true;
+    }
+
+    // Check registry for dynamically registered circuits
+    if (_circuitRegistry != null) {
+      final source = await _circuitRegistry.resolveCircuit(circuitId);
+      if (source != null) return true;
+    }
+
+    return false;
   }
 
   @override
@@ -278,38 +299,32 @@ class ProofRepositoryImpl extends ProofRepository {
   }
 
   @override
-  Stream<DownloadInfo> circuitsDownloadInfoStream(
-      {required List<CircuitsToDownloadParam> circuitsToDownload}) async* {
+  Stream<DownloadInfo> circuitsDownloadInfoStream({
+    required List<CircuitsToDownloadParam> circuitsToDownload,
+  }) async* {
     await for (final downloadResponse
         in _circuitsDownloadDataSource.downloadStream) {
-      int progress = downloadResponse.progress;
-      int total = downloadResponse.total;
+      final progress = downloadResponse.progress;
+      final total = downloadResponse.total;
 
       if (downloadResponse.errorOccurred) {
-        yield DownloadInfo.onError(
-          errorMessage: downloadResponse.errorMessage,
-        );
+        yield DownloadInfo.onError(errorMessage: downloadResponse.errorMessage);
       }
 
       if (downloadResponse.done) {
         final int downloadSize = _circuitsDownloadDataSource.downloadSize;
-
         int totalZipFileSize = 0;
 
-        for (CircuitsToDownloadParam param in circuitsToDownload) {
-          if (param.downloadPath == null) {
-            continue;
-          }
-          String pathForZipFileTemp = param.downloadPath!;
-          String pathForZipFile = await _circuitsFilesDataSource
-              .getPathToCircuitZipFile(circuitsFileName: param.circuitsName);
-          String pathForCircuits = await _circuitsFilesDataSource.getPath();
+        for (final param in circuitsToDownload) {
+          final pathForZipFileTemp = param.downloadPath;
+          if (pathForZipFileTemp == null) continue;
 
-          // we get the size of the temp zip file
-          int zipFileSize = _circuitsFilesDataSource.zipFileSize(
-              pathToFile: pathForZipFileTemp);
+          final pathForZipFile = _circuitsFilesDS.getPathToCircuitZipFile(
+            circuitsFileName: param.circuitsName,
+          );
+          final pathForCircuits = _circuitsFilesDS.path;
 
-          totalZipFileSize += zipFileSize;
+          totalZipFileSize += File(pathForZipFileTemp).lengthSync();
 
           await _completeWritingFile(
             pathForCircuits: pathForCircuits,
@@ -319,19 +334,10 @@ class ProofRepositoryImpl extends ProofRepository {
         }
 
         if (downloadSize != 0 && totalZipFileSize != downloadSize) {
-          try {
-            // if error we delete the temp file
-            for (CircuitsToDownloadParam param in circuitsToDownload) {
-              if (param.downloadPath == null) {
-                continue;
-              }
-              String pathForZipFileTemp = param.downloadPath!;
-              _circuitsFilesDataSource.deleteFile(pathForZipFileTemp);
-            }
-          } catch (_) {}
-
+          _cleanupTempFiles(circuitsToDownload);
           yield DownloadInfo.onError(
-              errorMessage: "Downloaded files incorrect");
+            errorMessage: "Downloaded files size incorrect",
+          );
         }
 
         yield DownloadInfo.onDone(
@@ -340,10 +346,39 @@ class ProofRepositoryImpl extends ProofRepository {
         );
       }
 
-      yield DownloadInfo.onProgress(
-        contentLength: total,
-        downloaded: progress,
+      yield DownloadInfo.onProgress(contentLength: total, downloaded: progress);
+    }
+  }
+
+  void _cleanupTempFiles(List<CircuitsToDownloadParam> circuitsToDownload) {
+    for (final param in circuitsToDownload) {
+      final path = param.downloadPath;
+      if (path != null) {
+        _circuitsFilesDS.deleteFile(path);
+      }
+    }
+  }
+
+  ///
+  Future<void> _completeWritingFile({
+    required String pathForZipFileTemp,
+    required String pathForZipFile,
+    required String pathForCircuits,
+  }) async {
+    File(pathForZipFileTemp).renameSync(pathForZipFile);
+
+    // Decode zip file
+    final archive = _zipDecoder.decodeStream(InputFileStream(pathForZipFile));
+
+    for (final archiveFile in archive) {
+      final filename = pathLib.join(
+        pathForCircuits,
+        pathLib.basename(archiveFile.name),
       );
+      if (archiveFile.isFile) {
+        final outFile = await File(filename).create(recursive: true);
+        archiveFile.writeContent(OutputFileStream(outFile.path));
+      }
     }
   }
 
@@ -353,11 +388,11 @@ class ProofRepositoryImpl extends ProofRepository {
     required List<CircuitsToDownloadParam> circuitsToDownload,
   }) async {
     for (int i = 0; i < circuitsToDownload.length; i++) {
-      CircuitsToDownloadParam param = circuitsToDownload[i];
-      String path = await _circuitsFilesDataSource.getPathToCircuitZipFileTemp(
-          circuitsFileName: param.circuitsName);
-      // we delete the file if it exists
-      await _circuitsFilesDataSource.deleteFile(path);
+      final param = circuitsToDownload[i];
+      final path = _circuitsFilesDS.getPathToCircuitZipFileTemp(
+        circuitsFileName: param.circuitsName,
+      );
+      _circuitsFilesDS.deleteFile(path);
       circuitsToDownload[i].downloadPath = path;
     }
     return _circuitsDownloadDataSource.initStreamedResponseFromServer(
@@ -367,33 +402,14 @@ class ProofRepositoryImpl extends ProofRepository {
 
   ///
   @override
-  Future<bool> circuitsFilesExist({required String circuitsFileName}) {
-    return _circuitsFilesDataSource.circuitsFilesExist(
-        circuitsFileName: circuitsFileName);
-  }
-
-  ///
-  Future<void> _completeWritingFile({
-    required String pathForZipFileTemp,
-    required String pathForZipFile,
-    required String pathForCircuits,
-  }) async {
-    _circuitsFilesDataSource.renameFile(pathForZipFileTemp, pathForZipFile);
-    await _circuitsFilesDataSource.writeCircuitsFileFromZip(
-      zipPath: pathForZipFile,
-      path: pathForCircuits,
+  Future<bool> circuitsFilesExist({required String circuitsFileName}) async {
+    return _circuitsFilesDS.circuitsFilesExist(
+      circuitsFileName: circuitsFileName,
     );
   }
 
   @override
   Future<void> cancelDownloadCircuits() async {
     return _circuitsDownloadDataSource.cancelDownload();
-  }
-
-  @override
-  Future<String> getProofFromSmartContract({required String inputs}) async {
-    String proof = await ProofFromSmartContract()
-        .getProofFromSmartContract(inputs: inputs);
-    return proof;
   }
 }
