@@ -11,7 +11,7 @@ typedef CircuitDownloader =
 
 /// Manages explicit circuit file registrations and an optional dynamic
 /// resolver for circuit IDs that are not known ahead of time.
-@injectable
+@lazySingleton
 class CircuitRegistry {
   final Map<String, CircuitFileSource> _registrations = {};
   CircuitResolver? _resolver;
