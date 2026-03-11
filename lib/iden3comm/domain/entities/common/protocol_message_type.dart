@@ -41,6 +41,9 @@ class ProtocolMessageType {
   static const credentialOnchainOfferMessageType =
       '${_iden3Protocol}credentials/1.0/onchain-offer';
 
+  static const credentialEncryptedIssuanceResponseType =
+      '${_iden3Protocol}credentials/0.1/encrypted-issuance-response';
+
   ///
   /// Credentials payments
   ///
@@ -97,29 +100,32 @@ class ProtocolMessageType {
   static const verificationResponseMessageType =
       '${_iden3Protocol}passport/0.1/verification-response';
 
-  // List of all message types for iteration or validation
-  static const List<String> allMessageTypes = [
-    authorizationRequestMessageType,
-    authorizationResponseMessageType,
-    credentialIssuanceRequestMessageType,
-    credentialFetchRequestMessageType,
-    credentialOfferMessageType,
-    credentialIssuanceResponseMessageType,
-    credentialRefreshMessageType,
-    revocationStatusRequestMessageType,
-    revocationStatusResponseMessageType,
-    contractInvokeRequestMessageType,
-    contractInvokeResponseMessageType,
-    credentialOnchainOfferMessageType,
-    proposalRequestMessageType,
-    proposalMessageType,
-    paymentRequestMessageType,
-    paymentMessageType,
-    problemReportMessageType,
-  ];
+  ///
+  /// Resource management
+  ///
 
-  // Helper method to check if a string is a valid message type
-  static bool isValidMessageType(String type) {
-    return allMessageTypes.contains(type);
-  }
+  static const resourcePermissionRequestMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-request';
+  static const resourcePermissionsUpdateRequestMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-update-request';
+  static const resourcePermissionsUpdateMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-update';
+  static const resourceDeliveryMessageType =
+      '${_iden3Protocol}resource-management/0.1/delivery';
+
+  static const resourcePermissionsRequestsListFetchMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-requests-list-fetch';
+  static const resourcePermissionsListFetchMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-list-fetch';
+  static const resourcePermissionsListMessageType =
+      '${_iden3Protocol}resource-management/0.1/permissions-list';
+
+  ///
+  /// Discovery
+  ///
+
+  static const discoveryQueriesMessageType =
+      '${_didcommProtocol}discover-features/2.0/queries';
+  static const discoveryDiscloseMessageType =
+      '${_didcommProtocol}discover-features/2.0/disclose';
 }

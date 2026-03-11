@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 
 import '../../../common/common_mocks.dart';
 import '../../../common/iden3comm_mocks.dart';
@@ -24,8 +25,11 @@ GetJWZUseCase useCase = GetJWZUseCase(
 );
 
 // Data
-GetJWZParam param =
-    GetJWZParam(message: CommonMocks.message, proof: ProofMocks.zkProof);
+GetJWZParam param = GetJWZParam(
+  message: CommonMocks.message,
+  proof: ProofMocks.zkProof,
+  circuitId: AuthV2Circuit(),
+);
 
 @GenerateMocks([
   Iden3commRepository,

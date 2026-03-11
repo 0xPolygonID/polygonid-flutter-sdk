@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/private_identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
@@ -10,7 +12,6 @@ import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_even
 import 'package:polygonid_flutter_sdk_example/src/presentation/ui/home/home_state.dart';
 import 'package:polygonid_flutter_sdk_example/utils/custom_strings.dart';
 import 'package:polygonid_flutter_sdk_example/utils/secure_storage_keys.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final PolygonIdSdk _polygonIdSdk;
@@ -59,7 +60,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeState.loaded(identifier: identity.did));
     } on IdentityException catch (identityException) {
       emit(HomeState.error(message: identityException.error));
-    } catch (_) {
+    } catch (e) {
+      debugPrint("Error creating identity: $e");
       emit(const HomeState.error(message: CustomStrings.genericError));
     }
   }

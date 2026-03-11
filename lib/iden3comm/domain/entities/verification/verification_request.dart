@@ -95,9 +95,7 @@ class VerificationRequestMessage extends Iden3Message<VerificationRequestBody> {
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [VerificationRequestMessage]
-  factory VerificationRequestMessage.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory VerificationRequestMessage.fromJson(Map<String, dynamic> json) {
     final body = VerificationRequestBody.fromJson(json['body']);
     return VerificationRequestMessage(
       id: json['id'],
@@ -122,7 +120,7 @@ class VerificationRequestMessage extends Iden3Message<VerificationRequestBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class VerificationRequestBody {
+class VerificationRequestBody implements JsonEncodable {
   final Map<String, dynamic> didDoc;
   final ZKProofEntity credentialProof;
 
@@ -165,16 +163,16 @@ class VerificationRequestBody {
   }
 
   Map<String, dynamic> toJson() => {
-        'did_doc': didDoc,
-        'credentialProof': credentialProof.toJson(),
-        'dg1Hash': dg1Hash,
-        'dgHashFunction': dgHashFunction,
-        'eContent': eContent,
-        'encryptedDigest': encryptedDigest,
-        'signedAttr': signedAttr,
-        'dscPem': dscPem,
-        'linkNonce': linkNonce,
-      };
+    'did_doc': didDoc,
+    'credentialProof': credentialProof.toJson(),
+    'dg1Hash': dg1Hash,
+    'dgHashFunction': dgHashFunction,
+    'eContent': eContent,
+    'encryptedDigest': encryptedDigest,
+    'signedAttr': signedAttr,
+    'dscPem': dscPem,
+    'linkNonce': linkNonce,
+  };
 
   @override
   String toString() =>

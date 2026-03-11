@@ -32,28 +32,23 @@
 "to": "1125GJqgw6YEsKFwj63GY87MMxPL9kwDKxPUiwMLNZ"
 }*/
 
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service_metadata_devices.dart';
 
-class DIDDocumentServiceMetadata {
+part 'did_document_service_metadata.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class DIDDocumentServiceMetadata with EquatableMixin {
   final List<DIDDocumentServiceMetadataDevices>? devices;
 
   DIDDocumentServiceMetadata({this.devices});
 
-  /// Creates an instance from the given json
-  ///
-  /// @param [Map<String, dynamic>] json
-  /// @returns [DIDDocumentServiceMetadata]
-  factory DIDDocumentServiceMetadata.fromJson(Map<String, dynamic> json) {
-    List<DIDDocumentServiceMetadataDevices>? devices =
-        (json['devices'] as List?)
-            ?.map((item) => DIDDocumentServiceMetadataDevices.fromJson(item))
-            .toList();
-    return DIDDocumentServiceMetadata(
-      devices: devices,
-    );
-  }
+  factory DIDDocumentServiceMetadata.fromJson(Map<String, dynamic> json) =>
+      _$DIDDocumentServiceMetadataFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        'devices': devices?.map((item) => item.toJson()).toList(),
-      };
+  Map<String, dynamic> toJson() => _$DIDDocumentServiceMetadataToJson(this);
+
+  @override
+  List<Object?> get props => [devices];
 }

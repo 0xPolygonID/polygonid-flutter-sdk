@@ -91,9 +91,8 @@ class CreateAnonAadhaarCredentialUseCase
       }).catchError((_) => claimDto),
       if (displayMethod != null)
         _remoteIden3commDataSource
-            .fetchDisplayType(url: displayMethod.id)
+            .fetchDisplayType(displayMethod: displayMethod)
             .then((displayType) {
-          displayType['type'] = displayMethod.type;
           claimDto.displayType = displayType;
           return claimDto;
         }).catchError((_) {

@@ -33,7 +33,7 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
       id: json['id'],
       typ: json['typ'],
       thid: json['thid'] ?? '',
-      pthid: json['pthid'],
+      pthid: json['pthid'] ?? '',
       ack: (json['ack'] as List?)?.map((e) => e.toString()).toList(),
       from: json['from'] ?? "",
       body: body,
@@ -110,7 +110,7 @@ class ProblemReportMessage extends Iden3Message<ProblemReportBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class ProblemReportBody {
+class ProblemReportBody implements JsonEncodable {
   // (optional) List of arguments matching the placeholders in comment field
   final List<String>? args;
 

@@ -7,6 +7,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_latest_state_use_case.dart';
@@ -37,6 +38,7 @@ GetAuthInputsParam param = GetAuthInputsParam(
   profileNonce: CommonMocks.nonce,
   privateKey: CommonMocks.privateKey,
   encryptionKey: CommonMocks.privateKey,
+  circuitId: AuthV2Circuit(),
 );
 var claims = [CommonMocks.authClaim, CommonMocks.authClaim];
 var getAuthInputsException = GetAuthInputsException(errorMessage: "error");
@@ -74,7 +76,7 @@ void main() {
     when(signMessageUseCase.execute(param: anyNamed("param")))
         .thenAnswer((realInvocation) => Future.value(CommonMocks.signature));
     when(credentialRepository.getAuthClaim(publicKey: anyNamed("publicKey")))
-        .thenAnswer((realInvocation) => Future.value(claims));
+        .thenAnswer((realInvocation) => claims);
     when(
       iden3commRepository.getAuthInputs(
         genesisDid: anyNamed('genesisDid'),
@@ -87,12 +89,13 @@ void main() {
         nonRevProof: anyNamed('nonRevProof'),
         gistProof: anyNamed('gistProof'),
         treeState: anyNamed('treeState'),
+        circuitId: anyNamed('circuitId'),
         config: anyNamed('config'),
       ),
     ).thenAnswer(
         (realInvocation) => Future.value(CommonMocks.generateInputsResponse));
     when(identityRepository.getAuthClaimNode(children: anyNamed('children')))
-        .thenAnswer((realInvocation) => Future.value(IdentityMocks.node));
+        .thenAnswer((realInvocation) => IdentityMocks.node);
     when(smtRepository.generateProof(
             key: anyNamed('key'),
             type: anyNamed('type'),
@@ -141,6 +144,7 @@ void main() {
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
           treeState: captureAnyNamed('treeState'),
+          circuitId: anyNamed('circuitId'),
           config: captureAnyNamed('config'),
         ),
       ).captured;
@@ -189,6 +193,7 @@ void main() {
           incProof: captureAnyNamed('incProof'),
           nonRevProof: captureAnyNamed('nonRevProof'),
           gistProof: captureAnyNamed('gistProof'),
+          circuitId: anyNamed('circuitId'),
           treeState: captureAnyNamed('treeState')));
     },
   );

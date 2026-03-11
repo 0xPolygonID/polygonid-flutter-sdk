@@ -57,6 +57,7 @@ void main() {
     final msg = factory.createMessage(rawMessage: rawMessage);
     expect(msg, isA<AuthorizationRequestMessage>());
     expect(msg.id, '123');
+    expect(msg.typ, messageTypePlain);
   });
 
   test('throws on unsupported type', () {

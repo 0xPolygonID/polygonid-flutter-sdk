@@ -1,3 +1,4 @@
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
@@ -9,6 +10,7 @@ abstract class Iden3commCredentialRepository {
     required String url,
     required String did,
     required String authToken,
+    required List<JsonWebKey> keys,
   });
 
   Future<Map<String, dynamic>> fetchSchema({required String url});
@@ -17,5 +19,6 @@ abstract class Iden3commCredentialRepository {
     required String url,
     required String authToken,
     required String profileDid,
+    required List<JsonWebKey> keys,
   });
 }

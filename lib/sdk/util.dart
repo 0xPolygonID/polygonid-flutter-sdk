@@ -1,5 +1,17 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 import 'package:polygonid_flutter_sdk/common/pidcore_util.dart';
+import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
+
+const _nativeChannel = MethodChannel('polygonid_flutter_sdk');
 
 @injectable
 class Util {
@@ -12,15 +24,142 @@ class Util {
   /// Returns an [AttestationResult] containing the public key and its components.
   /// If the attestation document is invalid, it will throw an [CoreLibraryException].
   AttestationResult validateAttestationDocument(String attestationDocument) {
-    final result =
-        _polygonIdCoreUtil.validateAttestationDocument(attestationDocument);
-    final publicKey = result['public_key'] as String?;
-    final userData = result['user_data'] as String?;
-
-    return AttestationResult(
-      publicKey: publicKey,
-      userData: userData,
+    final result = _polygonIdCoreUtil.validateAttestationDocument(
+      jsonEncode({"attestation_document": attestationDocument}),
     );
+
+    final parsed = jsonDecode(result);
+
+    final publicKey = parsed['public_key'] as String?;
+    final userData = parsed['user_data'] as String?;
+
+    return AttestationResult(publicKey: publicKey, userData: userData);
+  }
+
+  /// Encrypts the input plaintext using provided keyset into JWE format.
+  /// [message] - The plaintext message to be encrypted.
+  /// [recipientDidDocs] - List of recipient DID Documents.
+  /// [recipientAlg] - Optional map of recipient algorithms. DID as key and algorithm as value.
+  /// Returns the encrypted message in JWE format.
+  String anonPack({
+    required Map<String, dynamic> message,
+    required List<DIDDocument> recipientDidDocs,
+    Map<String, String>? recipientAlg,
+  }) {
+    final json = {
+      'message': message,
+      'recipientDidDocs': recipientDidDocs.map((e) {
+        return {
+          'didDocument': e.toJson(),
+          'didResolutionMetadata': null,
+          'didDocumentMetadata': null,
+        };
+      }).toList(),
+      if (recipientAlg != null) 'recipientAlg': recipientAlg,
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.anonPack(input);
+  }
+
+  /// Decrypts the input ciphertext using provided keyset from JWE format.
+  /// [ciphertext] - The encrypted message in JWE format.
+  /// [keys] - List of keys to decrypt the message.
+  /// Returns the decrypted plaintext message.
+  String anonUnpack(
+    Map<String, dynamic> ciphertext,
+    List<Map<String, dynamic>> keys,
+  ) {
+    final json = {
+      'ciphertext': ciphertext,
+      'keySet': {'keys': keys},
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.anonUnpack(input);
+  }
+
+  String decryptJwe(Map<String, dynamic> jwe, List<Map<String, dynamic>> keys) {
+    final json = {
+      'ciphertext': jwe,
+      'keySet': {'keys': keys},
+    };
+    final input = jsonEncode(json);
+
+    return _polygonIdCoreUtil.decryptJwe(input);
+  }
+
+  W3CCredential decryptEncryptedCredential(
+    Map<String, dynamic> encryptedCredentialIssuanceMessage,
+    List<Map<String, dynamic>> keys,
+  ) {
+    final json = {
+      'encryptedCredentialIssuanceMessage': encryptedCredentialIssuanceMessage,
+      'keySet': {'keys': keys},
+    };
+    final input = jsonEncode(json);
+
+    final result = _polygonIdCoreUtil.decryptEncryptedCredential(input);
+
+    return W3CCredential.fromJson(jsonDecode(result));
+  }
+
+  bool verifyProof(W3CCredential credential) {
+    final input = jsonEncode(credential.toJson());
+
+    return _polygonIdCoreUtil.verifyProof(input);
+  }
+
+  /// Verifies an authorization response against the original request and a set of keys.
+  /// [request] - The original authorization request.
+  /// [response] - The authorization response to be verified. Can be plain iden3
+  /// message, JWE or JWZ format.
+  /// [keys] - List of keys to verify the response if it is JWE format.
+  /// Returns AuthorizationResponseMessage parsed from native response.
+  Future<AuthorizationResponseMessage> verifyAuthResponse({
+    required AuthorizationRequestMessage request,
+    required dynamic response,
+    List<Map<String, dynamic>> keys = const [],
+    String acceptedStateTransitionDelay = '8784h',
+    String acceptedProofGenerationDelay = '8784h',
+  }) async {
+    final input = jsonEncode({
+      'authRequest': request.toJson(),
+      'authResponse': response,
+      'keySet': {'keys': keys},
+      'options': {
+        'acceptedStateTransitionDelay': acceptedStateTransitionDelay,
+        'acceptedProofGenerationDelay': acceptedProofGenerationDelay,
+      },
+    });
+
+    final cfg = PolygonIdCore.envConfigJson;
+    final result = await _nativeChannel.invokeMethod('verifyAuthResponse', {
+      "in": input,
+      "cfg": cfg,
+    });
+
+    return AuthorizationResponseMessage.fromJson(jsonDecode(result));
+  }
+
+  Future<DIDDocument> createDidDocument(
+    String profileDid, {
+    PushServiceData? pushServiceData,
+    String? redirectUrl,
+    List<String>? keyAgreement,
+    List<VerificationMethod>? verificationMethod,
+  }) async {
+    return composeDidDoc(
+      did: profileDid,
+      redirectUrl: redirectUrl,
+      pushServiceData: pushServiceData,
+      keyAgreement: keyAgreement,
+      verificationMethod: verificationMethod,
+    );
+  }
+
+  bool verifyAnonAadhaarQR(String anonAadhaarQRCode) {
+    return _polygonIdCoreUtil.verifyAnonAadhaarQR(anonAadhaarQRCode);
   }
 }
 
@@ -29,10 +168,7 @@ class AttestationResult {
   final String? publicKey;
   final String? userData;
 
-  AttestationResult({
-    this.publicKey,
-    this.userData,
-  });
+  AttestationResult({this.publicKey, this.userData});
 
   @override
   String toString() {

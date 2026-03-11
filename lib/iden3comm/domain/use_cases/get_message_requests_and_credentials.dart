@@ -5,17 +5,19 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_proof_requests_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
+import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 
 typedef RequestAndCredentials = ({
-  ProofRequestEntity request,
+  ProofScopeRequest request,
   List<CredentialEntity> credentials,
 });
 
@@ -24,7 +26,6 @@ class GetMessageRequestsAndCredsParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;
-  final List<ProofRequestEntity>? proofRequests;
   List<CredentialSortOrder> credentialSortOrderList;
 
   GetMessageRequestsAndCredsParam({
@@ -32,23 +33,41 @@ class GetMessageRequestsAndCredsParam {
     required this.genesisDid,
     required this.profileNonce,
     required this.encryptionKey,
-    this.proofRequests,
     this.credentialSortOrderList = const [],
   });
+
+  GetMessageRequestsAndCredsParam.fromRequest({
+    required ZeroKnowledgeProofRequest request,
+    required this.genesisDid,
+    required this.profileNonce,
+    required this.encryptionKey,
+    this.credentialSortOrderList = const [],
+  }) : message = AuthorizationRequestMessage(
+         from: '',
+         body: AuthorizationRequestMessageBody(
+           callbackUrl: '',
+           reason: '',
+           scope: [request],
+         ),
+       );
 }
 
-class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
-    GetMessageRequestsAndCredsParam, List<RequestAndCredentials>> {
+class GetMessageRequestsAndCredsUseCase
+    extends
+        FutureUseCase<
+          GetMessageRequestsAndCredsParam,
+          List<RequestAndCredentials>
+        > {
   final Iden3commCredentialRepository _iden3commCredentialRepository;
   final GetClaimsUseCase _getClaimsUseCase;
-  final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
+  final ProofRepository _proofRepository;
   final GetProofRequestsUseCase _getProofRequestsUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetMessageRequestsAndCredsUseCase(
     this._iden3commCredentialRepository,
     this._getClaimsUseCase,
-    this._isProofCircuitSupported,
+    this._proofRepository,
     this._getProofRequestsUseCase,
     this._stacktraceManager,
   );
@@ -58,11 +77,13 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
     required GetMessageRequestsAndCredsParam param,
   }) async {
     final requestCredentialPairs = <RequestAndCredentials>[];
+    final requests = await _getProofRequestsUseCase.execute(
+      param: param.message,
+    );
 
-    List<ProofRequestEntity> requests = param.proofRequests ??
-        await _getProofRequestsUseCase.execute(param: param.message);
-    _stacktraceManager
-        .addTrace("[GetMessageRequestsAndCredsUseCase] requests: $requests");
+    _stacktraceManager.addTrace(
+      "[GetMessageRequestsAndCredsUseCase] requests: $requests",
+    );
 
     var groupedByGroupId = groupBy(requests, (req) => req.scope.query.groupId);
 
@@ -76,8 +97,9 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
       List<ProofRequestEntity> groupRequests = group.value;
       List<FilterEntity> filtersForQueryClaimDb = [];
       for (ProofRequestEntity request in groupRequests) {
-        bool supportedCircuit = await _isProofCircuitSupported.execute(
-            param: request.scope.circuitId);
+        bool supportedCircuit = await _proofRepository.isCircuitSupported(
+          circuitId: request.scope.circuitId,
+        );
         if (!supportedCircuit) {
           continue;
         }
@@ -101,11 +123,18 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
 
     /// We got [ProofRequestEntity], let's find the associated [ClaimEntity]
     for (ProofRequestEntity request in requests) {
+      // Skip credential search for empty query
+      if (request.scope.query.isEmpty) {
+        requestCredentialPairs.add((request: request.scope, credentials: []));
+        continue;
+      }
+
       // we check if circuit from the request is supported
-      bool supportedCircuit = await _isProofCircuitSupported.execute(
-          param: request.scope.circuitId);
+      bool supportedCircuit = await _proofRepository.isCircuitSupported(
+        circuitId: request.scope.circuitId,
+      );
       if (!supportedCircuit) {
-        requestCredentialPairs.add((request: request, credentials: []));
+        requestCredentialPairs.add((request: request.scope, credentials: []));
         continue;
       }
 
@@ -116,10 +145,11 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
           claimsByGroupId.containsKey(requestGroupId)) {
         validCreds = claimsByGroupId[requestGroupId] ?? [];
       } else {
-        List<FilterEntity> filters =
-            await _iden3commCredentialRepository.getFilters(request: request);
-        _stacktraceManager
-            .addTrace("[GetMessageRequestsAndCredsUseCase] filters: $filters");
+        List<FilterEntity> filters = await _iden3commCredentialRepository
+            .getFilters(request: request);
+        _stacktraceManager.addTrace(
+          "[GetMessageRequestsAndCredsUseCase] filters: $filters",
+        );
 
         List<CredentialEntity> claimsFiltered = await _getClaimsUseCase.execute(
           param: GetClaimsParam(
@@ -145,43 +175,37 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
       );
 
       if (!request.isOptional && validCreds.isEmpty) {
-        _stacktraceManager
-            .addTrace("[GetMessageRequestsAndCredsUseCase] claims is empty");
-        requestCredentialPairs.add((request: request, credentials: []));
+        _stacktraceManager.addTrace(
+          "[GetMessageRequestsAndCredsUseCase] claims is empty",
+        );
+        requestCredentialPairs.add((request: request.scope, credentials: []));
         continue;
       }
 
       /// check that credential has proof type supported by request
       validCreds = validCreds.where((cred) {
         List<Map<String, dynamic>> proofs = cred.info["proof"];
-        List<String> proofTypes =
-            proofs.map((e) => e["type"] as String).toList();
+        List<String> proofTypes = proofs
+            .map((e) => e["type"] as String)
+            .toList();
 
-        final circuitId = request.scope.circuitId;
-        // TODO (moria): remove this with v3 circuit release
-        if (circuitId.startsWith(CircuitType.v3CircuitPrefix) &&
-            !circuitId.endsWith(CircuitType.currentCircuitBetaPostfix)) {
-          _stacktraceManager.addTrace(
-              "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-          throw CircuitNotDownloadedException(
-              circuit: circuitId,
-              errorMessage:
-                  "V3 circuit beta version mismatch $circuitId is not supported, current is ${CircuitType.currentCircuitBetaPostfix}");
-        }
+        CircuitId circuitId = CircuitId.fromId(request.scope.circuitId);
 
-        CircuitType circuitType = CircuitTypes.fromId(circuitId);
-
-        return circuitType.isAnyProofTypeSupported(proofTypes);
+        return circuitId.isAnyProofTypeSupported(proofTypes);
       }).toList();
 
       if (!request.isOptional && validCreds.isEmpty) {
         _stacktraceManager.addTrace(
-            "[GetMessageRequestsAndCredsUseCase] claims has no valid proof type");
-        requestCredentialPairs.add((request: request, credentials: []));
+          "[GetMessageRequestsAndCredsUseCase] claims has no valid proof type",
+        );
+        requestCredentialPairs.add((request: request.scope, credentials: []));
         continue;
       }
 
-      requestCredentialPairs.add((request: request, credentials: validCreds));
+      requestCredentialPairs.add((
+        request: request.scope,
+        credentials: validCreds,
+      ));
     }
 
     return requestCredentialPairs;
@@ -217,7 +241,9 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
   }
 
   String _getTypeFromNestedObject(
-      Map<String, dynamic> contextMap, String nestedKey) {
+    Map<String, dynamic> contextMap,
+    String nestedKey,
+  ) {
     List<String> keys = nestedKey.split('.');
     dynamic value = contextMap;
     for (String key in keys) {
@@ -235,7 +261,10 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
   }
 
   void _processMap(
-      dynamic map, String key, List<CredentialEntity> claimsFiltered) {
+    dynamic map,
+    String key,
+    List<CredentialEntity> claimsFiltered,
+  ) {
     map.forEach((operator, needle) {
       _filterClaims(operator, needle, key, claimsFiltered);
     });
@@ -306,8 +335,9 @@ class GetMessageRequestsAndCredsUseCase extends FutureUseCase<
 
       credsFiltered.removeWhere((cred) {
         List<Map<String, dynamic>> proofs = cred.info["proof"];
-        List<String> proofTypes =
-            proofs.map((e) => e["type"] as String).toList();
+        List<String> proofTypes = proofs
+            .map((e) => e["type"] as String)
+            .toList();
         return !proofTypes.contains(proofType);
       });
     } catch (ignored) {

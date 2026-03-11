@@ -8,7 +8,6 @@ import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/unknown_
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_info_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/data/mappers/claim_state_mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/display_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 
@@ -49,15 +48,13 @@ final displayType = UnknownDisplayType({});
 // Dependencies
 final stateMapper = MockCredentialStateMapper();
 final infoMapper = MockCredentialInfoMapper();
-MockDisplayTypeMapper displayTypeMapper = MockDisplayTypeMapper();
 // Tested instance
 CredentialMapper mapper =
-    CredentialMapper(stateMapper, infoMapper, displayTypeMapper);
+    CredentialMapper(stateMapper, infoMapper);
 
 @GenerateMocks([
   CredentialStateMapper,
   CredentialInfoMapper,
-  DisplayTypeMapper,
 ])
 void main() {
   setUp(() {});
@@ -69,7 +66,6 @@ void main() {
       // Given
       when(infoMapper.mapFrom(any)).thenReturn(info);
       when(stateMapper.mapFrom(any)).thenReturn(CredentialState.active);
-      when(displayTypeMapper.mapFrom(any)).thenReturn(displayType);
 
       // When
       expect(mapper.mapFrom(dto), entity);
@@ -78,7 +74,6 @@ void main() {
       expect(verify(infoMapper.mapFrom(captureAny)).captured.first,
           issuanceMessage.body.credential);
       expect(verify(stateMapper.mapFrom(captureAny)).captured.first, '');
-      verifyNever(displayTypeMapper.mapFrom(captureAny));
     });
   });
 
@@ -89,7 +84,6 @@ void main() {
       // Given
       when(infoMapper.mapTo(any)).thenReturn(issuanceMessage.body.credential);
       when(stateMapper.mapTo(any)).thenReturn('');
-      when(displayTypeMapper.mapTo(any)).thenReturn({});
 
       // When
       expect(mapper.mapTo(entity), dto);

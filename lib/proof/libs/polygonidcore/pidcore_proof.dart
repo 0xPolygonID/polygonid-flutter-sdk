@@ -61,6 +61,7 @@ class PolygonIdCoreProof extends PolygonIdCore {
       input: () => input,
       config: config,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAGenerateInputs,
+      methodName: 'PLGNAGenerateInputs',
       parse: (result) {
         return GenerateInputsResponse.fromJson(jsonDecode(result));
       },

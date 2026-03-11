@@ -67,6 +67,7 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_body_request.dart';
+import 'package:uuid/uuid.dart';
 
 @Deprecated('Use CredentialsOnchainOfferMessage instead')
 typedef OnchainOfferIden3MessageEntity = CredentialsOnchainOfferMessage;
@@ -74,14 +75,18 @@ typedef OnchainOfferIden3MessageEntity = CredentialsOnchainOfferMessage;
 class CredentialsOnchainOfferMessage
     extends BaseCredentialOfferMessage<CredentialsOnchainOfferMessageBody> {
   CredentialsOnchainOfferMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.from,
     required super.body,
     super.to,
-  }) : super(type: Iden3MessageType.onchainCredentialOffer);
+  }) : super(
+         id: id ?? Uuid().v4(),
+         type: Iden3MessageType.onchainCredentialOffer,
+         thid: thid ?? Uuid().v4(),
+       );
 
   factory CredentialsOnchainOfferMessage.fromJson(Map<String, dynamic> json) {
     CredentialsOnchainOfferMessageBody body =

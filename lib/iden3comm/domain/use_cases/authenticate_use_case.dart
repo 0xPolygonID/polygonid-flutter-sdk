@@ -9,6 +9,8 @@ import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.d
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_package_name_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -16,6 +18,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
@@ -27,6 +30,7 @@ class AuthenticateParam {
   final String privateKey;
   final String? pushToken;
   final String? challenge;
+  final CircuitId circuitId;
 
   AuthenticateParam({
     required this.message,
@@ -35,6 +39,7 @@ class AuthenticateParam {
     required this.privateKey,
     this.pushToken,
     this.challenge,
+    this.circuitId = CircuitId.authV2,
   });
 }
 
@@ -125,24 +130,29 @@ class AuthenticateUseCase
           .addTrace("[AuthenticateUseCase] _getIden3commProofsUseCase success");
       logger().i("stopwatch after getProofs ${stopwatch.elapsedMilliseconds}");
 
-      String pushUrl = env.pushUrl;
-      _stacktraceManager.addTrace("[AuthenticateUseCase] pushUrl: $pushUrl");
+      PushServiceData? pushServiceData;
+      if (param.pushToken != null) {
+        String packageName = await _getPackageNameUseCase.execute();
+        pushServiceData = PushServiceData(
+          pushToken: param.pushToken!,
+          serviceEndpoint: env.pushUrl,
+          packageName: packageName,
+        );
+      }
 
-      String packageName = await _getPackageNameUseCase.execute();
-      _stacktraceManager
-          .addTrace("[AuthenticateUseCase] packageName: $packageName");
-      logger().i(
-          "stopwatch after getPackageNameUseCase ${stopwatch.elapsedMilliseconds}");
+      final didDocument = await composeDidDoc(
+        did: profileDid,
+        pushServiceData: pushServiceData,
+      );
 
       _proofGenerationStepsStreamManager
           .add("preparing authentication parameters...");
       String authResponse = await _iden3commRepository.getAuthResponse(
-          did: profileDid,
-          request: param.message,
-          scope: proofs,
-          pushUrl: pushUrl,
-          pushToken: param.pushToken,
-          packageName: packageName);
+        did: profileDid,
+        request: param.message,
+        scope: proofs,
+        didDocument: didDocument,
+      );
       _stacktraceManager.addTrace(
           "[AuthenticateUseCase] _iden3commRepository.getAuthResponse success\nauthResponse: $authResponse");
       logger().i(
@@ -155,7 +165,10 @@ class AuthenticateUseCase
               genesisDid: param.genesisDid,
               profileNonce: param.profileNonce,
               privateKey: param.privateKey,
-              message: authResponse));
+              message: authResponse,
+            circuitId: param.circuitId,
+          ),
+      );
       logger()
           .i("stopwatch after getAuthToken ${stopwatch.elapsedMilliseconds}");
       _stacktraceManager.addTrace(

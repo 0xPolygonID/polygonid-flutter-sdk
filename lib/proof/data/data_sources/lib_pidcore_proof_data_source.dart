@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/atomic_query_inputs_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/proof/libs/polygonidcore/pidcore_proof.dart';
@@ -82,6 +83,7 @@ class LibPolygonIdCoreProofDataSource {
     required String challenge,
     required String signature,
     Map<String, dynamic>? config,
+    required CircuitId circuitId,
   }) async {
     final input = AuthAtomicQueryInputsParam(
       genesisDid: genesisDid,
@@ -93,6 +95,7 @@ class LibPolygonIdCoreProofDataSource {
       gistProof: gistProof,
       signature: signature,
       challenge: challenge,
+      circuitId: circuitId.id,
     );
 
     EnvConfigEntity? configParam;

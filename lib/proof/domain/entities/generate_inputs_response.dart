@@ -2,11 +2,13 @@ class GenerateInputsResponse {
   final Map<String, dynamic> inputs;
   final Map<String, dynamic>? verifiablePresentation;
   final PublicStatesInfo? publicStatesInfo;
+  final String? circuitId;
 
   GenerateInputsResponse({
     required this.inputs,
     this.verifiablePresentation,
     this.publicStatesInfo,
+    this.circuitId,
   });
 
   factory GenerateInputsResponse.fromJson(Map<String, dynamic> json) {
@@ -16,15 +18,19 @@ class GenerateInputsResponse {
       publicStatesInfo: json.containsKey("publicStatesInfo")
           ? PublicStatesInfo.fromJson(json["publicStatesInfo"])
           : null,
+      circuitId: json["circuitId"],
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "inputs": inputs,
         if (verifiablePresentation != null)
           "verifiablePresentation": verifiablePresentation,
         if (publicStatesInfo != null)
           "publicStatesInfo": publicStatesInfo?.toJson(),
+        if (circuitId != null)
+          "circuitId": circuitId,
       };
 }
 
@@ -48,7 +54,8 @@ class PublicStatesInfo {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "states": states.map((x) => x.toJson()).toList(),
         "gists": gists.map((x) => x.toJson()).toList(),
       };
@@ -70,7 +77,8 @@ class PublicUserStateInfo {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "state": state,
       };
@@ -92,7 +100,8 @@ class PublicGistStateInfo {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         "id": id,
         "root": root,
       };

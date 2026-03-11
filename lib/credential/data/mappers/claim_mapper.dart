@@ -1,5 +1,4 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
-import 'package:polygonid_flutter_sdk/credential/data/mappers/display_type_mapper.dart';
 
 import '../../domain/entities/claim_entity.dart';
 import '../dtos/claim_dto.dart';
@@ -11,17 +10,11 @@ typedef ClaimMapper = CredentialMapper;
 class CredentialMapper extends Mapper<CredentialDTO, CredentialEntity> {
   final CredentialStateMapper _credentialStateMapper;
   final CredentialInfoMapper _credentialInfoMapper;
-  final DisplayTypeMapper _displayTypeMapper;
 
-  CredentialMapper(
-    this._credentialStateMapper,
-    this._credentialInfoMapper,
-    this._displayTypeMapper,
-  );
+  CredentialMapper(this._credentialStateMapper, this._credentialInfoMapper);
 
   @override
   CredentialEntity mapFrom(CredentialDTO from) {
-    final displayType = from.displayType;
     return CredentialEntity(
       id: from.id,
       issuer: from.issuer,
@@ -32,8 +25,7 @@ class CredentialMapper extends Mapper<CredentialDTO, CredentialEntity> {
       schema: from.schema,
       type: from.type,
       info: _credentialInfoMapper.mapFrom(from.info),
-      displayType:
-          displayType != null ? _displayTypeMapper.mapFrom(displayType) : null,
+      displayType: from.displayType,
       credentialRawValue: from.credentialRawValue,
     );
   }
@@ -50,8 +42,7 @@ class CredentialMapper extends Mapper<CredentialDTO, CredentialEntity> {
       expiration: to.expiration,
       schema: to.schema,
       info: _credentialInfoMapper.mapTo(to.info),
-      displayType:
-          displayType != null ? _displayTypeMapper.mapTo(displayType) : null,
+      displayType: displayType,
       credentialRawValue: to.credentialRawValue,
     );
   }

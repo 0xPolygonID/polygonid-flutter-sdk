@@ -21,7 +21,9 @@
 
 */
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../authorization/request/auth_body_request.dart';
 
@@ -34,10 +36,10 @@ class AuthorizationRequestMessage
   final String from;
 
   AuthorizationRequestMessage({
-    required super.id,
-    required super.typ,
+    String? id,
+    super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required this.from,
     required super.body,
     super.to,
@@ -45,9 +47,11 @@ class AuthorizationRequestMessage
     super.expiresTime,
     super.attachments = const [],
   }) : super(
-          type: Iden3MessageType.authRequest,
-          from: from,
-        );
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.authRequest,
+         thid: thid ?? const Uuid().v4(),
+         from: from,
+       );
 
   /// Creates an instance from the given json
   ///
@@ -63,24 +67,17 @@ class AuthorizationRequestMessage
       thid: json['thid'],
       from: json['from'],
       to: json['to'],
+      createdTime: json['created_time'],
+      expiresTime: json['expires_time'],
       body: body,
+      attachments: json['attachments'] != null
+          ? List<Map<String, dynamic>>.from(
+              json['attachments'],
+            ).map((j) => Attachment.fromJson(j)).toList()
+          : const [],
     );
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = super.toJson();
-    data['body'] = body.toJson();
-    return data;
-  }
-
-  @override
   String toString() => "[AuthorizationRequestMessage] {${super.toString()}}";
-
-  @override
-  bool operator ==(Object other) =>
-      super == other && other is AuthorizationRequestMessage;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
 }

@@ -73,7 +73,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
     BigInt nonce = await NonceUtils(_polygonIdSdk).lookupNonce(
             did: didIdentifier,
             privateKey: privateKey,
-            from: iden3message.from) ??
+            from: iden3message.from!) ??
         GENESIS_PROFILE_NONCE;
 
     try {
@@ -83,6 +83,7 @@ class ClaimsBloc extends Bloc<ClaimsEvent, ClaimsState> {
         genesisDid: didIdentifier,
         profileNonce: nonce,
         privateKey: privateKey,
+        keys: [],
       );
 
       if (claimList.isNotEmpty) {

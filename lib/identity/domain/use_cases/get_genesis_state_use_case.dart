@@ -29,13 +29,13 @@ class GetGenesisStateUseCase
       final authClaim = await _getIdentityAuthClaimUseCase.execute(
         param: param,
       );
-      final NodeEntity node = await _identityRepository.getAuthClaimNode(
+      final NodeEntity node = _identityRepository.getAuthClaimNode(
         children: authClaim,
       );
-      final String hash = await _smtRepository.hashState(
-        claims: node.hash.string(),
-        revocation: BigInt.zero.toString(),
-        roots: BigInt.zero.toString(),
+      final String hash = _smtRepository.hashState(
+        claims: node.hash.toBigInt(),
+        revocation: BigInt.zero,
+        roots: BigInt.zero,
       );
       final state = TreeStateEntity(
         hash,

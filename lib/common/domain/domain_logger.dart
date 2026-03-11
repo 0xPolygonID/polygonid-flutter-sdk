@@ -30,3 +30,15 @@ class Domain {
 
 PolygonIdSdkLogger logger() =>
     Domain.logEnabled ? Domain.logger ?? NoLogger() : NoLogger();
+
+extension LogTimestampExtension on PolygonIdSdkLogger {
+  void logTimestamp(Stopwatch stopwatch, String message, {String? tag}) {
+    String log = message;
+    if (tag != null) {
+      log = '[$tag]: $log';
+    }
+
+    log += ' at ${stopwatch.elapsedMilliseconds} ms';
+    i(log);
+  }
+}

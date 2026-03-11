@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
 
 import '../../../common/domain/entities/filter_entity.dart';
 import '../entities/claim_entity.dart';
@@ -44,32 +45,19 @@ abstract class CredentialRepository {
     required CredentialEntity claim,
   });
 
-  Future<bool> isUsingRHS({required CredentialEntity claim});
-
   Future<String?> getRhsRevocationId({required CredentialEntity claim});
 
   Future<String> getIssuerIdentifier({required CredentialEntity claim});
 
-  Future<int> getRevocationNonce({
-    required CredentialEntity claim,
-    required bool rhs,
-  });
+  Future<int> getRevocationNonce({required CredentialDTO credential});
 
-  Future<String> getRevocationUrl({
-    required CredentialEntity claim,
-    required bool rhs,
-  });
+  Future<String> getRevocationUrl({required CredentialDTO credential});
 
-  Future<List<String>> getAuthClaim({required List<String> publicKey});
+  List<String> getAuthClaim({required List<String> publicKey});
 
-  Future<bool> cacheCredential({
-    required String credential,
-    String? config,
-  });
+  Future<bool> cacheCredential({required String credential, String? config});
 
-  void cleanCache({
-    String? config,
-  });
+  void cleanCache({String? config});
 
   Future<String> coreClaimFromCredential({
     required String credential,

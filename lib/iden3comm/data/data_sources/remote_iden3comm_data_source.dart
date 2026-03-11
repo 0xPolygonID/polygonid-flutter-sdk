@@ -9,20 +9,25 @@ import 'package:polygonid_flutter_sdk/common/data/exceptions/network_exceptions.
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/common/utils/pinata_gateway_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/ipfs.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_encrypted_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:web3dart/crypto.dart';
 
 class RemoteIden3commDataSource {
   final Dio dio;
   final StacktraceManager _stacktraceManager;
 
-  RemoteIden3commDataSource(
-    this.dio,
-    this._stacktraceManager,
-  );
+  RemoteIden3commDataSource(this.dio, this._stacktraceManager);
 
   Future<Response> authWithToken({
     required String token,
@@ -30,12 +35,10 @@ class RemoteIden3commDataSource {
   }) async {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) {
-      _stacktraceManager
-          .addError('authWithToken error: url is invalid\nurl: $url');
-      throw NetworkException(
-        errorMessage: "url is invalid",
-        statusCode: 0,
+      _stacktraceManager.addError(
+        'authWithToken error: url is invalid\nurl: $url',
       );
+      throw NetworkException(errorMessage: "url is invalid", statusCode: 0);
     }
 
     try {
@@ -53,7 +56,8 @@ class RemoteIden3commDataSource {
 
       if (response.statusCode != 200) {
         _stacktraceManager.addError(
-            'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
+          'Auth Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}',
+        );
         throw NetworkException(
           errorMessage: response.data,
           statusCode: response.statusCode ?? 0,
@@ -65,7 +69,8 @@ class RemoteIden3commDataSource {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
         _stacktraceManager.addError(
-            'authWithToken error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}');
+          'authWithToken error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+        );
         throw NetworkException(
           errorMessage:
               "Connection timeout while sending auth token to the requester.",
@@ -73,7 +78,8 @@ class RemoteIden3commDataSource {
         );
       } else {
         _stacktraceManager.addError(
-            'authWithToken error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}');
+          'authWithToken error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+        );
         rethrow;
       }
     } catch (e) {
@@ -85,13 +91,14 @@ class RemoteIden3commDataSource {
   Future<CredentialDTO> refreshCredential({
     required String authToken,
     required String url,
-    required,
     required String profileDid,
+    required List<JsonWebKey> keys,
   }) async {
     Uri? uri = Uri.tryParse(url);
     if (uri == null) {
-      _stacktraceManager
-          .addError('refreshCredential error: url is invalid\nurl: $url');
+      _stacktraceManager.addError(
+        'refreshCredential error: url is invalid\nurl: $url',
+      );
       throw NetworkException(errorMessage: "Invalid url", statusCode: 0);
     }
 
@@ -114,10 +121,11 @@ class RemoteIden3commDataSource {
           log: true,
         );
         throw NetworkException(
-            errorMessage: response.data, statusCode: response.statusCode ?? 0);
+          errorMessage: response.data,
+          statusCode: response.statusCode ?? 0,
+        );
       } else {
-        final type =
-            (response.data['type'] as Object?)?.toString() ?? 'unknown';
+        final type = response.data['type'] as String? ?? 'unknown';
 
         if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
           final message = CredentialIssuanceMessage.fromJson(response.data);
@@ -130,9 +138,49 @@ class RemoteIden3commDataSource {
             info: message.body.credential,
             credentialRawValue: json.encode(response.data),
           );
+        } else if (type ==
+            ProtocolMessageType.credentialEncryptedIssuanceResponseType) {
+          final message = CredentialEncryptedIssuanceResponse.fromJson(
+            response.data,
+          );
+          final requiredKeyIds = message.body.data.recipients
+              .map((r) => r.header.keyId!)
+              .toList();
+
+          JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
+            return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
+          });
+          if (eligibleKey == null) {
+            _stacktraceManager.addError(
+              "[RemoteIden3commDataSource] refreshCredential: No eligible keys found for decryption",
+            );
+            throw Exception(
+              "No eligible keys found for decrypting the credential.",
+            );
+          }
+
+          final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
+            response.data,
+            [eligibleKey.toJson()],
+          );
+
+          final claimDTO = CredentialDTO(
+            id: decryptedCred.id,
+            issuer: message.from,
+            did: profileDid,
+            type: decryptedCred.credentialSubject.type,
+            expiration: decryptedCred.expirationDate,
+            info: decryptedCred,
+            credentialRawValue: jsonEncode(response.data),
+          );
+          logger().i(
+            "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}",
+          );
+          return claimDTO;
         } else {
           _stacktraceManager.addError(
-              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
+            "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException",
+          );
           throw UnsupportedFetchClaimTypeException(
             type: type,
             errorMessage:
@@ -144,14 +192,16 @@ class RemoteIden3commDataSource {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
         _stacktraceManager.addError(
-            'refreshCredential error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}');
+          'refreshCredential error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+        );
         throw NetworkException(
           errorMessage: "Connection timeout while refreshing credential.",
           statusCode: e.response?.statusCode ?? 0,
         );
       } else {
         _stacktraceManager.addError(
-            'refreshCredential error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}');
+          'refreshCredential error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+        );
         rethrow;
       }
     } catch (e) {
@@ -164,9 +214,11 @@ class RemoteIden3commDataSource {
     required String authToken,
     required String url,
     required String did,
+    required List<JsonWebKey> keys,
   }) async {
     _stacktraceManager.logTrace(
-        "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken");
+      "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken",
+    );
 
     try {
       final response = await dio.post(
@@ -182,7 +234,8 @@ class RemoteIden3commDataSource {
       );
 
       _stacktraceManager.logTrace(
-          "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}");
+        "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}",
+      );
       if (response.statusCode == 200) {
         final type =
             (response.data['type'] as Object?)?.toString() ?? 'unknown';
@@ -190,7 +243,8 @@ class RemoteIden3commDataSource {
         if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
           final message = CredentialIssuanceMessage.fromJson(response.data);
           logger().i(
-              "[RemoteIden3commDataSource] fetchClaim: ${message.body.credential.toJson()}");
+            "[RemoteIden3commDataSource] fetchClaim: ${message.body.credential.toJson()}",
+          );
           final claimDTO = CredentialDTO(
             id: message.body.credential.id,
             issuer: message.from,
@@ -201,20 +255,63 @@ class RemoteIden3commDataSource {
             credentialRawValue: jsonEncode(response.data),
           );
           logger().i(
-              "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}");
+            "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}",
+          );
+          return claimDTO;
+        } else if (type ==
+            ProtocolMessageType.credentialEncryptedIssuanceResponseType) {
+          final message = CredentialEncryptedIssuanceResponse.fromJson(
+            response.data,
+          );
+
+          final requiredKeyIds = message.body.data.recipients
+              .map((r) => r.header.keyId!)
+              .toList();
+
+          JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
+            return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
+          });
+          if (eligibleKey == null) {
+            _stacktraceManager.addError(
+              "[RemoteIden3commDataSource] refreshCredential: No eligible keys found for decryption",
+            );
+            throw Exception(
+              "No eligible keys found for decrypting the credential.",
+            );
+          }
+
+          final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
+            response.data,
+            [eligibleKey.toJson()],
+          );
+
+          final claimDTO = CredentialDTO(
+            id: decryptedCred.id,
+            issuer: message.from,
+            did: did,
+            type: decryptedCred.credentialSubject.type,
+            expiration: decryptedCred.expirationDate,
+            info: decryptedCred,
+            credentialRawValue: jsonEncode(response.data),
+          );
+          logger().i(
+            "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}",
+          );
           return claimDTO;
         } else {
           _stacktraceManager.addError(
-              "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException");
+            "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException",
+          );
           throw UnsupportedFetchClaimTypeException(
             type: type,
             errorMessage:
-                'Unsupported fetch claim type: $type\nShould be ${ProtocolMessageType.credentialIssuanceResponseMessageType}',
+                'Unsupported fetch claim type: $type\nShould be ${ProtocolMessageType.credentialIssuanceResponseMessageType} or ${ProtocolMessageType.credentialEncryptedIssuanceResponseType}',
           );
         }
       } else {
         _stacktraceManager.logError(
-            'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}');
+          'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}',
+        );
         throw NetworkException(
           errorMessage: response.data,
           statusCode: response.statusCode ?? 0,
@@ -224,14 +321,16 @@ class RemoteIden3commDataSource {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
         _stacktraceManager.addError(
-            'fetchClaim error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}');
+          'fetchClaim error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+        );
         throw NetworkException(
           errorMessage: "Connection timeout while fetching claim.",
           statusCode: e.response?.statusCode ?? 0,
         );
       } else {
         _stacktraceManager.addError(
-            'fetchClaim error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}');
+          'fetchClaim error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+        );
         rethrow;
       }
     } catch (e) {
@@ -245,23 +344,13 @@ class RemoteIden3commDataSource {
       String schemaUrl = url;
 
       if (schemaUrl.toLowerCase().startsWith("ipfs://")) {
-        String fileHash = schemaUrl.replaceFirst("ipfs://", "");
-
-        String? pinataGatewayUrl =
-            await PinataGatewayUtils().retrievePinataGatewayUrlFromEnvironment(
-          fileHash: fileHash,
-        );
-
-        if (pinataGatewayUrl != null) {
-          schemaUrl = pinataGatewayUrl;
-        } else {
-          schemaUrl = "https://ipfs.io/ipfs/$fileHash";
-        }
+        schemaUrl = await IPFSUtils.getIpfsFileUrl(schemaUrl);
       }
 
       var schemaUri = Uri.parse(schemaUrl);
       _stacktraceManager.logTrace(
-          "[RemoteIden3commDataSource] fetchSchema original url: $url\nschemaUrl: $schemaUrl");
+        "[RemoteIden3commDataSource] fetchSchema original url: $url\nschemaUrl: $schemaUrl",
+      );
 
       Dio dio = Dio();
       final dir = await getApplicationDocumentsDirectory();
@@ -279,7 +368,8 @@ class RemoteIden3commDataSource {
 
       final schemaResponse = await dio.get(schemaUri.toString());
       _stacktraceManager.logTrace(
-          "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
+        "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}",
+      );
       if (schemaResponse.statusCode == 200 ||
           schemaResponse.statusCode == 304) {
         Map<String, dynamic> schema = {};
@@ -293,7 +383,8 @@ class RemoteIden3commDataSource {
         return schema;
       } else {
         _stacktraceManager.addError(
-            "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}");
+          "[RemoteIden3commDataSource] fetchSchema: ${schemaResponse.statusCode} ${schemaResponse.data}",
+        );
         throw NetworkException(
           errorMessage: schemaResponse.data.toString(),
           statusCode: schemaResponse.statusCode ?? 0,
@@ -302,8 +393,9 @@ class RemoteIden3commDataSource {
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (error) {
-      _stacktraceManager
-          .addError("[RemoteIden3commDataSource] fetchSchema: $error");
+      _stacktraceManager.addError(
+        "[RemoteIden3commDataSource] fetchSchema: $error",
+      );
       throw FetchSchemaException(
         error: error,
         errorMessage: 'Error while fetching schema',
@@ -311,28 +403,18 @@ class RemoteIden3commDataSource {
     }
   }
 
-  Future<Map<String, dynamic>> fetchDisplayType({required String url}) async {
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) async {
     try {
       String displayTypeUrl = url;
 
       if (displayTypeUrl.toLowerCase().startsWith("ipfs://")) {
-        String ipfsHash = displayTypeUrl.replaceFirst("ipfs://", "");
-
-        String? pinataGatewayUrl =
-            await PinataGatewayUtils().retrievePinataGatewayUrlFromEnvironment(
-          fileHash: ipfsHash,
-        );
-
-        if (pinataGatewayUrl != null) {
-          displayTypeUrl = pinataGatewayUrl;
-        } else {
-          displayTypeUrl = "https://ipfs.io/ipfs/$ipfsHash";
-        }
+        displayTypeUrl = await IPFSUtils.getIpfsFileUrl(displayTypeUrl);
       }
 
       final displayTypeUri = Uri.parse(displayTypeUrl);
       _stacktraceManager.addTrace(
-          "[RemoteIden3commDataSource] fetchDisplayType original url: $url");
+        "[RemoteIden3commDataSource] fetchDisplayType original url: $displayTypeUrl",
+      );
 
       final dio = Dio();
       final dir = await getApplicationDocumentsDirectory();
@@ -350,7 +432,8 @@ class RemoteIden3commDataSource {
 
       final response = await dio.get(displayTypeUri.toString());
       _stacktraceManager.addTrace(
-          "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
+        "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}",
+      );
       if (response.statusCode == 200 || response.statusCode == 304) {
         Map<String, dynamic> data = {};
         bool isMap = response.data is Map<String, dynamic>;
@@ -363,18 +446,29 @@ class RemoteIden3commDataSource {
         return data;
       } else {
         _stacktraceManager.addError(
-            "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}");
+          "[RemoteIden3commDataSource] fetchDisplayType: ${response.statusCode} ${response.data}",
+        );
         throw NetworkException(
           errorMessage: response.data.toString(),
           statusCode: response.statusCode ?? 0,
         );
       }
     } catch (error) {
-      _stacktraceManager
-          .addError("[RemoteIden3commDataSource] fetchDisplayType: $error");
+      _stacktraceManager.addError(
+        "[RemoteIden3commDataSource] fetchDisplayType: $error",
+      );
       throw FetchDisplayTypeException(
-          error: error, errorMessage: error.toString());
+        error: error,
+        errorMessage: error.toString(),
+      );
     }
+  }
+
+  Future<DisplayType> fetchDisplayType({
+    required DisplayMethod displayMethod,
+  }) async {
+    final displayType = await fetchDisplayMethod(url: displayMethod.id);
+    return DisplayType.fromJson(displayType, type: displayMethod.type);
   }
 
   ///
@@ -383,5 +477,19 @@ class RemoteIden3commDataSource {
     final path = dir.path;
     await HiveCacheStore(path).clean();
     return;
+  }
+}
+
+extension on JsonWebKey {
+  String get alias {
+    final alg = this['alg'] as String;
+
+    final n = this['n'] as String;
+    final e = this['e'] as String;
+    final bytes = utf8.encode(n.toString() + e.toString());
+    final keccakBytes = keccak256(bytes);
+    final keccak = keccakBytes.bytesToHex(include0x: true);
+
+    return "$alg:$keccak";
   }
 }

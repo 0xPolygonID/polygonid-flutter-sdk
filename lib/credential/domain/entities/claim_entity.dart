@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
 typedef ClaimState = CredentialState;
@@ -6,7 +7,7 @@ enum CredentialState { active, expired, pending, revoked }
 
 typedef ClaimEntity = CredentialEntity;
 
-class CredentialEntity {
+class CredentialEntity with EquatableMixin {
   final String id;
   final String issuer;
   final String did;
@@ -50,6 +51,14 @@ class CredentialEntity {
     );
   }
 
+  Map<String, dynamic> get credentialSubject {
+    return info["credentialSubject"];
+  }
+
+  List<String> get context {
+    return info["@context"];
+  }
+
   @override
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -64,30 +73,6 @@ class CredentialEntity {
         'displayType': displayType?.toJson(),
         'credentialRawValue': credentialRawValue,
       };
-
-  @override
-  String toString() => "[ClaimEntity] {id: $id, issuer: $issuer, did: $did, "
-      "state: $state, expiration: $expiration, issuanceDate: $issuanceDate, "
-      "schema: $schema, type: $type, info: $info, displayType: $displayType}";
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CredentialEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          issuer == other.issuer &&
-          did == other.did &&
-          state == other.state &&
-          expiration == other.expiration &&
-          issuanceDate == other.issuanceDate &&
-          schema == other.schema &&
-          type == other.type &&
-          info.toString() == other.info.toString() &&
-          displayType == other.displayType;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
 
   //copyWith method
   CredentialEntity copyWith({
@@ -117,4 +102,19 @@ class CredentialEntity {
       credentialRawValue: credentialRawValue ?? this.credentialRawValue,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        issuer,
+        did,
+        state,
+        expiration,
+        issuanceDate,
+        schema,
+        type,
+        info,
+        displayType,
+        credentialRawValue,
+      ];
 }

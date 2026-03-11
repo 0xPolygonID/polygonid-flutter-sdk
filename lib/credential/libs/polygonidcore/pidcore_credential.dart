@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:ffi';
 
@@ -26,8 +27,11 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       malloc.free(status);
     }
 
-    int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNCreateClaim(response, in1, status);
+    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNCreateClaim(
+      response,
+      in1,
+      status,
+    );
 
     // res 0 means error
     if (res == 0) {
@@ -63,8 +67,11 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     }
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
         malloc<ffi.Pointer<PLGNStatus>>();
-    int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNCacheCredentials(in1, cfg, status);
+    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNCacheCredentials(
+      in1,
+      cfg,
+      status,
+    );
 
     // it means success
     if (res != 0) {
@@ -156,11 +163,15 @@ class PolygonIdCoreCredential extends PolygonIdCore {
   }
 
   String createW3CCredentialFromAnonAadhaarInputs(
-      String input, String? config) {
+    String input,
+    String? config,
+  ) {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore
-          .nativePolygonIdCoreLib.PLGNW3CCredentialFromAnonAadhaarInputs,
+          .nativePolygonIdCoreLib
+          .PLGNW3CCredentialFromAnonAadhaarInputs,
+      methodName: 'PLGNW3CCredentialFromAnonAadhaarInputs',
       parse: (o) => o,
     );
   }
@@ -169,7 +180,9 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     return callGenericCoreFunction(
       input: () => input,
       function: PolygonIdCore
-          .nativePolygonIdCoreLib.PLGNW3CCredentialFromPassportInputs,
+          .nativePolygonIdCoreLib
+          .PLGNW3CCredentialFromPassportInputs,
+      methodName: 'PLGNW3CCredentialFromPassportInputs',
       parse: (o) => o,
     );
   }
@@ -190,8 +203,12 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       malloc.free(status);
     }
 
-    int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNW3CCredentialToCoreClaim(response, in1, cfg, status);
+    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNW3CCredentialToCoreClaim(
+      response,
+      in1,
+      cfg,
+      status,
+    );
 
     // res 0 means error
     if (res == 0) {
@@ -218,8 +235,20 @@ class PolygonIdCoreCredential extends PolygonIdCore {
     return result;
   }
 
+  bool credentialStatusCheck(String input, String? config) {
+    return callGenericCoreFunction(
+      input: () => input,
+      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNACredentialStatusCheck,
+      methodName: 'PLGNACredentialStatusCheck',
+      parse: (result) {
+        return jsonDecode(result)['valid'] as bool? ?? false;
+      },
+    );
+  }
+
   void _trackError(ConsumedStatusResult consumedStatus, String methodName) {
     _stacktraceManager.addError(
-        "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}");
+      "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}",
+    );
   }
 }

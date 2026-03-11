@@ -2,6 +2,7 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 
 class UnsupportedIden3MsgTypeException extends PolygonIdSDKException {
   final Iden3MessageType type;
@@ -141,7 +142,7 @@ class GetAuthInputsException extends PolygonIdSDKException {
 }
 
 class NoCredentialsFoundException extends PolygonIdSDKException {
-  final ProofRequestEntity? proofRequest;
+  final ZeroKnowledgeProofRequest? proofRequest;
 
   NoCredentialsFoundException({
     this.proofRequest,
@@ -149,3 +150,25 @@ class NoCredentialsFoundException extends PolygonIdSDKException {
     super.error,
   });
 }
+
+
+class UnsupportedCircuitException extends PolygonIdSDKException {
+  final ZeroKnowledgeProofRequest proofRequest;
+
+  UnsupportedCircuitException({
+    required this.proofRequest,
+    required super.errorMessage,
+    super.error,
+  });
+}
+
+class NullAuthChallengeException extends PolygonIdSDKException {
+  final ZeroKnowledgeProofRequest proofRequest;
+
+  NullAuthChallengeException({
+    required this.proofRequest,
+    required super.errorMessage,
+    super.error,
+  });
+}
+

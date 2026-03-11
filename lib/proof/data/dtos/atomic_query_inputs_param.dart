@@ -30,7 +30,7 @@ class AuthAtomicQueryInputsParam extends AtomicQueryInputsParam {
     required this.treeState,
     required this.challenge,
     required this.signature,
-    this.circuitId = "authV2",
+    required this.circuitId,
   });
 
   @override

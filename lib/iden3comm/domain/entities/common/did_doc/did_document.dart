@@ -1,63 +1,112 @@
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document_service.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/context_parser.dart';
+
+part 'did_document.g.dart';
 
 typedef AuthBodyDidDocResponse = DIDDocument;
 
-class DIDDocument {
-  final List<String>? context;
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class DIDDocument with EquatableMixin {
   final String id;
+  @JsonKey(name: '@context', fromJson: parseContext)
+  final List<String>? context;
   final List<String>? alsoKnownAs;
   final List<String>? controller;
   final List<DIDDocumentService>? service;
-  final List<String>? verificationMethod;
+  final List<VerificationMethod>? verificationMethod;
+  final List<String>? keyAgreement;
 
   DIDDocument({
-    this.context,
     required this.id,
+    this.context,
     this.service,
     this.alsoKnownAs,
     this.controller,
     this.verificationMethod,
+    this.keyAgreement,
   });
 
-  /// Creates an instance from the given json
-  ///
-  /// @param [Map<String, dynamic>] json
-  /// @returns [DIDDocument]
-  factory DIDDocument.fromJson(Map<String, dynamic> json) {
-    List<String>? context =
-        (json['@context'] as List?)?.map((item) => item as String).toList();
+  factory DIDDocument.fromJson(Map<String, dynamic> json) =>
+      _$DIDDocumentFromJson(json);
 
-    List<DIDDocumentService>? service = (json['service'] as List?)
-        ?.map((item) => DIDDocumentService.fromJson(item))
-        .toList();
+  Map<String, dynamic> toJson() => _$DIDDocumentToJson(this);
 
-    List<String>? alsoKnownAs =
-        (json['alsoKnownAs'] as List?)?.map((item) => item as String).toList();
+  @override
+  List<Object?> get props => [
+        id,
+        context,
+        service,
+        alsoKnownAs,
+        controller,
+        verificationMethod,
+        keyAgreement
+      ];
 
-    List<String>? controller =
-        (json['controller'] as List?)?.map((item) => item as String).toList();
-
-    List<String>? verificationMethod = (json['verificationMethod'] as List?)
-        ?.map((item) => item as String)
-        .toList();
-
+  DIDDocument copyWith({
+    String? id,
+    List<String>? context,
+    List<DIDDocumentService>? service,
+    List<String>? alsoKnownAs,
+    List<String>? controller,
+    List<VerificationMethod>? verificationMethod,
+    List<String>? keyAgreement,
+  }) {
     return DIDDocument(
-      context: context,
-      id: json['id'],
-      service: service,
-      alsoKnownAs: alsoKnownAs,
-      controller: controller,
-      verificationMethod: verificationMethod,
+      id: id ?? this.id,
+      context: context ?? this.context,
+      service: service ?? this.service,
+      alsoKnownAs: alsoKnownAs ?? this.alsoKnownAs,
+      controller: controller ?? this.controller,
+      verificationMethod: verificationMethod ?? this.verificationMethod,
+      keyAgreement: keyAgreement ?? this.keyAgreement,
     );
   }
+}
 
-  Map<String, dynamic> toJson() => {
-        '@context': context,
-        'id': id,
-        'service': service?.map((item) => item.toJson()).toList(),
-        if (alsoKnownAs != null) 'alsoKnownAs': alsoKnownAs,
-        if (controller != null) 'controller': controller,
-        if (verificationMethod != null)
-          'verificationMethod': verificationMethod,
-      };
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
+class VerificationMethod with EquatableMixin {
+  final String id;
+  final String type;
+  final String controller;
+  final String? publicKeyBase58;
+  final String? publicKeyBase64;
+  final String? publicKeyHex;
+  final String? publicKeyMultibase;
+  final String? blockchainAccountId;
+  final String? ethereumAddress;
+  final Map<String, dynamic>? publicKeyJwk;
+
+  VerificationMethod({
+    required this.id,
+    required this.type,
+    required this.controller,
+    this.publicKeyBase58,
+    this.publicKeyBase64,
+    this.publicKeyHex,
+    this.publicKeyMultibase,
+    this.blockchainAccountId,
+    this.ethereumAddress,
+    this.publicKeyJwk,
+  });
+
+  factory VerificationMethod.fromJson(Map<String, dynamic> json) =>
+      _$VerificationMethodFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VerificationMethodToJson(this);
+
+  @override
+  List<Object?> get props => [
+        id,
+        type,
+        controller,
+        publicKeyBase58,
+        publicKeyBase64,
+        publicKeyHex,
+        publicKeyMultibase,
+        blockchainAccountId,
+        ethereumAddress,
+        publicKeyJwk
+      ];
 }

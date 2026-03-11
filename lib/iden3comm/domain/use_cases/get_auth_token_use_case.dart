@@ -1,45 +1,42 @@
-import 'dart:convert';
-
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_inputs_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_challenge_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_jwz_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/load_circuit_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/use_cases/prove_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 
 import '../../../common/domain/domain_logger.dart';
 import '../../../common/domain/use_case.dart';
+
+const _tag = "getJWZUseCase";
 
 class GetAuthTokenParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String privateKey;
   final String message;
+  final CircuitId circuitId;
 
   GetAuthTokenParam({
     required this.genesisDid,
     required this.profileNonce,
     required this.privateKey,
     required this.message,
+    this.circuitId = CircuitId.authV2,
   });
 }
 
 class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
-  final LoadCircuitUseCase _loadCircuitUseCase;
   final GetJWZUseCase _getJWZUseCase;
   final GetAuthChallengeUseCase _getAuthChallengeUseCase;
-  final GetAuthInputsUseCase _getAuthInputsUseCase;
-  final ProveUseCase _proveUseCase;
+  final GenerateAuthProofUseCase _generateAuthProofUseCase;
   final StacktraceManager _stacktraceManager;
 
   GetAuthTokenUseCase(
-    this._loadCircuitUseCase,
     this._getJWZUseCase,
     this._getAuthChallengeUseCase,
-    this._getAuthInputsUseCase,
-    this._proveUseCase,
+    this._generateAuthProofUseCase,
     this._stacktraceManager,
   );
 
@@ -49,49 +46,37 @@ class GetAuthTokenUseCase extends FutureUseCase<GetAuthTokenParam, String> {
     logger().i('GetAuthTokenUseCase: started');
     try {
       final jwz = await _getJWZUseCase.execute(
-        param: GetJWZParam(message: param.message),
+        param: GetJWZParam(message: param.message, circuitId: param.circuitId),
       );
 
-      logger().i(
-          'GetAuthTokenUseCase: getJWZUseCase at ${stopwatch.elapsedMilliseconds} ms');
+      logger().logTimestamp(stopwatch, "getJWZUseCase", tag: _tag);
 
       final authChallenge = await _getAuthChallengeUseCase.execute(param: jwz);
 
-      logger().i(
-          'GetAuthTokenUseCase: getAuthChallengeUseCase at ${stopwatch.elapsedMilliseconds} ms');
+      logger().logTimestamp(stopwatch, "getAuthChallengeUseCase", tag: _tag);
 
-      final generateInputsResponse = await _getAuthInputsUseCase.execute(
-        param: GetAuthInputsParam(
-          challenge: authChallenge,
+      final proof = await _generateAuthProofUseCase.execute(
+        param: GenerateAuthProofParam(
           genesisDid: param.genesisDid,
-          profileNonce: param.profileNonce,
           privateKey: param.privateKey,
-          encryptionKey: param.privateKey,
+          profileNonce: param.profileNonce,
+          requestId: 0,
+          circuitId: param.circuitId.id,
+          challenge: authChallenge,
         ),
       );
-      final authInputs = jsonEncode(generateInputsResponse.inputs);
 
-      logger().i(
-          'GetAuthTokenUseCase: getAuthInputsUseCase at ${stopwatch.elapsedMilliseconds} ms');
-
-      final circuit = await _loadCircuitUseCase.execute(param: "authV2");
-
-      logger().i(
-          'GetAuthTokenUseCase: loadCircuitUseCase at ${stopwatch.elapsedMilliseconds} ms');
-
-      final zkProofEntity = await _proveUseCase.execute(
-        param: ProveParam(authInputs, circuit),
-      );
-
-      logger().i(
-          'GetAuthTokenUseCase: proveUseCase at ${stopwatch.elapsedMilliseconds} ms');
+      logger().logTimestamp(stopwatch, "generateAuthProofUseCase", tag: _tag);
 
       String authToken = await _getJWZUseCase.execute(
-        param: GetJWZParam(message: param.message, proof: zkProofEntity),
+        param: GetJWZParam(
+          message: param.message,
+          proof: proof,
+          circuitId: param.circuitId,
+        ),
       );
 
-      logger().i(
-          'GetAuthTokenUseCase: getJWZUseCase at ${stopwatch.elapsedMilliseconds} ms');
+      logger().logTimestamp(stopwatch, "getJWZUseCase", tag: _tag);
 
       return authToken;
     } on PolygonIdSDKException catch (_) {

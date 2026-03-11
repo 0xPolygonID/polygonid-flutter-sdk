@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/crypto/symmetric.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 
 class CommonMocks {
@@ -63,10 +64,15 @@ class CommonMocks {
     ipfsNodeUrl: '',
     ipfsGatewayUrl: '',
   );
+  static PushServiceData pushData = PushServiceData(
+    pushToken: 'theToken',
+    serviceEndpoint: 'theUrl',
+    packageName: 'theConfig',
+  );
 
   static FilterEntity filter = FilterEntity(name: name, value: aMap);
 
-  static Key key = Key.fromBase16(CommonMocks.privateKey);
+  static SymmetricKey key = SymmetricKey.fromBase16(CommonMocks.privateKey);
 
   static Map<String, dynamic> envJson = {
     'pushUrl': url,

@@ -2,7 +2,6 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/smt_data_source
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/storage_smt_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/hash_entity.dart';
-import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_state_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/smt_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
@@ -12,10 +11,7 @@ class SMTRepositoryImpl implements SMTRepository {
   final SMTDataSource _smtDataSource;
   final StorageSMTDataSource _storageSMTDataSource;
 
-  SMTRepositoryImpl(
-    this._smtDataSource,
-    this._storageSMTDataSource,
-  );
+  SMTRepositoryImpl(this._smtDataSource, this._storageSMTDataSource);
 
   // @override
   // Future<HashEntity> addLeaf({required HashEntity key,
@@ -134,10 +130,7 @@ class SMTRepositoryImpl implements SMTRepository {
     required MTProofEntity proof,
     required NodeEntity node,
   }) async {
-    return _smtDataSource.getProofTreeRoot(
-      proof: proof,
-      node: node,
-    );
+    return _smtDataSource.getProofTreeRoot(proof: proof, node: node);
   }
 
   Future<bool> verifyProof({
@@ -160,10 +153,11 @@ class SMTRepositoryImpl implements SMTRepository {
     required String encryptionKey,
   }) {
     return _smtDataSource.createSMT(
-        maxLevels: maxLevels,
-        storeName: type.storeName,
-        did: did,
-        encryptionKey: encryptionKey);
+      maxLevels: maxLevels,
+      storeName: type.storeName,
+      did: did,
+      encryptionKey: encryptionKey,
+    );
   }
 
   @override
@@ -173,26 +167,23 @@ class SMTRepositoryImpl implements SMTRepository {
     required String encryptionKey,
   }) async {
     await _smtDataSource.removeSMT(
-        storeName: type.storeName, did: did, encryptionKey: encryptionKey);
+      storeName: type.storeName,
+      did: did,
+      encryptionKey: encryptionKey,
+    );
     await _smtDataSource.removeRoot(
-        storeName: type.storeName, did: did, encryptionKey: encryptionKey);
+      storeName: type.storeName,
+      did: did,
+      encryptionKey: encryptionKey,
+    );
   }
 
   @override
-  Future<String> hashState({
-    required String claims,
-    required String revocation,
-    required String roots,
-  }) async {
-    return poseidon3([
-      BigInt.parse(claims),
-      BigInt.parse(revocation),
-      BigInt.parse(roots),
-    ]).toString();
-  }
-
-  @override
-  Future<Map<String, dynamic>> convertState({required TreeStateEntity state}) {
-    return Future.value(state.toJson());
+  String hashState({
+    required BigInt claims,
+    required BigInt revocation,
+    required BigInt roots,
+  }) {
+    return poseidon3([claims, revocation, roots]).toString();
   }
 }

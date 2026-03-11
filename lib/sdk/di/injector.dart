@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
@@ -13,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/circuits_repository.dart';
+import 'package:polygonid_flutter_sdk/common/crypto/symmetric.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/kms/index.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
@@ -215,8 +215,8 @@ abstract class RepositoriesModule {
 abstract class EncryptionModule {
   @Named('encryptAES')
   @factoryMethod
-  encrypt.Encrypter encryptAES(@factoryParam encrypt.Key key) {
-    return encrypt.Encrypter(encrypt.AES(key));
+  AesCipher encryptAES(@factoryParam SymmetricKey key) {
+    return AesCipher(key);
   }
 }
 

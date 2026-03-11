@@ -58,7 +58,7 @@ void main() {
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.did));
     when(identityRepository.getPublicKeys(
             bjjPrivateKey: CommonMocks.privateKey))
-        .thenAnswer((realInvocation) => Future.value(CommonMocks.publicKey));
+        .thenAnswer((realInvocation) => CommonMocks.publicKey);
   });
 
   test(

@@ -6,8 +6,8 @@ abstract class DisplayType {
 
   String get typeName;
 
-  factory DisplayType.fromJson(Map<String, dynamic> json) {
-    switch (json['type']) {
+  factory DisplayType.fromJson(Map<String, dynamic> json, {String? type}) {
+    switch (type ?? json['type']) {
       case Iden3BasicDisplayType.name:
         return Iden3BasicDisplayType.fromJson(json);
       default:

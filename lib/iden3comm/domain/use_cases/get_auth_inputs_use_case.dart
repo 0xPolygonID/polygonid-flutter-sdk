@@ -8,6 +8,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/credential/domain/repositories/credential_repository.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/iden3comm_repository.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/node_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/tree_type.dart';
@@ -27,6 +28,7 @@ class GetAuthInputsParam {
   final BigInt profileNonce;
   final String privateKey;
   final String encryptionKey;
+  final CircuitId circuitId;
 
   GetAuthInputsParam({
     required this.challenge,
@@ -34,6 +36,7 @@ class GetAuthInputsParam {
     required this.profileNonce,
     required this.privateKey,
     required this.encryptionKey,
+    required this.circuitId,
   });
 }
 
@@ -79,12 +82,12 @@ class GetAuthInputsUseCase
       logger().i(
           'GetAuthInputsUseCase: got identity at: ${stopwatch.elapsedMilliseconds} ms');
 
-      List<String> authClaim = await _credentialRepository.getAuthClaim(
+      List<String> authClaim = _credentialRepository.getAuthClaim(
           publicKey: identity.publicKey);
       logger().i(
           'GetAuthInputsUseCase: got authClaim at: ${stopwatch.elapsedMilliseconds} ms');
       NodeEntity authClaimNode =
-          await _identityRepository.getAuthClaimNode(children: authClaim);
+          _identityRepository.getAuthClaimNode(children: authClaim);
       _stacktraceManager.addTrace("[GetAuthInputsUseCase] Auth claim node");
 
       logger().i(
@@ -154,6 +157,7 @@ class GetAuthInputsUseCase
         nonRevProof: nonRevProof,
         gistProof: gistProof,
         treeState: treeState,
+        circuitId: param.circuitId,
         config: env.config.toJson(),
       );
 

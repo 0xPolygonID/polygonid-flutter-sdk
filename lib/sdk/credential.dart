@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
@@ -9,6 +10,7 @@ import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_ex
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/cache_credentials_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/clean_cache_use_case.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/use_cases/credential_status_check_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claim_revocation_status_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_claims_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_credential_by_id_use_case.dart';
@@ -94,6 +96,9 @@ abstract class PolygonIdSdkCredential {
     required String privateKey,
   });
 
+  /// Check the revocation status of a [CredentialEntity].
+  Future<bool> credentialStatusCheck({required CredentialEntity credential});
+
   /// Remove a list of [CredentialEntity] filtered by ids associated to the identity previously stored
   /// in the the Polygon ID Sdk
   ///
@@ -157,6 +162,7 @@ abstract class PolygonIdSdkCredential {
     required CredentialEntity credential,
     required String genesisDid,
     required String privateKey,
+    required List<JsonWebKey> keys,
   });
 
   /// Cache a [CredentialEntity] associated to the identity previously stored to speed up
@@ -176,9 +182,7 @@ abstract class PolygonIdSdkCredential {
   });
 
   /// Clean the credentials cache to remove all cached credentials.
-  Future<void> cleanCredentialsCache({
-    EnvConfigEntity? configParam,
-  });
+  Future<void> cleanCredentialsCache({EnvConfigEntity? configParam});
 }
 
 @injectable
@@ -186,6 +190,7 @@ class Credential implements PolygonIdSdkCredential {
   final SaveClaimsUseCase _saveClaimsUseCase;
   final GetClaimsUseCase _getClaimsUseCase;
   final GetClaimRevocationStatusUseCase _getClaimRevocationStatusUseCase;
+  final CredentialStatusCheckUseCase _credentialStatusCheckUseCase;
   final RemoveClaimsUseCase _removeClaimsUseCase;
   final UpdateClaimUseCase _updateClaimUseCase;
   final StacktraceManager _stacktraceManager;
@@ -201,6 +206,7 @@ class Credential implements PolygonIdSdkCredential {
     this._getClaimsUseCase,
     this._removeClaimsUseCase,
     this._getClaimRevocationStatusUseCase,
+    this._credentialStatusCheckUseCase,
     this._updateClaimUseCase,
     this._stacktraceManager,
     this._refreshCredentialUseCase,
@@ -235,14 +241,16 @@ class Credential implements PolygonIdSdkCredential {
     required String privateKey,
   }) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.getCredentialById called");
+    _stacktraceManager.addTrace(
+      "PolygonIdSdk.Credential.getCredentialById called",
+    );
     return _getCredentialByIdUseCase.execute(
-        param: GetCredentialByIdParam(
-      genesisDid: genesisDid,
-      encryptionKey: privateKey,
-      id: credentialId,
-    ));
+      param: GetCredentialByIdParam(
+        genesisDid: genesisDid,
+        encryptionKey: privateKey,
+        id: credentialId,
+      ),
+    );
   }
 
   @override
@@ -252,14 +260,16 @@ class Credential implements PolygonIdSdkCredential {
     required String privateKey,
   }) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.getCredentialByPartialId called");
+    _stacktraceManager.addTrace(
+      "PolygonIdSdk.Credential.getCredentialByPartialId called",
+    );
     return _getCredentialByPartialIdUseCase.execute(
-        param: GetCredentialByPartialIdParam(
-      genesisDid: genesisDid,
-      encryptionKey: privateKey,
-      partialId: partialCredentialId,
-    ));
+      param: GetCredentialByPartialIdParam(
+        genesisDid: genesisDid,
+        encryptionKey: privateKey,
+        partialId: partialCredentialId,
+      ),
+    );
   }
 
   @override
@@ -272,13 +282,14 @@ class Credential implements PolygonIdSdkCredential {
     _stacktraceManager.clear();
     _stacktraceManager.addTrace("PolygonIdSdk.Credential.getClaims called");
     return _getClaimsUseCase.execute(
-        param: GetClaimsParam(
-      filters: filters,
-      genesisDid: genesisDid,
-      profileNonce: GENESIS_PROFILE_NONCE,
-      encryptionKey: privateKey,
-      credentialSortOrderList: credentialSortOrderList,
-    ));
+      param: GetClaimsParam(
+        filters: filters,
+        genesisDid: genesisDid,
+        profileNonce: GENESIS_PROFILE_NONCE,
+        encryptionKey: privateKey,
+        credentialSortOrderList: credentialSortOrderList,
+      ),
+    );
   }
 
   @override
@@ -288,18 +299,23 @@ class Credential implements PolygonIdSdkCredential {
     required String privateKey,
   }) {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.getClaimsByIds called");
+    _stacktraceManager.addTrace(
+      "PolygonIdSdk.Credential.getClaimsByIds called",
+    );
     return _getClaimsUseCase.execute(
-        param: GetClaimsParam(
-      filters: [
-        FilterEntity(
-            operator: FilterOperator.inList, name: 'id', value: claimIds)
-      ],
-      genesisDid: genesisDid,
-      profileNonce: GENESIS_PROFILE_NONCE,
-      encryptionKey: privateKey,
-    ));
+      param: GetClaimsParam(
+        filters: [
+          FilterEntity(
+            operator: FilterOperator.inList,
+            name: 'id',
+            value: claimIds,
+          ),
+        ],
+        genesisDid: genesisDid,
+        profileNonce: GENESIS_PROFILE_NONCE,
+        encryptionKey: privateKey,
+      ),
+    );
   }
 
   @override
@@ -310,8 +326,9 @@ class Credential implements PolygonIdSdkCredential {
     Map<String, dynamic>? nonRevProof,
   }) async {
     _stacktraceManager.clear();
-    _stacktraceManager
-        .addTrace("PolygonIdSdk.Credential.getClaimRevocationStatus called");
+    _stacktraceManager.addTrace(
+      "PolygonIdSdk.Credential.getClaimRevocationStatus called",
+    );
     List<CredentialEntity> claimEntityList = await getClaimsByIds(
       claimIds: [claimId],
       genesisDid: genesisDid,
@@ -319,10 +336,11 @@ class Credential implements PolygonIdSdkCredential {
     );
     if (claimEntityList.isNotEmpty) {
       return _getClaimRevocationStatusUseCase.execute(
-          param: GetClaimRevocationStatusParam(
-        claim: claimEntityList[0],
-        nonRevProof: nonRevProof,
-      ));
+        param: GetClaimRevocationStatusParam(
+          claim: claimEntityList[0],
+          nonRevProof: nonRevProof,
+        ),
+      );
     } else {
       _stacktraceManager.addError("Claim not found");
       throw CredentialNotFoundException(
@@ -330,6 +348,18 @@ class Credential implements PolygonIdSdkCredential {
         errorMessage: "Claim not found",
       );
     }
+  }
+
+  @override
+  Future<bool> credentialStatusCheck({
+    required CredentialEntity credential,
+  }) async {
+    _stacktraceManager.clear();
+    _stacktraceManager.addTrace(
+      "PolygonIdSdk.Credential.credentialStatusCheck called",
+    );
+
+    return _credentialStatusCheckUseCase.execute(param: credential);
   }
 
   @override
@@ -398,12 +428,14 @@ class Credential implements PolygonIdSdkCredential {
     required String genesisDid,
     required String privateKey,
     required CredentialEntity credential,
+    required List<JsonWebKey> keys,
   }) {
     return _refreshCredentialUseCase.execute(
       param: RefreshCredentialParam(
         credential: credential,
         genesisDid: genesisDid,
         privateKey: privateKey,
+        keys: keys,
       ),
     );
   }
@@ -414,10 +446,8 @@ class Credential implements PolygonIdSdkCredential {
     EnvConfigEntity? configParam,
   }) {
     return _cacheCredentialUseCase.execute(
-        param: CacheCredentialParam(
-      credential: credential,
-      config: configParam,
-    ));
+      param: CacheCredentialParam(credential: credential, config: configParam),
+    );
   }
 
   @override
@@ -432,11 +462,7 @@ class Credential implements PolygonIdSdkCredential {
   }
 
   @override
-  Future<void> cleanCredentialsCache({
-    EnvConfigEntity? configParam,
-  }) {
-    return _cleanCredentialCacheUseCase.execute(
-      param: configParam,
-    );
+  Future<void> cleanCredentialsCache({EnvConfigEntity? configParam}) {
+    return _cleanCredentialCacheUseCase.execute(param: configParam);
   }
 }

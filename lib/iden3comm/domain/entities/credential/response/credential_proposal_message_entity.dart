@@ -1,5 +1,6 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/credential_schema_info.dart';
+import 'package:uuid/uuid.dart';
 
 /*
 {
@@ -29,17 +30,21 @@ typedef CredentialProposal = ProposalMessage;
 /// https://iden3-communication.io/credentials/0.1/proposal
 class ProposalMessage extends Iden3Message<ProposalMessageBody> {
   ProposalMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.body,
     required super.from,
     required super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.credentialProposal);
+  }) : super(
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.credentialProposal,
+         thid: thid ?? const Uuid().v4(),
+       );
 
   factory ProposalMessage.fromJson(Map<String, dynamic> json) {
     return ProposalMessage(
@@ -65,24 +70,24 @@ class ProposalMessage extends Iden3Message<ProposalMessageBody> {
   }
 }
 
-class ProposalMessageBody {
+class ProposalMessageBody implements JsonEncodable {
   final List<Proposal> proposals;
 
-  ProposalMessageBody({
-    required this.proposals,
-  });
+  ProposalMessageBody({required this.proposals});
 
   factory ProposalMessageBody.fromJson(Map<String, dynamic> json) {
     return ProposalMessageBody(
       proposals: List<Proposal>.from(
-          json['proposals'].map((x) => Proposal.fromJson(x))),
+        json['proposals'].map((x) => Proposal.fromJson(x)),
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "proposals":
-          List<dynamic>.from(proposals.map((Proposal x) => x.toJson())),
+      "proposals": List<dynamic>.from(
+        proposals.map((Proposal x) => x.toJson()),
+      ),
     };
   }
 }
@@ -117,8 +122,9 @@ class Proposal {
 
   factory Proposal.fromJson(Map<String, dynamic> json) {
     return Proposal(
-      credentials: List<ProposalRequestCredential>.from(json['credentials']
-          .map((x) => ProposalRequestCredential.fromJson(x))),
+      credentials: List<ProposalRequestCredential>.from(
+        json['credentials'].map((x) => ProposalRequestCredential.fromJson(x)),
+      ),
       type: json['type'],
       url: json['url'],
       description: json['description'],
@@ -128,7 +134,8 @@ class Proposal {
   Map<String, dynamic> toJson() {
     return {
       "credentials": List<dynamic>.from(
-          credentials.map((ProposalRequestCredential x) => x.toJson())),
+        credentials.map((ProposalRequestCredential x) => x.toJson()),
+      ),
       "type": type,
       "url": url,
       "description": description,

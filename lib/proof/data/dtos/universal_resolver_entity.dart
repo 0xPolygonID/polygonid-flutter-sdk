@@ -1,6 +1,8 @@
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
+
 class ResolverResponse {
   final String? context;
-  final dynamic didDocument;
+  final DIDDocument? didDocument;
   final DidResolutionMetadata didResolutionMetadata;
   final dynamic didDocumentMetadata;
 
@@ -14,20 +16,23 @@ class ResolverResponse {
   factory ResolverResponse.fromJson(Map<String, dynamic> json) {
     return ResolverResponse(
       context: json['@context'] as String?,
-      didDocument: json['didDocument'],
-      didResolutionMetadata:
-          DidResolutionMetadata.fromJson(json['didResolutionMetadata']),
+      didDocument: json['didDocument'] != null
+          ? DIDDocument.fromJson(json['didDocument'])
+          : null,
+      didResolutionMetadata: DidResolutionMetadata.fromJson(
+        json['didResolutionMetadata'],
+      ),
       didDocumentMetadata: json['didDocumentMetadata'],
     );
   }
 }
 
 class DidResolutionMetadata {
-  final List<String> context;
-  final String contentType;
-  final String retrieved;
-  final String type;
-  final List<DidResolutionProof> proof;
+  final List<String>? context;
+  final String? contentType;
+  final String? retrieved;
+  final String? type;
+  final List<DidResolutionProof>? proof;
 
   DidResolutionMetadata({
     required this.context,
@@ -44,8 +49,19 @@ class DidResolutionMetadata {
       retrieved: json['retrieved'],
       type: json['type'],
       proof: List<DidResolutionProof>.from(
-          json['proof'].map((x) => DidResolutionProof.fromJson(x))),
+        json['proof'].map((x) => DidResolutionProof.fromJson(x)),
+      ),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (context != null) '@context': context,
+      if (contentType != null) 'contentType': contentType,
+      if (retrieved != null) 'retrieved': retrieved,
+      if (type != null) 'type': type,
+      if (proof != null) 'proof': proof,
+    };
   }
 }
 
@@ -75,6 +91,17 @@ class DidResolutionProof {
         created: json['created'],
         eip712: EIP712Entity.fromJson(json['eip712']),
       );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'proofPurpose': proofPurpose,
+      'proofValue': proofValue,
+      'verificationMethod': verificationMethod,
+      'created': created,
+      'eip712': eip712.toJson(),
+    };
+  }
 }
 
 class EIP712Entity {
@@ -91,11 +118,20 @@ class EIP712Entity {
   });
 
   factory EIP712Entity.fromJson(Map<String, dynamic> json) => EIP712Entity(
-        types: json['types'],
-        primaryType: json['primaryType'],
-        domain: json['domain'],
-        message: BaseEIP712Message.fromJson(json['message']),
-      );
+    types: json['types'],
+    primaryType: json['primaryType'],
+    domain: json['domain'],
+    message: BaseEIP712Message.fromJson(json['message']),
+  );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'types': types,
+      'primaryType': primaryType,
+      'domain': domain,
+      'message': message.toJson(),
+    };
+  }
 }
 
 abstract class BaseEIP712Message {
@@ -117,10 +153,7 @@ abstract class BaseEIP712Message {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'replacedAtTimestamp': replacedAtTimestamp,
-      'timestamp': timestamp,
-    };
+    return {'replacedAtTimestamp': replacedAtTimestamp, 'timestamp': timestamp};
   }
 }
 
@@ -145,11 +178,7 @@ class GlobalStateEIP712Message extends BaseEIP712Message {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'idType': idType,
-      'root': root,
-    };
+    return {...super.toJson(), 'idType': idType, 'root': root};
   }
 }
 
@@ -174,10 +203,6 @@ class IdentityStateEIP712Message extends BaseEIP712Message {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'id': id,
-      'state': state,
-    };
+    return {...super.toJson(), 'id': id, 'state': state};
   }
 }

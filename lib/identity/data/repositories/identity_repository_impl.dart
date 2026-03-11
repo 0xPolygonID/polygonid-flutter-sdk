@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:encrypt/encrypt.dart';
+import 'package:polygonid_flutter_sdk/common/crypto/symmetric.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
@@ -64,14 +64,14 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<List<String>> getPublicKeys({required String bjjPrivateKey}) async {
+  List<String> getPublicKeys({required String bjjPrivateKey}) {
     final wallet = BjjWallet(hexToBytes(bjjPrivateKey));
     final pubKeys = wallet.publicKey;
     return pubKeys;
   }
 
   @override
-  Future<NodeEntity> getAuthClaimNode({required List<String> children}) {
+  NodeEntity getAuthClaimNode({required List<String> children}) {
     BigInt hashIndex = poseidon4([
       BigInt.parse(children[0]),
       BigInt.parse(children[1]),
@@ -94,45 +94,51 @@ class IdentityRepositoryImpl extends IdentityRepository {
       hash: HashEntity.fromBigInt(hashClaimNode),
       type: NodeType.leaf,
     );
-    return Future.value(authClaimNode);
+    return authClaimNode;
   }
 
   @override
-  Future<void> storeIdentity({required IdentityEntity identity}) {
-    return _storageIdentityDataSource
-        .storeIdentity(did: identity.did, identity: identity)
-        .catchError(
-          (error) => throw IdentityException(
-            errorMessage: "Error storing identity with error: $error",
-            error: error,
-          ),
-        );
+  Future<void> storeIdentity({required IdentityEntity identity}) async {
+    try {
+      await _storageIdentityDataSource.storeIdentity(
+        did: identity.did,
+        identity: identity,
+      );
+    } catch (error) {
+      throw IdentityException(
+        errorMessage: "Error storing identity with error: $error",
+        error: error,
+      );
+    }
   }
 
   /// Get an [IdentityEntity] from an identifier
   /// The [IdentityEntity] is the one previously stored and associated to the identifier
   /// Throws an [UnknownIdentityException] if not found.
   @override
-  Future<IdentityEntity> getIdentity({required String genesisDid}) {
-    return _storageIdentityDataSource
-        .getIdentity(did: genesisDid)
-        .catchError(
-          (error) => throw IdentityException(
-            errorMessage: "Error getting identity with error: $error",
-            error: error,
-          ),
-          test: (error) => error is! UnknownIdentityException,
-        );
+  Future<IdentityEntity> getIdentity({required String genesisDid}) async {
+    try {
+      return await _storageIdentityDataSource.getIdentity(did: genesisDid);
+    } on UnknownIdentityException {
+      rethrow;
+    } catch (error) {
+      throw IdentityException(
+        errorMessage: "Error getting identity with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
-  Future<List<IdentityEntity>> getIdentities() {
-    return _storageIdentityDataSource.getIdentities().catchError(
-      (error) => throw IdentityException(
+  Future<List<IdentityEntity>> getIdentities() async {
+    try {
+      return await _storageIdentityDataSource.getIdentities();
+    } catch (error) {
+      throw IdentityException(
         errorMessage: "Error getting identities with error: $error",
         error: error,
-      ),
-    );
+      );
+    }
   }
 
   @override
@@ -169,19 +175,21 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<String> getState({
     required String identifier,
     required String contractAddress,
-  }) {
-    return _localContractFilesDataSource
-        .loadStateContract(contractAddress)
-        .then(
-          (contract) => _rpcDataSource
-              .getState(_stateIdentifierMapper.mapTo(identifier), contract)
-              .catchError(
-                (error) => throw FetchIdentityStateException(
-                  errorMessage: "Error fetching state with error: $error",
-                  error: error,
-                ),
-              ),
-        );
+  }) async {
+    final contract = _localContractFilesDataSource.loadStateContract(
+      contractAddress,
+    );
+    try {
+      return await _rpcDataSource.getState(
+        _stateIdentifierMapper.mapTo(identifier),
+        contract,
+      );
+    } catch (error) {
+      throw FetchIdentityStateException(
+        errorMessage: "Error fetching state with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -200,21 +208,25 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getNonRevProof({
+  Future<Map<String, dynamic>> getRHSNonRevProof({
     required String identityState,
     required BigInt nonce,
     required String baseUrl,
     Map<String, dynamic>? cachedNonRevProof,
-  }) {
-    return _remoteIdentityDataSource
-        .getNonRevocationProof(identityState, nonce, baseUrl, cachedNonRevProof)
-        .catchError(
-          (error) => throw NonRevProofException(
-            errorMessage:
-                "Error fetching non revocation proof with error: $error",
-            error: error,
-          ),
-        );
+  }) async {
+    try {
+      return await _remoteIdentityDataSource.getNonRevocationProof(
+        identityState,
+        nonce,
+        baseUrl,
+        cachedNonRevProof,
+      );
+    } catch (error) {
+      throw NonRevProofException(
+        errorMessage: "Error fetching non revocation proof with error: $error",
+        error: error,
+      );
+    }
   }
 
   @override
@@ -319,9 +331,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }) async {
     Map<String, Object?> exportableDb = await _storageIdentityDataSource
         .getIdentityDb(did: did, encryptionKey: encryptionKey);
-
-    final key = Key.fromBase16(encryptionKey);
-
+    final key = SymmetricKey.fromBase16(encryptionKey);
     return _encryptionDbDataSource.encryptData(data: exportableDb, key: key);
   }
 
@@ -331,16 +341,13 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String encryptedDb,
     required String encryptionKey,
   }) async {
-    final key = Key.fromBase16(encryptionKey);
-
+    final key = SymmetricKey.fromBase16(encryptionKey);
     Map<String, Object?> decryptedDb = _encryptionDbDataSource.decryptData(
       encryptedData: encryptedDb,
       key: key,
     );
-
     String destinationPath = await _destinationPathDataSource
         .getDestinationPath(did: did);
-
     return _storageIdentityDataSource.saveIdentityDb(
       exportableDb: decryptedDb,
       destinationPath: destinationPath,

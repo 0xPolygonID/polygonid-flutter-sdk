@@ -173,14 +173,14 @@ class ProofRepositoryImpl extends ProofRepository {
   @override
   Future<Uint8List> calculateWitness({
     required CircuitDataEntity circuitData,
-    required String atomicQueryInputs,
+    required String inputs,
   }) async {
     _stacktraceManager.addTrace(
         "[calculateWitness] circuitData.circuitId ${circuitData.circuitId}");
-    final circuitType = CircuitTypes.fromString(circuitData.circuitId);
+    final circuitType = CircuitId.fromString(circuitData.circuitId);
     try {
       Uint8List? witness = await _witnessDataSource.computeWitness(
-        inputsJson: atomicQueryInputs,
+        inputsJson: inputs,
         circuitGraphFile: circuitData.witnessCalculationData,
       );
       if (witness == null) {
@@ -245,8 +245,8 @@ class ProofRepositoryImpl extends ProofRepository {
 
   @override
   Future<bool> isCircuitSupported({required String circuitId}) async {
-    final circuitType = CircuitTypes.fromString(circuitId);
-    return _proofCircuitDataSource.isCircuitSupported(circuit: circuitType);
+    final circuitType = CircuitId.fromString(circuitId);
+    return _proofCircuitDataSource.isCircuitSupported(circuitId: circuitType);
   }
 
   @override
@@ -256,7 +256,7 @@ class ProofRepositoryImpl extends ProofRepository {
   }) async {
     try {
       final envEntity = await _getEnvUseCase.execute();
-      final contract = await _localContractFilesDataSource.loadStateContract(
+      final contract = _localContractFilesDataSource.loadStateContract(
         contractAddress,
       );
 

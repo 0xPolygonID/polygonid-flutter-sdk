@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bip32_plus/bip32_plus.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
 
+import 'bip32_derivation.dart';
 import 'eddsa_babyjub.dart';
 
-// TODO: move impl to a DS and transform this class to an entity
 /// @class
 /// Manage Babyjubjub keys
 /// Perform standard wallet actions
@@ -41,17 +40,12 @@ class BjjWallet {
     } else {
       prvKey = EthPrivateKey(secret);
     }
-    // Convert the master private key to a BIP32 instance
-    final master = bip32.BIP32.fromSeed(prvKey.privateKey);
-
-    // Derive the path m/44'/60'/0'/0
+    // Derive using internal BIP32 subset
+    final master = masterFromSeed(prvKey.privateKey);
     const path = "m/44'/60'/0'/0";
-    final child = master.derivePath(path);
-
-    // Get the private key
+    final child = derivePath(master, path);
     final privateBjjKey = child.privateKey;
-
-    final bjjWallet = BjjWallet(privateBjjKey!);
+    final bjjWallet = BjjWallet(privateBjjKey);
     return bjjWallet;
   }
 

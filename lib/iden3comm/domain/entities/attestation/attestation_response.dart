@@ -6,33 +6,34 @@
 */
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 @Deprecated('Use AttestationResponseMessage instead')
 typedef AttestationResponseEntity = AttestationResponseMessage;
 
 class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
   AttestationResponseMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.body,
     super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
   }) : super(
-          type: Iden3MessageType.attestationResponse,
-          from: "",
-        );
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.attestationResponse,
+         thid: thid ?? const Uuid().v4(),
+         from: "",
+       );
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [AttestationResponseMessage]
-  factory AttestationResponseMessage.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory AttestationResponseMessage.fromJson(Map<String, dynamic> json) {
     final body = AttestationResponseBody.fromJson(json['body']);
     return AttestationResponseMessage(
       id: json['id'],
@@ -54,14 +55,11 @@ class AttestationResponseMessage extends Iden3Message<AttestationResponseBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class AttestationResponseBody {
+class AttestationResponseBody implements JsonEncodable {
   final String type;
   final dynamic payload;
 
-  AttestationResponseBody({
-    required this.type,
-    required this.payload,
-  });
+  AttestationResponseBody({required this.type, required this.payload});
 
   /// Creates an instance from the given json
   ///
@@ -74,10 +72,7 @@ class AttestationResponseBody {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'type': type,
-        'payload': payload,
-      };
+  Map<String, dynamic> toJson() => {'type': type, 'payload': payload};
 
   @override
   String toString() =>

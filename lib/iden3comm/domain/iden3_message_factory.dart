@@ -8,17 +8,29 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/re
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/response/auth_response_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/response/problem_report_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_issuance_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_proposal_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/credential_refresh_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_encrypted_issuance_response.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_issuance_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_proposal_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/credential_status_update_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/response/fetch_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/disclose.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/query.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/payment_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/payment/response/payment_request_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_response_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/permissions_list.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/permissions_list_fetch.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/permissions_requests_list.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_delivery.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_permissions_update.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_permissions_update_request.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/resource_management/resource_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/verification/verification_response.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -29,9 +41,7 @@ class Iden3MessageFactory {
 
   Iden3MessageFactory(this._stacktraceManager);
 
-  Iden3Message createMessage({
-    required String rawMessage,
-  }) {
+  Iden3Message createMessage({required String rawMessage}) {
     try {
       Map<String, dynamic> json = jsonDecode(rawMessage);
 
@@ -48,7 +58,9 @@ class Iden3MessageFactory {
         case Iden3MessageType.onchainCredentialOffer:
           return CredentialsOnchainOfferMessage.fromJson(json);
         case Iden3MessageType.credentialIssuanceResponse:
-          return CredentialFetchRequestMessage.fromJson(json);
+          return CredentialIssuanceMessage.fromJson(json);
+        case Iden3MessageType.credentialEncryptedIssuanceResponse:
+          return CredentialEncryptedIssuanceResponse.fromJson(json);
         case Iden3MessageType.proofContractInvokeRequest:
           return ContractInvokeRequestMessage.fromJson(json);
         case Iden3MessageType.proofContractInvokeResponse:
@@ -77,7 +89,27 @@ class Iden3MessageFactory {
           return VerificationResponseMessage.fromJson(json);
         case Iden3MessageType.fetchRequest:
           return CredentialFetchRequestMessage.fromJson(json);
-        default:
+        case Iden3MessageType.credentialIssuanceRequest:
+          return CredentialIssuanceRequestMessage.fromJson(json);
+        case Iden3MessageType.resourceRequest:
+          return ResourceRequestMessage.fromJson(json);
+        case Iden3MessageType.resourcePermissionsUpdateRequest:
+          return ResourcePermissionsUpdateRequestMessage.fromJson(json);
+        case Iden3MessageType.resourcePermissionsUpdate:
+          return ResourcePermissionsUpdateMessage.fromJson(json);
+        case Iden3MessageType.resourceDelivery:
+          return ResourceDeliveryMessage.fromJson(json);
+        case Iden3MessageType.permissionsRequestsList:
+          return ResourcePermissionsRequestsListMessage.fromJson(json);
+        case Iden3MessageType.permissionsList:
+          return ResourcePermissionsListMessage.fromJson(json);
+        case Iden3MessageType.permissionsListFetch:
+          return ResourcePermissionsListFetchMessage.fromJson(json);
+        case Iden3MessageType.discoveryQueries:
+          return DiscoverFeatureQueriesMessage.fromJson(json);
+        case Iden3MessageType.discoveryDisclose:
+          return DiscoverFeatureDiscloseMessage.fromJson(json);
+        case Iden3MessageType.unknown:
           throw UnsupportedIden3MsgTypeException(
             type: type,
             errorMessage: "Unsupported message type: $type",

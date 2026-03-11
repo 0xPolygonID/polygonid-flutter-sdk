@@ -56,9 +56,9 @@ final mockAuthResponse = AuthorizationResponseMessage(
   to: Iden3commMocks.authRequest.from,
   from: CommonMocks.identifier,
   typ: "application/iden3comm-plain-json",
-  body: AuthorizationMessageResponseBody(
+  body: AuthorizationResponseMessageBody(
     message: Iden3commMocks.authRequest.body.message,
-    proofs: [],
+    scope: [],
     did_doc: null,
   ),
 );
@@ -294,7 +294,7 @@ void main() {
 
       // Given
       when(localContractFilesDataSource.loadStateContract(any))
-          .thenAnswer((realInvocation) => Future.value(contract));
+          .thenAnswer((realInvocation) => contract);
       when(stateIdentifierMapper.mapTo(any))
           .thenAnswer((realInvocation) => CommonMocks.id);
       when(rpcDataSource.getState(any, any))
@@ -378,7 +378,7 @@ void main() {
 
       // When
       expect(
-          await repository.getNonRevProof(
+          await repository.getRHSNonRevProof(
               identityState: CommonMocks.state,
               nonce: CommonMocks.nonce,
               baseUrl: CommonMocks.url),
@@ -403,7 +403,7 @@ void main() {
 
       // When
       await repository
-          .getNonRevProof(
+          .getRHSNonRevProof(
               identityState: CommonMocks.state,
               nonce: CommonMocks.nonce,
               baseUrl: CommonMocks.url)

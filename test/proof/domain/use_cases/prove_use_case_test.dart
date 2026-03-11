@@ -24,7 +24,7 @@ void main() {
   setUp(() {
     when(proofRepository.calculateWitness(
       circuitData: anyNamed('circuitData'),
-      atomicQueryInputs: anyNamed('atomicQueryInputs'),
+      inputs: anyNamed('inputs'),
     )).thenAnswer((realInvocation) => Future.value(CommonMocks.aBytes));
     when(proofRepository.prove(
       circuitData: anyNamed('circuitData'),
@@ -41,7 +41,7 @@ void main() {
       // Then
       var capturedWitness = verify(proofRepository.calculateWitness(
         circuitData: captureAnyNamed('circuitData'),
-        atomicQueryInputs: captureAnyNamed('atomicQueryInputs'),
+        inputs: captureAnyNamed('inputs'),
       )).captured;
       expect(capturedWitness[0], param.circuitData);
       expect(capturedWitness[1], param.inputs);
@@ -61,7 +61,7 @@ void main() {
       // Given
       when(proofRepository.calculateWitness(
         circuitData: captureAnyNamed('circuitData'),
-        atomicQueryInputs: captureAnyNamed('atomicQueryInputs'),
+        inputs: captureAnyNamed('inputs'),
       )).thenAnswer((realInvocation) => Future.error(CommonMocks.exception));
 
       // When
@@ -71,7 +71,7 @@ void main() {
       // Then
       var capturedWitness = verify(proofRepository.calculateWitness(
         circuitData: captureAnyNamed('circuitData'),
-        atomicQueryInputs: captureAnyNamed('atomicQueryInputs'),
+        inputs: captureAnyNamed('inputs'),
       )).captured;
       expect(capturedWitness[0], param.circuitData);
       expect(capturedWitness[1], param.inputs);

@@ -1,8 +1,43 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/protocol_message_type.dart';
+
+export 'package:polygonid_flutter_sdk/common/json.dart';
+
+const String messageTypePlain = "application/iden3comm-plain-json";
+const String messageTypeZkp = "application/iden3-zkp-json";
+const String messageTypeEnc = "application/iden3comm-encrypted-json";
+const String messageTypeSigned = "application/iden3comm-signed-json";
+
+enum MediaType {
+  plainMessage(messageTypePlain),
+  zkpMessage(messageTypeZkp),
+  encryptedMessage(messageTypeEnc),
+  signedMessage(messageTypeSigned);
+
+  final String value;
+
+  const MediaType(this.value);
+
+  factory MediaType.fromType(String type) {
+    return MediaType.values.firstWhere(
+      (element) => element.value == type,
+      orElse: () => throw Exception("Unknown media type: $type"),
+    );
+  }
+
+  static MediaType fromJson(String json) {
+    return MediaType.fromType(json);
+  }
+
+  String toJson() => value;
+
+  @override
+  String toString() => value;
+}
 
 enum Iden3MessageType {
   /// Authorization
@@ -11,13 +46,20 @@ enum Iden3MessageType {
   credentialOffer(ProtocolMessageType.credentialOfferMessageType),
   onchainCredentialOffer(ProtocolMessageType.credentialOnchainOfferMessageType),
   credentialIssuanceRequest(
-      ProtocolMessageType.credentialIssuanceRequestMessageType),
+    ProtocolMessageType.credentialIssuanceRequestMessageType,
+  ),
   credentialIssuanceResponse(
-      ProtocolMessageType.credentialIssuanceResponseMessageType),
+    ProtocolMessageType.credentialIssuanceResponseMessageType,
+  ),
+  credentialEncryptedIssuanceResponse(
+    ProtocolMessageType.credentialEncryptedIssuanceResponseType,
+  ),
   proofContractInvokeRequest(
-      ProtocolMessageType.contractInvokeRequestMessageType),
+    ProtocolMessageType.contractInvokeRequestMessageType,
+  ),
   proofContractInvokeResponse(
-      ProtocolMessageType.contractInvokeResponseMessageType),
+    ProtocolMessageType.contractInvokeResponseMessageType,
+  ),
   credentialRefresh(ProtocolMessageType.credentialRefreshMessageType),
   credentialProposalRequest(ProtocolMessageType.proposalRequestMessageType),
   credentialProposal(ProtocolMessageType.proposalMessageType),
@@ -30,6 +72,23 @@ enum Iden3MessageType {
   verificationRequest(ProtocolMessageType.verificationRequestMessageType),
   verificationResponse(ProtocolMessageType.verificationResponseMessageType),
   fetchRequest(ProtocolMessageType.credentialFetchRequestMessageType),
+  resourceRequest(ProtocolMessageType.resourcePermissionRequestMessageType),
+  resourcePermissionsUpdateRequest(
+    ProtocolMessageType.resourcePermissionsUpdateRequestMessageType,
+  ),
+  resourcePermissionsUpdate(
+    ProtocolMessageType.resourcePermissionsUpdateMessageType,
+  ),
+  resourceDelivery(ProtocolMessageType.resourceDeliveryMessageType),
+  permissionsRequestsList(
+    ProtocolMessageType.resourcePermissionsRequestsListFetchMessageType,
+  ),
+  permissionsList(ProtocolMessageType.resourcePermissionsListMessageType),
+  permissionsListFetch(
+    ProtocolMessageType.resourcePermissionsListFetchMessageType,
+  ),
+  discoveryQueries(ProtocolMessageType.discoveryQueriesMessageType),
+  discoveryDisclose(ProtocolMessageType.discoveryDiscloseMessageType),
   unknown("");
 
   final String type;
@@ -54,15 +113,17 @@ enum Iden3MessageType {
 }
 
 @Deprecated('Use Iden3Message instead')
-typedef Iden3MessageEntity<T> = Iden3Message<T>;
+typedef Iden3MessageEntity<T extends JsonEncodable> = Iden3Message<T>;
+
+typedef BasicMessage<T extends JsonEncodable> = Iden3Message<T>;
 
 /// Represents an iden3 protocol message.
 /// https://identity.foundation/didcomm-messaging/spec/#message-headers
-abstract class Iden3Message<T> extends Equatable {
+abstract class Iden3Message<T extends JsonEncodable> extends Equatable {
   final String id;
 
   /// The type of the message, e.g. "application/iden3-zkp-json".
-  final String? typ;
+  final String typ;
 
   /// The type of the message, e.g. "https://iden3-communication.io/authorization/1.0/request".
   final Iden3MessageType type;
@@ -74,8 +135,7 @@ abstract class Iden3Message<T> extends Equatable {
   final T body;
 
   /// The sender of the message, usually a DID.
-  // TODO: Make this optional according to protocol.
-  final String from;
+  final String? from;
 
   /// The recipient of the message, usually a DID.
   final String? to;
@@ -91,7 +151,7 @@ abstract class Iden3Message<T> extends Equatable {
 
   const Iden3Message({
     required this.id,
-    required this.typ,
+    String? typ,
     required this.type,
     required this.thid,
     required this.body,
@@ -100,7 +160,7 @@ abstract class Iden3Message<T> extends Equatable {
     required this.createdTime,
     required this.expiresTime,
     required this.attachments,
-  });
+  }): this.typ = typ ?? messageTypePlain;
 
   @Deprecated('Use type instead')
   Iden3MessageType get messageType => type;
@@ -114,12 +174,14 @@ abstract class Iden3Message<T> extends Equatable {
       'id': id,
       'typ': typ,
       'type': type.type,
-      'thid': thid,
-      'body': (body as dynamic).toJson(),
-      'from': from,
-      'to': to,
-      'created_time': createdTime,
-      'expires_time': expiresTime,
+      if (thid != null) 'thid': thid,
+      'body': body.toJson(),
+      if (from != null) 'from': from,
+      if (to != null) 'to': to,
+      if (createdTime != null) 'created_time': createdTime,
+      if (expiresTime != null) 'expires_time': expiresTime,
+      if (attachments.isNotEmpty)
+        'attachments': attachments.map((e) => e.toJson()).toList(),
     }..removeWhere((_, value) => value == null);
   }
 
@@ -138,4 +200,29 @@ abstract class Iden3Message<T> extends Equatable {
       attachments,
     ];
   }
+}
+
+class RequiredIden3Message<T extends JsonEncodable> extends Iden3Message<T> {
+
+  @override
+  String get thid => super.thid!;
+
+  @override
+  String get from => super.from!;
+
+  @override
+  String get to => super.to!;
+
+  const RequiredIden3Message({
+    required super.id,
+    required super.typ,
+    required super.type,
+    required String thid,
+    required super.body,
+    required String from,
+    required String to,
+    required super.createdTime,
+    required super.expiresTime,
+    required super.attachments,
+  }) : super(thid: thid, from: from, to: to);
 }

@@ -63,7 +63,7 @@ class GetIdentityUseCase
       if (pbKey != null) {
         publicKey = pbKey;
       } else {
-        publicKey = await _identityRepository.getPublicKeys(
+        publicKey = _identityRepository.getPublicKeys(
           bjjPrivateKey: bjjPrivateKey,
         );
       }

@@ -5,8 +5,8 @@ import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_selected_chain_use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/constants.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/abi/constants.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/onchain_offer_iden3_message_entity.dart';
@@ -19,6 +19,7 @@ import 'package:polygonid_flutter_sdk/identity/data/data_sources/local_contract_
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_identifier_use_case.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/get_did_use_case.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
@@ -55,6 +56,7 @@ class FetchCredentialsUseCase {
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
+    required List<JsonWebKey> keys,
     String? blockchain,
     String? network,
     String? method,
@@ -70,8 +72,8 @@ class FetchCredentialsUseCase {
 
       // we get the current network chain selected
       if (network == null || blockchain == null) {
-        final ChainConfigEntity chain =
-            await _getSelectedChainUseCase.execute();
+        final ChainConfigEntity chain = await _getSelectedChainUseCase
+            .execute();
         network = chain.network;
         blockchain = chain.blockchain;
         method = chain.method;
@@ -97,6 +99,7 @@ class FetchCredentialsUseCase {
           genesisDid: genesisDid,
           profileNonce: profileNonce,
           profileDid: profileDid,
+          keys: keys,
         );
         return credentials;
       }
@@ -123,13 +126,11 @@ class FetchCredentialsUseCase {
     required String genesisDid,
     required BigInt profileNonce,
     required String profileDid,
+    required List<JsonWebKey> keys,
   }) async {
     // we get all the requests of the credential offer
     final List<String> requests = await _getFetchRequestsUseCase.execute(
-      param: GetFetchRequestsParam(
-        credentialOfferMessage,
-        profileDid,
-      ),
+      param: GetFetchRequestsParam(credentialOfferMessage, profileDid),
     );
 
     final List<CredentialEntity> credentials = [];
@@ -146,12 +147,13 @@ class FetchCredentialsUseCase {
 
       // we get the credential from the issuer using the authToken
       // and the url of the credential
-      final CredentialEntity credential =
-          await _iden3commCredentialRepository.fetchClaim(
-        did: profileDid,
-        authToken: authToken,
-        url: credentialOfferMessage.body.url,
-      );
+      final CredentialEntity credential = await _iden3commCredentialRepository
+          .fetchClaim(
+            did: profileDid,
+            authToken: authToken,
+            url: credentialOfferMessage.body.url,
+            keys: keys,
+          );
 
       credentials.add(credential);
     }
@@ -170,8 +172,8 @@ class FetchCredentialsUseCase {
     final web3Client = getItSdk<Web3Client>(param1: chain!.rpcUrl);
 
     final address = message.body.transactionData.contractAddress;
-    final deployedContract = await _localContractFilesDataSource
-        .loadOnchainNonMerkelizedIssuerBaseContract(address);
+    final deployedContract = _localContractFilesDataSource
+        .loadOnchainIssuerContract(address);
 
     final issuer = Onchain_non_merkelized_issuer_base(
       address: deployedContract.address,
@@ -183,36 +185,38 @@ class FetchCredentialsUseCase {
     );
 
     // TODO (moria): Maybe refactor this to a separate use case
-    final supportsInterfaceCheck = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(interfaceCheckInterface)),
-    );
-    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(nonMerklizedIssuerInterface)),
-    );
+    final supportsInterfaceCheck = await issuer.supportsInterface((
+      interfaceId: hexToBytes(interfaceCheckInterface),
+    ));
+    final supportsNonMerklizedIssuerInterface = await issuer.supportsInterface((
+      interfaceId: hexToBytes(nonMerklizedIssuerInterface),
+    ));
 
-    final supportsGetIssuerIdInterface = await issuer.supportsInterface(
-      (interfaceId: hexToBytes(getIssuerIdInterface)),
-    );
+    final supportsGetIssuerIdInterface = await issuer.supportsInterface((
+      interfaceId: hexToBytes(getIssuerIdInterface),
+    ));
 
     if (!supportsInterfaceCheck ||
         !supportsNonMerklizedIssuerInterface ||
         !supportsGetIssuerIdInterface) {
       _stacktraceManager.addError(
-          "Contract at address $address does not support non-merkelized issuer interface");
+        "Contract at address $address does not support non-merkelized issuer interface",
+      );
       throw FetchClaimException(
-          errorMessage:
-              "Contract at address $address does not support non-merkelized issuer interface");
+        errorMessage:
+            "Contract at address $address does not support non-merkelized issuer interface",
+      );
     }
     final issuerIdInt = await getIssuerId.getId();
     final issuerDid = (await _identityRepository.describeId(
       id: issuerIdInt,
       config: env.config,
-    ))
-        .did;
+    )).did;
 
     final didEntity = await _getDidUseCase.execute(param: profileDid);
-    final userId =
-        await _identityRepository.convertIdToBigInt(id: didEntity.identifier);
+    final userId = await _identityRepository.convertIdToBigInt(
+      id: didEntity.identifier,
+    );
 
     final adapterVersion = await issuer.getCredentialAdapterVersion();
 
@@ -239,7 +243,8 @@ class FetchCredentialsUseCase {
         rethrow;
       } catch (e) {
         _stacktraceManager.addError(
-            "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e");
+          "[FetchAndSaveClaimsUseCase] Error while fetching onchain claim: $e",
+        );
         throw FetchClaimException(
           errorMessage: "Error while fetching onchain claim",
           error: e,

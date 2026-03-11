@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
@@ -18,11 +20,13 @@ class RefreshCredentialParam {
   final CredentialEntity credential;
   final String genesisDid;
   final String privateKey;
+  final List<JsonWebKey> keys;
 
   RefreshCredentialParam({
     required this.credential,
     required this.genesisDid,
     required this.privateKey,
+    required this.keys,
   });
 }
 
@@ -66,24 +70,24 @@ class RefreshCredentialUseCase
 
     if (!param.credential.info.containsKey("refreshService") ||
         param.credential.info["refreshService"] == null) {
-      _stacktraceManager
-          .addError("[RefreshCredentialUseCase] Refresh service not found");
+      _stacktraceManager.addError(
+        "[RefreshCredentialUseCase] Refresh service not found",
+      );
       throw RefreshCredentialException(
-          errorMessage: "Refresh service not found");
+        errorMessage: "Refresh service not found",
+      );
     }
 
-    RefreshService refreshService =
-        RefreshService.fromJson(param.credential.info["refreshService"]);
+    RefreshService refreshService = RefreshService.fromJson(
+      param.credential.info["refreshService"],
+    );
     String refreshServiceUrl = refreshService.id;
     String id = const Uuid().v4();
     final credentialRefreshMessage = CredentialRefreshMessage(
       id: id,
-      typ: "application/iden3comm-plain-json",
+      typ: messageTypePlain,
       thid: id,
-      body: CredentialRefreshBodyRequest(
-        param.credential.id,
-        "expired",
-      ),
+      body: CredentialRefreshBodyRequest(param.credential.id, "expired"),
       from: param.credential.did,
       to: param.credential.issuer,
     );
@@ -101,6 +105,7 @@ class RefreshCredentialUseCase
       authToken: authToken,
       url: refreshServiceUrl,
       profileDid: param.credential.did,
+      keys: param.keys,
     );
 
     if (claimEntity.id != param.credential.id) {

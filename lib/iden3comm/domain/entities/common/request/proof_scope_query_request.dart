@@ -112,53 +112,60 @@ class ZeroKnowledgeProofQuery {
   final String? proofType;
   final bool? skipClaimRevocationCheck;
   final int? groupId;
-  final String? type;
+  final String type;
 
-  ZeroKnowledgeProofQuery({
+  /// Non-protocol local field to check if the query is empty.
+  /// For auth queries we have query mostly empty.
+  /// Introduced to don't break backwards compatibility and nullability.
+  final bool isEmpty;
+
+  const ZeroKnowledgeProofQuery({
     required this.allowedIssuers,
     required this.context,
     this.credentialSubject,
     this.proofType,
     this.skipClaimRevocationCheck,
     this.groupId,
-    this.type,
-  });
+    required this.type,
+  }) : isEmpty = false;
+
+  const ZeroKnowledgeProofQuery.empty()
+    : allowedIssuers = const ['*'],
+      context = "",
+      credentialSubject = null,
+      proofType = null,
+      skipClaimRevocationCheck = null,
+      groupId = null,
+      type = '',
+      isEmpty = true;
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [ProofScopeRulesQueryRequest]
-  factory ZeroKnowledgeProofQuery.fromJson(Map<String, dynamic>? json) {
-    if (json != null) {
-      return ZeroKnowledgeProofQuery(
-        allowedIssuers: List<String>.from(json['allowedIssuers']),
-        context: json['context'],
-        proofType: json['proofType'],
+  factory ZeroKnowledgeProofQuery.fromJson(Map<String, dynamic> json) {
+    return ZeroKnowledgeProofQuery(
+      allowedIssuers: List<String>.from(json['allowedIssuers']),
+      context: json['context'],
+      proofType: json['proofType'],
 
-        /// FIXME: flooring doubles without decimals to ints, this is because of protobuf
-        /// only use number_value for google.protobuf.Value and turn int to float
-        credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
-            ?.deepDoubleToInt(),
-        skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
-        groupId: json['groupId'],
-        type: json['type'],
-      );
-      //schema: schema);
-    } else {
-      throw "something went wrong";
-    }
+      credentialSubject: (json['credentialSubject'] as Map<String, dynamic>?)
+          ?.deepDoubleToInt(),
+      skipClaimRevocationCheck: json['skipClaimRevocationCheck'],
+      groupId: json['groupId'],
+      type: json['type'],
+    );
   }
 
   Map<String, dynamic> toJson() => {
-        'allowedIssuers': allowedIssuers,
-        'context': context,
-        'type': type,
-        'credentialSubject': credentialSubject,
-        'skipClaimRevocationCheck': skipClaimRevocationCheck,
-        'proofType': proofType,
-        'groupId': groupId,
-      }..removeWhere(
-          (dynamic key, dynamic value) => key == null || value == null);
+    'allowedIssuers': allowedIssuers,
+    'context': context,
+    'type': type,
+    'credentialSubject': credentialSubject,
+    'skipClaimRevocationCheck': skipClaimRevocationCheck,
+    'proofType': proofType,
+    'groupId': groupId,
+  }..removeWhere((dynamic key, dynamic value) => key == null || value == null);
 
   @override
   String toString() =>
@@ -175,9 +182,32 @@ class ZeroKnowledgeProofQuery {
           proofType == other.proofType &&
           skipClaimRevocationCheck == other.skipClaimRevocationCheck &&
           groupId == other.groupId &&
-          const DeepCollectionEquality()
-              .equals(credentialSubject, other.credentialSubject);
+          const DeepCollectionEquality().equals(
+            credentialSubject,
+            other.credentialSubject,
+          );
 
   @override
   int get hashCode => runtimeType.hashCode;
+
+  ZeroKnowledgeProofQuery copyWith({
+    List<String>? allowedIssuers,
+    String? context,
+    Map<String, dynamic>? credentialSubject,
+    String? proofType,
+    bool? skipClaimRevocationCheck,
+    int? groupId,
+    String? type,
+  }) {
+    return ZeroKnowledgeProofQuery(
+      allowedIssuers: allowedIssuers ?? this.allowedIssuers,
+      context: context ?? this.context,
+      credentialSubject: credentialSubject ?? this.credentialSubject,
+      proofType: proofType ?? this.proofType,
+      skipClaimRevocationCheck:
+          skipClaimRevocationCheck ?? this.skipClaimRevocationCheck,
+      groupId: groupId ?? this.groupId,
+      type: type ?? this.type,
+    );
+  }
 }

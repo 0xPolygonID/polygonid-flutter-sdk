@@ -10,7 +10,7 @@ abstract class IdentityRepository {
     required String? secret,
   });
 
-  Future<List<String>> getPublicKeys({
+  List<String> getPublicKeys({
     required String bjjPrivateKey,
   });
 
@@ -50,8 +50,7 @@ abstract class IdentityRepository {
     required BigInt profileNonce,
   });
 
-  // RHS
-  Future<Map<String, dynamic>> getNonRevProof({
+  Future<Map<String, dynamic>> getRHSNonRevProof({
     required String identityState,
     required BigInt nonce,
     required String baseUrl,
@@ -70,7 +69,7 @@ abstract class IdentityRepository {
 
   Future<RhsNodeEntity> getStateRoots({required String url});
 
-  Future<NodeEntity> getAuthClaimNode({required List<String> children});
+  NodeEntity getAuthClaimNode({required List<String> children});
 
   Future<String> exportIdentity({
     required String did,

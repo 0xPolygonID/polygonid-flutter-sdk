@@ -144,7 +144,29 @@ enum CredentialStatusType {
   @JsonValue("Iden3commRevocationStatusV1.0")
   iden3commRevocationStatusV1,
   @JsonValue("Iden3OnchainSparseMerkleTreeProof2023")
-  iden3OnchainSparseMerkleTreeProof2023,
+  iden3OnchainSparseMerkleTreeProof2023;
+
+  bool get useRHS {
+    switch (this) {
+      case CredentialStatusType.reverseSparseMerkleTreeProof:
+        return true;
+      case CredentialStatusType.sparseMerkleTreeProof:
+      case CredentialStatusType.iden3commRevocationStatusV1:
+      case CredentialStatusType.iden3OnchainSparseMerkleTreeProof2023:
+        return false;
+    }
+  }
+
+  bool get onchain {
+    switch (this) {
+      case CredentialStatusType.iden3OnchainSparseMerkleTreeProof2023:
+        return true;
+      case CredentialStatusType.sparseMerkleTreeProof:
+      case CredentialStatusType.reverseSparseMerkleTreeProof:
+      case CredentialStatusType.iden3commRevocationStatusV1:
+        return false;
+    }
+  }
 }
 
 typedef CredentialStatusDTO = CredentialStatus;

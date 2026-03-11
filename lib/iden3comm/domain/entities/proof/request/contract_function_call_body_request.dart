@@ -40,13 +40,14 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:polygonid_flutter_sdk/common/json.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/request/contract_function_call_body_tx_data_request.dart';
 
 typedef ContractFunctionCallBodyRequest = ContractInvokeRequestBody;
 
-class ContractInvokeRequestBody {
+class ContractInvokeRequestBody implements JsonEncodable {
   final String? reason;
   final ContractInvokeTransactionData transactionData;
   final List<ZeroKnowledgeProofRequest> scope;

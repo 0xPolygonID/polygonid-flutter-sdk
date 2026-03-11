@@ -8,7 +8,7 @@ part of 'claim_proof_dto.dart';
 
 Map<String, dynamic> _$ClaimProofDTOToJson(ClaimProofDTO instance) =>
     <String, dynamic>{
-      'stringify': instance.stringify,
+      'stringify': ?instance.stringify,
       'hashCode': instance.hashCode,
       'type': instance.type,
       'issuerData': instance.issuer.toJson(),

@@ -32,5 +32,18 @@ void main() {
             "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld");
       },
     );
+
+    test('toJson', () {
+      var authRequest = AuthorizationRequestMessage.fromJson(json);
+      var newJson = authRequest.toJson();
+
+      expect(newJson, json);
+    });
+
+    test('agentic auth request message fromJson', () {
+      var authRequest = AuthorizationRequestMessage.fromJson(Iden3commMocks.agenticAuthRequest);
+
+      expect(authRequest.toJson(), Iden3commMocks.agenticAuthRequest);
+    });
   });
 }

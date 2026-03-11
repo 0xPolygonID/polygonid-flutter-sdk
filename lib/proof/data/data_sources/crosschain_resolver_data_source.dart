@@ -24,11 +24,12 @@ class ResolverDataSource {
     }
 
     final dio = Dio();
-    final response = await dio.get(
-      requestUrl,
-    );
+    final response = await dio.get(requestUrl);
+    final data = response.data is String
+        ? jsonDecode(response.data)
+        : response.data;
     try {
-      final resolverResponse = ResolverResponse.fromJson(response.data);
+      final resolverResponse = ResolverResponse.fromJson(data);
 
       return resolverResponse;
     } catch (e) {
@@ -41,11 +42,7 @@ class ResolverDataSource {
 }
 
 String _getCallParamsForLog(String did, String? gist, String? state) {
-  final params = {
-    "did": did,
-    "gist": gist,
-    "state": state,
-  };
+  final params = {"did": did, "gist": gist, "state": state};
 
   return jsonEncode(params);
 }

@@ -88,7 +88,7 @@ class PaymentRequestMessage extends Iden3Message<PaymentRequestBody> {
   }
 }
 
-class PaymentRequestBody {
+class PaymentRequestBody implements JsonEncodable {
   final String agent;
   final List<PaymentRequestInfo> payments;
 

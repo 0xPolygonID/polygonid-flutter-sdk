@@ -5,16 +5,26 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/common/package_manager/package_manager_impl.dart';
+import 'package:polygonid_flutter_sdk/common/package_manager/plain_packer.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/claim_info_dto.dart';
+import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/add_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_list_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/get_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/use_cases/remove_did_profile_info_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/authenticate.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/data/data_sources/remote_iden3comm_data_source.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/discovery_protocol.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/did_doc/did_document.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/base.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/disclose.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/discovery/query.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/interaction/interaction_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/self_issuance/self_issued_credential_params.dart';
@@ -35,6 +45,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_auth_token_
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_filters_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_rev_nonce_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_claims_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_schemas_use_case.dart';
@@ -42,7 +53,9 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/add
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/get_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/remove_interactions_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/interaction/update_interaction_use_case.dart';
+import 'package:polygonid_flutter_sdk/identity/data/dtos/circuit_type.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/identity_entity.dart';
+import 'package:polygonid_flutter_sdk/jose/jwk.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 
 abstract class PolygonIdSdkIden3comm {
@@ -56,11 +69,18 @@ abstract class PolygonIdSdkIden3comm {
   Future<Iden3Message> getIden3Message({required String message});
 
   /// Returns the schemas from an [Iden3Message].
-  Future<List<Map<String, dynamic>>> getSchemas(
-      {required Iden3Message message});
+  Future<List<Map<String, dynamic>>> getSchemas({
+    required Iden3Message message,
+  });
 
   /// Fetches a schema from a given [schemaUrl].
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl});
+
+  /// Fetches a display method JSON from a given [url].
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url});
+
+  /// Fetches and parses [DisplayType] for given [DisplayMethod].
+  Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod});
 
   /// Returns a list of [FilterEntity] from an iden3comm message to
   /// apply to [Credential.getCredentials]
@@ -85,6 +105,7 @@ abstract class PolygonIdSdkIden3comm {
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
+    required List<JsonWebKey> keys,
   });
 
   /// Fetch a list of [CredentialEntity] from onchain contract using its address
@@ -173,6 +194,31 @@ abstract class PolygonIdSdkIden3comm {
     Map<String, dynamic>? transactionData,
   });
 
+  /// Get an [Iden3commProofEntity] for iden3comm message
+  ///
+  /// The [request] is the zero knowledge proof request from iden3comm message
+  ///
+  /// The [verifierDid] is DID of the request verifier
+  ///
+  /// The [genesisDid] is the unique id of the identity
+  ///
+  /// The [profileNonce] is the nonce of the profile used from identity
+  /// to obtain the did identifier
+  ///
+  /// The [privateKey] is the key used to access all the sensitive info from the identity
+  /// and also to realize operations like generating proofs
+  Future<Iden3commProofEntity> getProof({
+    required ZeroKnowledgeProofRequest request,
+    required String verifierDid,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String linkNonce,
+    required String privateKey,
+    String? challenge,
+    EnvConfigEntity? config,
+    Map<String, dynamic>? transactionData,
+  });
+
   /// Authenticate response from iden3Message sharing the needed
   /// (if any) proofs requested by it
   ///
@@ -188,12 +234,26 @@ abstract class PolygonIdSdkIden3comm {
   ///
   /// The [pushToken] is the push notification registration token so the issuer/verifer
   /// can send notifications to the identity.
+  @Deprecated('Use authenticateV2')
   Future<Iden3Message?> authenticate({
     required Iden3Message message,
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
     String? pushToken,
+    String? challenge,
+  });
+
+  Future<Iden3Message?> authenticateV2({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
   });
 
@@ -258,7 +318,7 @@ abstract class PolygonIdSdkIden3comm {
   /// Handles notifications and store them
   ///
   /// The [payload] is the notification payload
-// Future<void> handleNotification({required String payload});
+  // Future<void> handleNotification({required String payload});
 
   /// Cleans the schema cache
   Future<void> cleanSchemaCache();
@@ -306,6 +366,30 @@ abstract class PolygonIdSdkIden3comm {
     required String interactedWithDid,
   });
 
+  /// Accepts any message as string and generate JWZ token containing this
+  /// message
+  Future<String> getAuthToken({
+    required String genesisDid,
+    required String privateKey,
+    required BigInt profileNonce,
+    required String iden3message,
+  });
+
+  /// Accepts auth request or contract invocation iden3 message and generates
+  /// JWZ token which contains the response to this message.
+  Future<String> getAuthResponseToken({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
+  });
+
   /// Fetches credential using the [credentialOfferMessage] and returns it without saving.
   /// [credentialOfferMessage] is the message received from the issuer
   /// [privateKey] is the key used to access the sensitive info
@@ -318,6 +402,7 @@ abstract class PolygonIdSdkIden3comm {
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
+    required List<JsonWebKey> keys,
     String? blockchain,
     String? network,
   });
@@ -364,6 +449,11 @@ abstract class PolygonIdSdkIden3comm {
     required String circuitId,
     Map<String, dynamic>? additionalFields,
   });
+
+  Future<DiscoverFeatureDiscloseMessage> handleDiscoveryMessage({
+    required DiscoverFeatureQueriesMessage message,
+    DiscoveryProtocolHandlerOptions? opts,
+  });
 }
 
 @injectable
@@ -379,6 +469,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
   final GetIden3commClaimsRevNonceUseCase _getIden3commClaimsRevNonceUseCase;
   final GetIden3commProofsUseCase _getIden3commProofsUseCase;
+  final GetIden3commProofUseCase _getIden3commProofUseCase;
   final GetInteractionsUseCase _getInteractionsUseCase;
   final AddInteractionUseCase _addInteractionUseCase;
   final RemoveInteractionsUseCase _removeInteractionsUseCase;
@@ -396,6 +487,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   final CreatePassportCredentialUseCase _createPassportCredentialUseCase;
   final CreatePassportProofUseCase _createPassportProofUseCase;
   final CoreClaimFromCredentialUseCase _coreClaimFromCredentialUseCase;
+  final RemoteIden3commDataSource _remoteIden3commDataSource;
 
   Iden3comm(
     this._fetchAndSaveClaimsUseCase,
@@ -409,6 +501,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._getMessageRequestsAndCredsUseCase,
     this._getIden3commClaimsRevNonceUseCase,
     this._getIden3commProofsUseCase,
+    this._getIden3commProofUseCase,
     this._getInteractionsUseCase,
     this._addInteractionUseCase,
     this._removeInteractionsUseCase,
@@ -426,6 +519,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     this._createPassportCredentialUseCase,
     this._createPassportProofUseCase,
     this._coreClaimFromCredentialUseCase,
+    this._remoteIden3commDataSource,
   );
 
   @override
@@ -435,8 +529,9 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getSchemas(
-      {required Iden3Message message}) {
+  Future<List<Map<String, dynamic>>> getSchemas({
+    required Iden3Message message,
+  }) {
     _stacktraceManager.clearStacktrace();
     return _getSchemasUseCase.execute(param: message);
   }
@@ -445,6 +540,20 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   Future<Map<String, dynamic>> fetchSchema({required String schemaUrl}) {
     _stacktraceManager.clearStacktrace();
     return _fetchSchemaUseCase.execute(param: schemaUrl);
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchDisplayMethod({required String url}) {
+    _stacktraceManager.clearStacktrace();
+    return _remoteIden3commDataSource.fetchDisplayMethod(url: url);
+  }
+
+  @override
+  Future<DisplayType> fetchDisplayType({required DisplayMethod displayMethod}) {
+    _stacktraceManager.clearStacktrace();
+    return _remoteIden3commDataSource.fetchDisplayType(
+      displayMethod: displayMethod,
+    );
   }
 
   @override
@@ -459,6 +568,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String genesisDid,
     BigInt? profileNonce,
     required String privateKey,
+    required List<JsonWebKey> keys,
   }) {
     _stacktraceManager.clearStacktrace();
 
@@ -468,6 +578,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         genesisDid: genesisDid,
         profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
         privateKey: privateKey,
+        keys: keys,
       ),
     );
   }
@@ -503,13 +614,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     _stacktraceManager.clearStacktrace();
     return _getIden3commClaimsUseCase.execute(
-        param: GetIden3commClaimsParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      encryptionKey: privateKey,
-      credentialSortOrderList: sortOrder,
-    ));
+      param: GetIden3commClaimsParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        encryptionKey: privateKey,
+        credentialSortOrderList: sortOrder,
+      ),
+    );
   }
 
   @override
@@ -539,12 +651,13 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     _stacktraceManager.clearStacktrace();
     return _getIden3commClaimsRevNonceUseCase.execute(
-        param: GetIden3commClaimsRevNonceParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      encryptionKey: privateKey,
-    ));
+      param: GetIden3commClaimsRevNonceParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        encryptionKey: privateKey,
+      ),
+    );
   }
 
   @override
@@ -559,15 +672,44 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     _stacktraceManager.clearStacktrace();
     return _getIden3commProofsUseCase.execute(
-        param: GetIden3commProofsParam(
-      message: message,
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      challenge: challenge,
-      config: config,
-      transactionData: transactionData,
-    ));
+      param: GetIden3commProofsParam(
+        message: message,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+        challenge: challenge,
+        config: config,
+        transactionData: transactionData,
+      ),
+    );
+  }
+
+  @override
+  Future<Iden3commProofEntity> getProof({
+    required ZeroKnowledgeProofRequest request,
+    required String verifierDid,
+    required String genesisDid,
+    BigInt? profileNonce,
+    required String linkNonce,
+    required String privateKey,
+    String? challenge,
+    EnvConfigEntity? config,
+    Map<String, dynamic>? transactionData,
+  }) {
+    _stacktraceManager.clearStacktrace();
+    return _getIden3commProofUseCase.execute(
+      param: GetIden3commProofParam(
+        request: request,
+        verifierDid: verifierDid,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        linkNonce: linkNonce,
+        privateKey: privateKey,
+        challenge: challenge,
+        config: config,
+        transactionData: transactionData,
+      ),
+    );
   }
 
   @override
@@ -578,11 +720,13 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     String? pushToken,
     String? challenge,
+    CircuitId circuitId = CircuitId.authV2,
   }) {
     _stacktraceManager.clearStacktrace();
     if (message is! AuthorizationRequestMessage) {
       _stacktraceManager.addError(
-          'Invalid message type: ${message.type}, expected: ${Iden3MessageType.authRequest}');
+        'Invalid message type: ${message.type}, expected: ${Iden3MessageType.authRequest}',
+      );
       throw InvalidIden3MsgTypeException(
         expected: Iden3MessageType.authRequest,
         actual: message.type,
@@ -599,6 +743,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         privateKey: privateKey,
         pushToken: pushToken,
         challenge: challenge,
+        circuitId: circuitId,
       ),
     );
   }
@@ -610,9 +755,11 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required IdentityEntity identityEntity,
     required Iden3Message message,
     required EnvEntity env,
-    List<RequestAndCredentials>? requestsAndCreds,
+    DIDDocument? didDocument,
     String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
     String? challenge,
+    CircuitId circuitId = CircuitId.authV2,
   }) async {
     try {
       return await Authenticate().authenticate(
@@ -623,15 +770,17 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         message: message,
         env: env,
         pushToken: pushToken,
+        didDocument: didDocument,
         requestsAndCreds: requestsAndCreds,
+        challenge: challenge,
       );
     } on PolygonIdSDKException catch (_) {
       rethrow;
     } catch (e) {
       _stacktraceManager.addError('[authenticateV2] Error: ${e.toString()}');
       throw PolygonIdSDKException(
-          errorMessage:
-              "Error while authenticating with error: ${e.toString()}");
+        errorMessage: "Error while authenticating with error: ${e.toString()}",
+      );
     }
   }
 
@@ -646,13 +795,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     _stacktraceManager.clearStacktrace();
     return _getInteractionsUseCase.execute(
-        param: GetInteractionsParam(
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      privateKey: privateKey,
-      types: types,
-      filters: filters,
-    ));
+      param: GetInteractionsParam(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        privateKey: privateKey,
+        types: types,
+        filters: filters,
+      ),
+    );
   }
 
   @override
@@ -697,13 +847,14 @@ class Iden3comm implements PolygonIdSdkIden3comm {
   }) {
     _stacktraceManager.clearStacktrace();
     return _updateInteractionUseCase.execute(
-        param: UpdateInteractionParam(
-      genesisDid: genesisDid,
-      profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
-      encryptionKey: privateKey,
-      id: id,
-      state: state,
-    ));
+      param: UpdateInteractionParam(
+        genesisDid: genesisDid,
+        profileNonce: profileNonce ?? GENESIS_PROFILE_NONCE,
+        encryptionKey: privateKey,
+        id: id,
+        state: state,
+      ),
+    );
   }
 
   @override
@@ -778,6 +929,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     required BigInt profileNonce,
     required String iden3message,
+    CircuitId circuitId = CircuitId.authV2,
   }) {
     return _getAuthTokenUseCase.execute(
       param: GetAuthTokenParam(
@@ -785,8 +937,47 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         profileNonce: profileNonce,
         privateKey: privateKey,
         message: iden3message,
+        circuitId: circuitId,
       ),
     );
+  }
+
+  Future<String> getAuthResponseToken({
+    required String privateKey,
+    required String genesisDid,
+    required BigInt profileNonce,
+    required IdentityEntity identityEntity,
+    required Iden3Message message,
+    required EnvEntity env,
+    DIDDocument? didDocument,
+    String? pushToken,
+    List<RequestAndCredentials>? requestsAndCreds,
+    String? challenge,
+    CircuitId circuitId = CircuitId.authV2,
+  }) async {
+    try {
+      return await Authenticate().getAuthResponseToken(
+        privateKey: privateKey,
+        genesisDid: genesisDid,
+        profileNonce: profileNonce,
+        identityEntity: identityEntity,
+        message: message,
+        env: env,
+        pushToken: pushToken,
+        didDocument: didDocument,
+        requestsAndCreds: requestsAndCreds,
+        circuitId: circuitId,
+        challenge: challenge,
+      );
+    } on PolygonIdSDKException catch (_) {
+      rethrow;
+    } catch (e) {
+      _stacktraceManager.addError('[getAuthTokenOnly] Error: ${e.toString()}');
+      throw PolygonIdSDKException(
+        errorMessage:
+            "Error while getting auth token with error: ${e.toString()}",
+      );
+    }
   }
 
   @override
@@ -795,6 +986,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
     required String privateKey,
     required String genesisDid,
     required BigInt profileNonce,
+    required List<JsonWebKey> keys,
     String? blockchain,
     String? network,
   }) {
@@ -802,6 +994,7 @@ class Iden3comm implements PolygonIdSdkIden3comm {
       credentialOfferMessage: credentialOfferMessage,
       privateKey: privateKey,
       genesisDid: genesisDid,
+      keys: keys,
       profileNonce: profileNonce,
       blockchain: blockchain,
       network: network,
@@ -914,5 +1107,20 @@ class Iden3comm implements PolygonIdSdkIden3comm {
         revNonce: revNonce,
       ),
     );
+  }
+
+  @override
+  Future<DiscoverFeatureDiscloseMessage> handleDiscoveryMessage({
+    required DiscoverFeatureQueriesMessage message,
+    DiscoveryProtocolHandlerOptions? opts,
+  }) {
+    final packageManager = PackageManager();
+    packageManager.packers[MediaType.plainMessage] = PlainPacker();
+
+    IDiscoveryProtocolHandler handler = DiscoveryProtocolHandler(
+      DiscoveryProtocolOptions(packageManager: packageManager),
+    );
+
+    return handler.handleDiscoveryQuery(message, opts);
   }
 }

@@ -5,31 +5,34 @@
 */
 
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 @Deprecated('Use AttestationRequestMessage instead')
 typedef AttestationRequestEntity = AttestationRequestMessage;
 
 class AttestationRequestMessage extends Iden3Message<AttestationRequestBody> {
   AttestationRequestMessage({
-    required super.id,
+    String? id,
     required super.typ,
     @Deprecated('may be omitted, gonna be removed in the future') String? type,
-    super.thid,
+    String? thid,
     required super.from,
     required super.body,
     super.to,
     super.createdTime,
     super.expiresTime,
     super.attachments = const [],
-  }) : super(type: Iden3MessageType.attestationRequest);
+  }) : super(
+         id: id ?? const Uuid().v4(),
+         type: Iden3MessageType.attestationRequest,
+         thid: thid ?? const Uuid().v4(),
+       );
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [AttestationRequestMessage]
-  factory AttestationRequestMessage.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory AttestationRequestMessage.fromJson(Map<String, dynamic> json) {
     final body = AttestationRequestBody.fromJson(json['body']);
     return AttestationRequestMessage(
       id: json['id'],
@@ -52,26 +55,20 @@ class AttestationRequestMessage extends Iden3Message<AttestationRequestBody> {
   int get hashCode => runtimeType.hashCode;
 }
 
-class AttestationRequestBody {
+class AttestationRequestBody implements JsonEncodable {
   final String type;
 
-  AttestationRequestBody({
-    required this.type,
-  });
+  AttestationRequestBody({required this.type});
 
   /// Creates an instance from the given json
   ///
   /// @param [Map<String, dynamic>] json
   /// @returns [OfferBodyRequest]
   factory AttestationRequestBody.fromJson(Map<String, dynamic> json) {
-    return AttestationRequestBody(
-      type: json['type'],
-    );
+    return AttestationRequestBody(type: json['type']);
   }
 
-  Map<String, dynamic> toJson() => {
-        'type': type,
-      };
+  Map<String, dynamic> toJson() => {'type': type};
 
   @override
   String toString() => "[AttestationRequestBody] {type: $type}";

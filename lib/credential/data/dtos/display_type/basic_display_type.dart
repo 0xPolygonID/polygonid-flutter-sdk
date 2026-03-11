@@ -1,10 +1,13 @@
+import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:polygonid_flutter_sdk/credential/data/dtos/display_type/display_type.dart';
 
 part 'basic_display_type.g.dart';
 
 @JsonSerializable()
-class Iden3BasicDisplayType extends DisplayType {
+class Iden3BasicDisplayType extends DisplayType with EquatableMixin {
   static const name = "Iden3BasicDisplayMethodV1";
 
   final String? title;
@@ -34,32 +37,35 @@ class Iden3BasicDisplayType extends DisplayType {
       _$Iden3BasicDisplayTypeFromJson(json);
 
   @override
-  Map<String, dynamic> toJson() => _$Iden3BasicDisplayTypeToJson(this);
+  Map<String, dynamic> toJson() => {
+    'type': Iden3BasicDisplayType.name,
+    ..._$Iden3BasicDisplayTypeToJson(this),
+  };
 
   @override
   String get typeName => name;
 
   @override
   List<Object?> get props => [
-        title,
-        description,
-        issuerName,
-        titleTextColor,
-        descriptionTextColor,
-        issuerTextColor,
-        backgroundImageUrl,
-        backgroundColor,
-        logo,
-      ];
+    title,
+    description,
+    issuerName,
+    titleTextColor,
+    descriptionTextColor,
+    issuerTextColor,
+    backgroundImageUrl,
+    backgroundColor,
+    logo,
+  ];
 
   @override
   String toString() {
-    return '[Iden3BasicDisplayType] {title: $title, description: $description, issuerName: $issuerName, titleTextColor: $titleTextColor, descriptionTextColor: $descriptionTextColor, issuerTextColor: $issuerTextColor, backgroundImageUrl: $backgroundImageUrl, backgroundColor: $backgroundColor, logo: $logo}';
+    return '[Iden3BasicDisplayType] ${jsonEncode(toJson())}';
   }
 }
 
 @JsonSerializable()
-class Iden3BasicDisplayTypeLogo {
+class Iden3BasicDisplayTypeLogo with EquatableMixin {
   final String? uri;
   final String? alt;
 

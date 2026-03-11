@@ -30,9 +30,7 @@ class GetIden3commClaimsUseCase
     extends FutureUseCase<GetIden3commClaimsParam, List<CredentialEntity?>> {
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
 
-  GetIden3commClaimsUseCase(
-    this._getMessageRequestsAndCredsUseCase,
-  );
+  GetIden3commClaimsUseCase(this._getMessageRequestsAndCredsUseCase);
 
   @override
   Future<List<CredentialEntity>> execute({
@@ -54,13 +52,17 @@ class GetIden3commClaimsUseCase
       final credential = requestAndCreds.credentials.firstOrNull;
       if (credential != null) {
         credentials.add(credential);
+      } else if (requestAndCreds.request.query.isEmpty) {
+        // Empty-query scopes (e.g. authV3/authV3-8-32) do not require
+        // resolving a credential from wallet storage.
+        continue;
       } else if (requestAndCreds.request.isOptional) {
         continue;
       } else {
         throw NoCredentialsFoundException(
           proofRequest: requestAndCreds.request,
           errorMessage:
-              "No credentials found for request: ${requestAndCreds.request.scope.id}",
+              "No credentials found for request: ${requestAndCreds.request.id}",
         );
       }
     }

@@ -1,11 +1,12 @@
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:uuid/uuid.dart';
 
 class CredentialIssuanceRequestMessage
     extends Iden3Message<CredentialIssuanceRequestMessageBody> {
   CredentialIssuanceRequestMessage({
-    required super.id,
+    String? id,
     required super.typ,
-    super.thid,
+    String? thid,
     required super.body,
     required super.from,
     super.to,
@@ -13,7 +14,9 @@ class CredentialIssuanceRequestMessage
     super.expiresTime,
     super.attachments = const [],
   }) : super(
+          id: id ?? const Uuid().v4(),
           type: Iden3MessageType.credentialIssuanceRequest,
+          thid: thid ?? const Uuid().v4(),
         );
 
   /// Creates an instance from the given json
@@ -45,7 +48,7 @@ class CredentialIssuanceRequestMessage
   int get hashCode => runtimeType.hashCode;
 }
 
-class CredentialIssuanceRequestMessageBody {
+class CredentialIssuanceRequestMessageBody implements JsonEncodable {
   final Schema schema;
   final Map<String, dynamic> data;
   final int expiration;
