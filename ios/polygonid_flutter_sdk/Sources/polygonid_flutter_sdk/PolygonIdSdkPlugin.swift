@@ -66,7 +66,7 @@ public class PolygonIdSdkPlugin: NSObject, FlutterPlugin {
             }
             
             // Call the C function
-            PLGNVerifyAuthResponse(&jsonResponsePtr, inCString, cfgCString, &statusPtr)
+            PLGNAuthFullVerify(&jsonResponsePtr, inCString, cfgCString, &statusPtr)
             
             // Check for errors in status
             // If statusPtr is not nil, an error occurred

@@ -33,7 +33,7 @@ static bool loadLibraryFunctions() {
 
     LOGI("Successfully opened libpolygonid.so");
 
-    g_PLGNVerifyAuthResponse = (PLGNVerifyAuthResponseFunc)dlsym(handle, "PLGNVerifyAuthResponse");
+    g_PLGNVerifyAuthResponse = (PLGNVerifyAuthResponseFunc)dlsym(handle, "PLGNAuthFullVerify");
     if (g_PLGNVerifyAuthResponse == nullptr) {
         LOGE("Failed to find PLGNVerifyAuthResponse: %s", dlerror());
         dlclose(handle);
