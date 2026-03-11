@@ -2,11 +2,11 @@ import 'dart:typed_data';
 
 import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
+import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/kms/kms.dart';
 import 'package:polygonid_flutter_sdk/common/kms/provider_helpers.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/abstract_key_store.dart';
-import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
-import 'package:web3dart/crypto.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:secp256k1/secp256k1.dart' as secp256k1;
 
 /// Provider for Secp256k1
@@ -36,7 +36,7 @@ class Sec256k1Provider implements IKeyProvider {
     if (seed.length != 32) {
       throw Exception('Seed should be 32 bytes');
     }
-    final privateKey = secp256k1.PrivateKey.fromHex(bytesToHex(seed));
+    final privateKey = secp256k1.PrivateKey.fromHex(seed.bytesToHex());
     final publicKey = privateKey.publicKey;
 
     final kmsId = KeyId(
@@ -46,7 +46,7 @@ class Sec256k1Provider implements IKeyProvider {
 
     await _keyStore.importKey(
       alias: kmsId.id,
-      key: bytesToHex(seed).padLeft(64, '0'),
+      key: seed.bytesToHex().padLeft(64, '0'),
     );
 
     return kmsId;
@@ -96,7 +96,7 @@ class Sec256k1Provider implements IKeyProvider {
 
     return signature.verify(
       publicKey.publicKey,
-      bytesToHex(message),
+      message.bytesToHex(),
     );
   }
 
@@ -133,12 +133,12 @@ class Secp256k1PrivateKey extends PrivateKey {
 
   @override
   Uint8List sign(Uint8List message) {
-    final signature = privateKey.signature(bytesToHex(message));
+    final signature = privateKey.signature(message.bytesToHex());
 
     final signatureBytes = Uint8List(64);
-    final rBytes = hexToBytes(signature.R.toRadixString(16).padLeft(32, '0'));
+    final rBytes = signature.R.toRadixString(16).padLeft(32, '0').hexToBytes();
     signatureBytes.setRange(0, 32, rBytes);
-    final sBytes = hexToBytes(signature.S.toRadixString(16).padLeft(32, '0'));
+    final sBytes = signature.S.toRadixString(16).padLeft(32, '0').hexToBytes();
     signatureBytes.setRange(32, 64, sBytes);
 
     return signatureBytes;

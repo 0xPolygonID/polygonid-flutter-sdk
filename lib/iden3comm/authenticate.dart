@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_ma
 import 'package:polygonid_flutter_sdk/common/utils/base_64.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
 import 'package:polygonid_flutter_sdk/common/utils/did_doc_compose.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/push_service.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/constants.dart';
@@ -56,7 +57,6 @@ import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stre
 import 'package:polygonid_flutter_sdk/sdk/di/injector.dart';
 import 'package:poseidon/poseidon.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web3dart/crypto.dart';
 
 class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
@@ -534,7 +534,7 @@ class Authenticate {
     String authChallenge = poseidon1([qNormalized]).toString();
 
     String signature = await signMessage(
-      privateKey: hexToBytes(privateKey),
+      privateKey: privateKey.hexToBytes(),
       message: authChallenge,
     );
 

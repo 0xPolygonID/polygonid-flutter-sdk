@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_exceptions.dart';
-import 'package:web3dart/crypto.dart';
 
 class PrivateKeyMapper {
   @override
@@ -11,7 +11,7 @@ class PrivateKeyMapper {
       return null;
     }
 
-    final privateKey = strip0x(from);
+    final privateKey = from.strip0x();
 
     if (privateKey.length == 32) {
       /// This is a workaround to support the old version of the SDK which

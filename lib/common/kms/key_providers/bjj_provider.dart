@@ -9,7 +9,7 @@ import "package:polygonid_flutter_sdk/common/kms/store/abstract_key_store.dart";
 import "package:polygonid_flutter_sdk/common/utils/big_int_extension.dart";
 import "package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart";
 import "package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart";
-import "package:web3dart/crypto.dart";
+import "package:web3dart/web3dart.dart";
 
 /// Provider for Baby Jub Jub keys
 /// @public

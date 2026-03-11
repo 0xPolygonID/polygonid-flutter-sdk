@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:polygonid_flutter_sdk/common/abi_encode/abi_encode.dart';
 import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/universal_resolver_entity.dart';
-import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 ///
@@ -136,7 +135,7 @@ abstract class SignedStateMessage implements AbiEncodable {
 
   Map<String, dynamic> toJson() {
     return {
-      'signature': bytesToHex(signature),
+      'signature': signature.bytesToHex(),
     };
   }
 }
@@ -215,7 +214,8 @@ class GlobalStateMessage extends StateMessage {
   });
 
   factory GlobalStateMessage.fromEip712Message(
-      GlobalStateEIP712Message message) {
+    GlobalStateEIP712Message message,
+  ) {
     return GlobalStateMessage(
       idType: message.idType.strip0x().bytesFromHex(),
       replacedAtTimestamp: BigInt.parse(message.replacedAtTimestamp),
@@ -247,7 +247,7 @@ class GlobalStateMessage extends StateMessage {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'idType': bytesToHex(idType),
+      'idType': idType.bytesToHex(),
       'replacedAtTimestamp': replacedAtTimestamp.toString(),
       'root': root.toString(),
       'timestamp': timestamp.toString(),
@@ -305,7 +305,7 @@ class SignedIdentityStateMessage extends SignedStateMessage {
   SignedIdentityStateMessage copyWithSignature(String signature) {
     return SignedIdentityStateMessage(
       idStateMsg: idStateMsg,
-      signature: hexToBytes(signature),
+      signature: signature.hexToBytes(),
     );
   }
 
@@ -332,7 +332,8 @@ class IdentityStateMessage extends StateMessage {
   });
 
   factory IdentityStateMessage.fromEip712Message(
-      IdentityStateEIP712Message message) {
+    IdentityStateEIP712Message message,
+  ) {
     return IdentityStateMessage(
       timestamp: BigInt.parse(message.timestamp),
       id: BigInt.parse(message.id),

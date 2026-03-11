@@ -6,7 +6,7 @@ import 'package:polygonid_flutter_sdk/common/kms/index.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
 import 'package:polygonid_flutter_sdk/common/kms/store/memory_key_store.dart';
 import 'package:polygonid_flutter_sdk/common/utils/big_int_extension.dart';
-import 'package:web3dart/crypto.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 
 Future<void> testFlow(IKeyProvider provider) async {
   final seed1 = getRandomBytes(32);
@@ -30,12 +30,21 @@ Future<void> testFlow(IKeyProvider provider) async {
   final signature2 = await provider.sign(keyId2, dataToSign2);
   final signature3 = await provider.sign(keyId3, dataToSign1);
 
-  final isPublicKey1Valid =
-      await provider.verify(dataToSign1, bytesToHex(signature1), keyId1);
-  final isPublicKey2Valid =
-      await provider.verify(dataToSign2, bytesToHex(signature2), keyId2);
-  final isPublicKey3Valid =
-      await provider.verify(dataToSign1, bytesToHex(signature3), keyId3);
+  final isPublicKey1Valid = await provider.verify(
+    dataToSign1,
+    signature1.bytesToHex(),
+    keyId1,
+  );
+  final isPublicKey2Valid = await provider.verify(
+    dataToSign2,
+    signature2.bytesToHex(),
+    keyId2,
+  );
+  final isPublicKey3Valid = await provider.verify(
+    dataToSign1,
+    signature3.bytesToHex(),
+    keyId3,
+  );
 
   // expect(signature1).to.not.deep.equal(signature2);
   // expect(signature1).to.deep.equal(signature3);
@@ -59,7 +68,7 @@ void main() {
       await Future.wait([
         // testFlow(bjjProvider),
         testFlow(ed25519Provider),
-        testFlow(secp256k1Provider)
+        testFlow(secp256k1Provider),
       ]);
     },
   );

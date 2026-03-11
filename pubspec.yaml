@@ -20,9 +20,10 @@ dependencies:
   http_cache_hive_store: ^5.0.0
 
   # Web3
-  web3dart: ^2.7.3
+  web3dart: ^3.0.1
   # Using fork because it supports pointycastle 4.0.0
   bip32_plus: ^1.0.0
+  wallet: ^0.0.18
 
   # Crypto
   crypto: ^3.0.1
@@ -78,9 +79,6 @@ dev_dependencies:
   # Using fork because it uses newer build and dart_analyze packages
   web3dart_builders:
     path: packages/web3dart_builders
-
-dependency_overrides:
-  pointycastle: 4.0.0
 
 dependency_overrides:
   pointycastle: 4.0.0

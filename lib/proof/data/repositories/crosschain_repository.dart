@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/entities/did_entity.dart';
@@ -10,7 +11,6 @@ import 'package:polygonid_flutter_sdk/proof/data/dtos/universal_resolver_entity.
 import 'package:polygonid_flutter_sdk/proof/data/repositories/auth_inputs_unmarshaller.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/generate_inputs_response.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:web3dart/crypto.dart';
 
 typedef MessageWithSignature = ({BaseEIP712Message message, String signature});
 
@@ -143,7 +143,7 @@ class CrosschainRepository {
     final didResolutionIssuer = await _crosschainDataSource.getDidResolution(
       universalResolverUrl: universalResolverUrl,
       did: issuerDid,
-      state: bytesToHex(nonRevStateBytes),
+      state: nonRevStateBytes.bytesToHex(),
     );
 
     final didResolutionIssuerProof =
@@ -169,7 +169,7 @@ class CrosschainRepository {
         .getDidResolution(
           universalResolverUrl: universalResolverUrl,
           did: issuerDid,
-          state: bytesToHex(stateBytes),
+          state: stateBytes.bytesToHex(),
         );
 
     final didResolutionIssuerAfterAddingCredentialProof =
