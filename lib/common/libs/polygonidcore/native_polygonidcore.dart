@@ -1174,6 +1174,36 @@ class NativePolygonIdCoreLib {
         )
       >();
 
+  int PLGNAuthFullVerify(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
+    ffi.Pointer<ffi.Char> in$,
+    ffi.Pointer<ffi.Char> cfg,
+    ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+  ) {
+    return _PLGNAuthFullVerify(jsonResponse, in$, cfg, status);
+  }
+
+  late final _PLGNAuthFullVerifyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          GoUint8 Function(
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+          )
+        >
+      >('PLGNAuthFullVerify');
+  late final _PLGNAuthFullVerify =
+      _PLGNAuthFullVerifyPtr.asFunction<
+        int Function(
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+        )
+      >();
+
   int PLGNVerifyAnonAadhaarQR(
     ffi.Pointer<ffi.Pointer<ffi.Char>> jsonResponse,
     ffi.Pointer<ffi.Char> in$,
@@ -2053,6 +2083,8 @@ const int __MAC_26_0 = 260000;
 
 const int __MAC_26_1 = 260100;
 
+const int __MAC_26_2 = 260200;
+
 const int __IPHONE_2_0 = 20000;
 
 const int __IPHONE_2_1 = 20100;
@@ -2233,6 +2265,8 @@ const int __IPHONE_26_0 = 260000;
 
 const int __IPHONE_26_1 = 260100;
 
+const int __IPHONE_26_2 = 260200;
+
 const int __WATCHOS_1_0 = 10000;
 
 const int __WATCHOS_2_0 = 20000;
@@ -2350,6 +2384,8 @@ const int __WATCHOS_12_0 = 120000;
 const int __WATCHOS_26_0 = 260000;
 
 const int __WATCHOS_26_1 = 260100;
+
+const int __WATCHOS_26_2 = 260200;
 
 const int __TVOS_9_0 = 90000;
 
@@ -2469,6 +2505,8 @@ const int __TVOS_26_0 = 260000;
 
 const int __TVOS_26_1 = 260100;
 
+const int __TVOS_26_2 = 260200;
+
 const int __BRIDGEOS_2_0 = 20000;
 
 const int __BRIDGEOS_3_0 = 30000;
@@ -2541,6 +2579,8 @@ const int __BRIDGEOS_10_0 = 100000;
 
 const int __BRIDGEOS_10_1 = 100100;
 
+const int __BRIDGEOS_10_2 = 100200;
+
 const int __DRIVERKIT_19_0 = 190000;
 
 const int __DRIVERKIT_20_0 = 200000;
@@ -2587,6 +2627,8 @@ const int __DRIVERKIT_25_0 = 250000;
 
 const int __DRIVERKIT_25_1 = 250100;
 
+const int __DRIVERKIT_25_2 = 250200;
+
 const int __VISIONOS_1_0 = 10000;
 
 const int __VISIONOS_1_1 = 10100;
@@ -2614,6 +2656,8 @@ const int __VISIONOS_3_0 = 30000;
 const int __VISIONOS_26_0 = 260000;
 
 const int __VISIONOS_26_1 = 260100;
+
+const int __VISIONOS_26_2 = 260200;
 
 const int MAC_OS_X_VERSION_10_0 = 1000;
 
@@ -2763,6 +2807,8 @@ const int MAC_OS_VERSION_26_0 = 260000;
 
 const int MAC_OS_VERSION_26_1 = 260100;
 
+const int MAC_OS_VERSION_26_2 = 260200;
+
 const int __AVAILABILITY_VERSIONS_VERSION_HASH = 93585900;
 
 const String __AVAILABILITY_VERSIONS_VERSION_STRING = 'Local';
@@ -2771,7 +2817,7 @@ const String __AVAILABILITY_FILE = 'AvailabilityVersions.h';
 
 const int __MAC_OS_X_VERSION_MIN_REQUIRED = 260000;
 
-const int __MAC_OS_X_VERSION_MAX_ALLOWED = 260100;
+const int __MAC_OS_X_VERSION_MAX_ALLOWED = 260200;
 
 const int __ENABLE_LEGACY_MAC_AVAILABILITY = 1;
 

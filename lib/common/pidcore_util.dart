@@ -87,6 +87,21 @@ class PolygonIdCoreUtil extends PolygonIdCore {
     );
   }
 
+  // Async version running heavy native verification in a background isolate
+  Future<String> authFullVerify(String input) async {
+    // Capture current env config before spawning isolate (late static vars are isolate-local)
+    final config = PolygonIdCore.envConfigJson;
+    return Isolate.run(
+      () => callGenericCoreFunction(
+        input: () => input,
+        function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAuthFullVerify,
+        methodName: 'PLGNAuthFullVerify',
+        config: config,
+        parse: (res) => res,
+      ),
+    );
+  }
+
   bool verifyAnonAadhaarQR(String input) {
     return callGenericCoreFunction(
       input: () => input,
