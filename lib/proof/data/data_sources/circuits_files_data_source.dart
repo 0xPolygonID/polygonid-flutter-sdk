@@ -186,6 +186,26 @@ class CircuitsFilesDataSource {
     }
   }
 
+  /// Extracts entries from [zipFilePath] into [outputDirectory], placing each
+  /// file directly in [outputDirectory] (using only the basename of the
+  /// archive entry). Directory entries are skipped.
+  Future<void> extractZipToDirectory({
+    required String zipFilePath,
+    required String outputDirectory,
+  }) async {
+    final archive = _zipDecoder.decodeStream(InputFileStream(zipFilePath));
+
+    for (final archiveFile in archive) {
+      if (!archiveFile.isFile) continue;
+      final outPath = pathLib.join(
+        outputDirectory,
+        pathLib.basename(archiveFile.name),
+      );
+      await File(outPath).create(recursive: true);
+      archiveFile.writeContent(OutputFileStream(outPath));
+    }
+  }
+
   /// Downloads a zip archive from [zipUrl], extracts it into a subdirectory
   /// named [circuitId] under the base [directory], and deletes the zip.
   ///
@@ -197,19 +217,21 @@ class CircuitsFilesDataSource {
     if (circuitDir.existsSync() && circuitDir.listSync().isNotEmpty) return;
 
     final zipPath = pathLib.join(directory.path, '$circuitId.zip');
-    await Dio().download(zipUrl, zipPath);
+    try {
+      await Dio().download(zipUrl, zipPath);
 
-    final archive = _zipDecoder.decodeStream(InputFileStream(zipPath));
-
-    await circuitDir.create(recursive: true);
-    for (final archiveFile in archive) {
-      if (!archiveFile.isFile) continue;
-      final outPath = pathLib.join(
-        circuitDir.path,
-        pathLib.basename(archiveFile.name),
+      await circuitDir.create(recursive: true);
+      await extractZipToDirectory(
+        zipFilePath: zipPath,
+        outputDirectory: circuitDir.path,
       );
-      await File(outPath).create(recursive: true);
-      archiveFile.writeContent(OutputFileStream(outPath));
+    } catch (_) {
+      // Clean up partially extracted directory so a retry can succeed
+      if (circuitDir.existsSync()) {
+        circuitDir.deleteSync(recursive: true);
+      }
+      deleteFile(zipPath);
+      rethrow;
     }
 
     // Clean up the zip

@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:archive/archive.dart';
-import 'package:archive/archive_io.dart';
-import 'package:path/path.dart' as pathLib;
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
@@ -42,7 +39,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final CircuitsFilesDataSource _circuitsFilesDS;
   final CircuitRegistry? _circuitRegistry;
   final GetEnvUseCase _getEnvUseCase;
-  final ZipDecoder _zipDecoder;
 
   final StacktraceManager _stacktraceManager;
 
@@ -60,7 +56,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._circuitsFilesDS,
     this._circuitRegistry,
     this._getEnvUseCase,
-    this._zipDecoder,
     this._stacktraceManager,
   );
 
@@ -367,19 +362,10 @@ class ProofRepositoryImpl extends ProofRepository {
   }) async {
     File(pathForZipFileTemp).renameSync(pathForZipFile);
 
-    // Decode zip file
-    final archive = _zipDecoder.decodeStream(InputFileStream(pathForZipFile));
-
-    for (final archiveFile in archive) {
-      final filename = pathLib.join(
-        pathForCircuits,
-        pathLib.basename(archiveFile.name),
-      );
-      if (archiveFile.isFile) {
-        final outFile = await File(filename).create(recursive: true);
-        archiveFile.writeContent(OutputFileStream(outFile.path));
-      }
-    }
+    await _circuitsFilesDS.extractZipToDirectory(
+      zipFilePath: pathForZipFile,
+      outputDirectory: pathForCircuits,
+    );
   }
 
   ///

@@ -752,7 +752,6 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i540.CircuitsFilesDataSource>(),
         gh<_i819.CircuitRegistry>(),
         gh<_i626.GetEnvUseCase>(),
-        gh<_i71.ZipDecoder>(),
         gh<_i267.StacktraceManager>(),
       ),
     );
