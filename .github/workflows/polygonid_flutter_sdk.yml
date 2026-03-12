@@ -18,29 +18,19 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 0
 
-      - name: Init submodules explicitly
+      - name: Init submodules
         run: |
-          set -e
           git submodule sync --recursive
-          git submodule update --init --recursive || echo "Submodule update failed, will attempt manual clone later"
-          git submodule status || true
-
-      - name: Fallback clone web3dart_builders if missing
-        run: |
-          if [ ! -d packages/web3dart_builders/lib ]; then
-            echo "web3dart_builders submodule not properly initialized. Cloning fallback..."
-            rm -rf packages/web3dart_builders || true
-            git clone https://github.com/5eeman/web3dart_builders.git packages/web3dart_builders
-          fi
-          ls -al packages/web3dart_builders | head
-
-      - name: Verify web3dart_builders path exists
-        run: |
-          ls -al packages
-          ls -al packages/web3dart_builders || (echo "web3dart_builders missing" && exit 1)
+          git submodule update --init --recursive || {
+            echo "Submodule update failed, attempting fallback clone..."
+            if [ ! -d packages/web3dart_builders/lib ]; then
+              rm -rf packages/web3dart_builders || true
+              git clone --branch main https://github.com/5eeman/web3dart_builders.git packages/web3dart_builders
+            fi
+          }
+          ls -al packages/web3dart_builders/lib || (echo "web3dart_builders missing" && exit 1)
 
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2

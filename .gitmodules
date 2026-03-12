@@ -1,3 +1,4 @@
 [submodule "packages/web3dart_builders"]
 	path = packages/web3dart_builders
 	url = https://github.com/5eeman/web3dart_builders.git
+	branch = main
