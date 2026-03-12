@@ -386,7 +386,6 @@ extension GetItInjectableX on _i174.GetIt {
     final platformModule = _$PlatformModule();
     final encryptionModule = _$EncryptionModule();
     final repositoriesModule = _$RepositoriesModule();
-    gh.factory<_i819.CircuitRegistry>(() => _i819.CircuitRegistry());
     gh.factory<_i325.FilterMapper>(() => _i325.FilterMapper());
     gh.factory<_i393.PolygonIdCore>(() => _i393.PolygonIdCore());
     gh.factory<_i375.PolygonIdCoreUtil>(() => _i375.PolygonIdCoreUtil());
@@ -437,6 +436,7 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.singleton<_i710.KMS>(() => kMSModule.kms);
+    gh.lazySingleton<_i819.CircuitRegistry>(() => _i819.CircuitRegistry());
     gh.lazySingleton<_i267.StacktraceManager>(() => _i267.StacktraceManager());
     gh.lazySingleton<_i920.ProofGenerationStepsStreamManager>(
       () => _i920.ProofGenerationStepsStreamManager(),
@@ -603,6 +603,7 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i497.Directory>(),
         gh<_i819.CircuitRegistry>(),
         gh<_i71.ZipDecoder>(),
+        gh<_i361.Dio>(),
       ),
     );
     gh.factory<_i57.InteractionStoreRefWrapper>(
@@ -740,21 +741,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i461.FiltersMapper>(),
       ),
     );
-    gh.factoryAsync<_i581.ProofRepositoryImpl>(
-      () async => _i581.ProofRepositoryImpl(
-        gh<_i1039.WitnessDataSource>(),
-        gh<_i502.ProverLibDataSource>(),
-        gh<_i41.LibPolygonIdCoreProofDataSource>(),
-        gh<_i694.GistMTProofDataSource>(),
-        gh<_i22.LocalContractFilesDataSource>(),
-        gh<_i352.CircuitsDownloadDataSource>(),
-        gh<_i294.CredentialMapper>(),
-        await getAsync<_i540.CircuitsFilesDataSource>(),
-        gh<_i819.CircuitRegistry>(),
-        gh<_i626.GetEnvUseCase>(),
-        gh<_i267.StacktraceManager>(),
-      ),
-    );
     gh.factory<_i698.Iden3commCredentialRepository>(
       () => repositoriesModule.iden3commCredentialRepository(
         gh<_i910.Iden3commCredentialRepositoryImpl>(),
@@ -805,6 +791,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i873.RPCDataSource>(
       () => _i873.RPCDataSource(
         gh<_i737.GetSelectedChainUseCase>(),
+        gh<_i267.StacktraceManager>(),
+      ),
+    );
+    gh.factoryAsync<_i581.ProofRepositoryImpl>(
+      () async => _i581.ProofRepositoryImpl(
+        gh<_i1039.WitnessDataSource>(),
+        gh<_i502.ProverLibDataSource>(),
+        gh<_i41.LibPolygonIdCoreProofDataSource>(),
+        gh<_i694.GistMTProofDataSource>(),
+        gh<_i22.LocalContractFilesDataSource>(),
+        gh<_i352.CircuitsDownloadDataSource>(),
+        gh<_i294.CredentialMapper>(),
+        await getAsync<_i540.CircuitsFilesDataSource>(),
+        gh<_i819.CircuitRegistry>(),
+        gh<_i626.GetEnvUseCase>(),
         gh<_i267.StacktraceManager>(),
       ),
     );
