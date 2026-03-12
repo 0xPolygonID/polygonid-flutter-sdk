@@ -136,9 +136,9 @@ class Secp256k1PrivateKey extends PrivateKey {
     final signature = privateKey.signature(message.bytesToHex());
 
     final signatureBytes = Uint8List(64);
-    final rBytes = signature.R.toRadixString(16).padLeft(32, '0').hexToBytes();
+    final rBytes = signature.R.toRadixString(16).padLeft(64, '0').hexToBytes();
     signatureBytes.setRange(0, 32, rBytes);
-    final sBytes = signature.S.toRadixString(16).padLeft(32, '0').hexToBytes();
+    final sBytes = signature.S.toRadixString(16).padLeft(64, '0').hexToBytes();
     signatureBytes.setRange(32, 64, sBytes);
 
     return signatureBytes;

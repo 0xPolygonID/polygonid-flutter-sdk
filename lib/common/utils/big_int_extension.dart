@@ -20,6 +20,8 @@ extension BigIntQ on BigInt {
   }
 
   Uint8List toBytes() {
-    return toRadixString(16).hexToBytes();
+    final hex = toRadixString(16);
+    final normalizedHex = hex.length.isOdd ? '0$hex' : hex;
+    return normalizedHex.hexToBytes();
   }
 }
