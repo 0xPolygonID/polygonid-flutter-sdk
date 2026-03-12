@@ -19,6 +19,8 @@ import 'package:http/http.dart' as _i519;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:logger/logger.dart' as _i974;
 import 'package:package_info_plus/package_info_plus.dart' as _i655;
+import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart'
+    as _i819;
 import 'package:polygonid_flutter_sdk/circuits/data/circuits_data_source.dart'
     as _i769;
 import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_use_case.dart'
@@ -323,8 +325,6 @@ import 'package:polygonid_flutter_sdk/proof/data/data_sources/gist_mtproof_data_
     as _i694;
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/lib_pidcore_proof_data_source.dart'
     as _i41;
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/proof_circuit_data_source.dart'
-    as _i1021;
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/prover_lib_data_source.dart'
     as _i502;
 import 'package:polygonid_flutter_sdk/proof/data/data_sources/witness_data_source.dart'
@@ -420,9 +420,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i694.GistMTProofDataSource>(
       () => _i694.GistMTProofDataSource(),
     );
-    gh.factory<_i1021.ProofCircuitDataSource>(
-      () => _i1021.ProofCircuitDataSource(),
-    );
     gh.factory<_i502.ProverLibDataSource>(() => _i502.ProverLibDataSource());
     gh.factory<_i1039.WitnessDataSource>(() => _i1039.WitnessDataSource());
     gh.factory<_i974.Logger>(() => loggerModule.logger);
@@ -439,6 +436,7 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.singleton<_i710.KMS>(() => kMSModule.kms);
+    gh.lazySingleton<_i819.CircuitRegistry>(() => _i819.CircuitRegistry());
     gh.lazySingleton<_i267.StacktraceManager>(() => _i267.StacktraceManager());
     gh.lazySingleton<_i920.ProofGenerationStepsStreamManager>(
       () => _i920.ProofGenerationStepsStreamManager(),
@@ -600,16 +598,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i281.MethodChannel>(),
       ),
     );
+    gh.factoryAsync<_i540.CircuitsFilesDataSource>(
+      () async => _i540.CircuitsFilesDataSource(
+        await getAsync<_i497.Directory>(),
+        gh<_i819.CircuitRegistry>(),
+        gh<_i71.ZipDecoder>(),
+        gh<_i361.Dio>(),
+      ),
+    );
     gh.factory<_i57.InteractionStoreRefWrapper>(
       () => _i57.InteractionStoreRefWrapper(
         gh<_i310.StoreRef<String, Map<String, Object?>>>(
           instanceName: 'interactionStore',
         ),
       ),
-    );
-    gh.factoryAsync<_i540.CircuitsFilesDataSource>(
-      () async =>
-          _i540.CircuitsFilesDataSource(await getAsync<_i497.Directory>()),
     );
     gh.factory<_i352.CircuitsDownloadDataSource>(
       () => _i352.CircuitsDownloadDataSource(gh<_i361.Dio>()),
@@ -760,21 +762,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i294.CredentialMapper>(),
       ),
     );
-    gh.factoryAsync<_i581.ProofRepositoryImpl>(
-      () async => _i581.ProofRepositoryImpl(
-        gh<_i1039.WitnessDataSource>(),
-        gh<_i502.ProverLibDataSource>(),
-        gh<_i41.LibPolygonIdCoreProofDataSource>(),
-        gh<_i694.GistMTProofDataSource>(),
-        gh<_i1021.ProofCircuitDataSource>(),
-        gh<_i22.LocalContractFilesDataSource>(),
-        gh<_i352.CircuitsDownloadDataSource>(),
-        gh<_i294.CredentialMapper>(),
-        await getAsync<_i540.CircuitsFilesDataSource>(),
-        gh<_i626.GetEnvUseCase>(),
-        gh<_i267.StacktraceManager>(),
-      ),
-    );
     gh.factoryAsync<_i37.CancelCircuitsDownloadUseCase>(
       () async => _i37.CancelCircuitsDownloadUseCase(
         await getAsync<_i1000.CircuitsRepository>(),
@@ -807,12 +794,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i267.StacktraceManager>(),
       ),
     );
-    gh.factoryAsync<_i610.Circuits>(
-      () async => _i610.Circuits(
-        await getAsync<_i521.DownloadCircuitsUseCase>(),
-        await getAsync<_i1068.CheckCircuitsUseCase>(),
-        await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
-        await getAsync<_i737.RemoveCircuitsUseCase>(),
+    gh.factoryAsync<_i581.ProofRepositoryImpl>(
+      () async => _i581.ProofRepositoryImpl(
+        gh<_i1039.WitnessDataSource>(),
+        gh<_i502.ProverLibDataSource>(),
+        gh<_i41.LibPolygonIdCoreProofDataSource>(),
+        gh<_i694.GistMTProofDataSource>(),
+        gh<_i22.LocalContractFilesDataSource>(),
+        gh<_i352.CircuitsDownloadDataSource>(),
+        gh<_i294.CredentialMapper>(),
+        await getAsync<_i540.CircuitsFilesDataSource>(),
+        gh<_i819.CircuitRegistry>(),
+        gh<_i626.GetEnvUseCase>(),
+        gh<_i267.StacktraceManager>(),
       ),
     );
     gh.factory<_i548.InteractionRepositoryImpl>(
@@ -914,6 +908,16 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i233.GetSchemasUseCase>(
       () => _i233.GetSchemasUseCase(gh<_i698.Iden3commCredentialRepository>()),
+    );
+    gh.factoryAsync<_i610.Circuits>(
+      () async => _i610.Circuits(
+        await getAsync<_i521.DownloadCircuitsUseCase>(),
+        await getAsync<_i1068.CheckCircuitsUseCase>(),
+        await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
+        await getAsync<_i737.RemoveCircuitsUseCase>(),
+        gh<_i819.CircuitRegistry>(),
+        await getAsync<_i540.CircuitsFilesDataSource>(),
+      ),
     );
     gh.factory<_i734.GetAuthChallengeUseCase>(
       () => _i734.GetAuthChallengeUseCase(
