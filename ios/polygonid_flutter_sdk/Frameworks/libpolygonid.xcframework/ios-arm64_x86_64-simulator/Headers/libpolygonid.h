@@ -116,33 +116,161 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
+
+// Deprecated: Use PLGNAGenerateInputs with additional
+// `"request": {"circuitId": "authV2"}` in the request json. This function
+// does not support `statsInfo` in response and returns inputs
+// on top level of response object.
+//
 extern GoUint8 PLGNAuthV2InputsMarshal(char** jsonResponse, char* in, PLGNStatus** status);
+
+// Deprecated: Use PLGNNewGenesisID instead. It supports environment
+// configuration, giving the ability to register custom DID methods.
+//
 extern GoUint8 PLGNCalculateGenesisID(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNNewGenesisID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNNewGenesisIDFromEth(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNW3CCredentialToCoreClaim(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNCreateClaim(char** jsonResponse, char* in, PLGNStatus** status);
+
+// PLGNIDToInt returns the ID as a big int string
+// Input should be a valid JSON object: string enclosed by double quotes.
+// Output is a valid JSON object to: string enclosed by double quotes.
+//
 extern GoUint8 PLGNIDToInt(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProofFromSmartContract(char** jsonResponse, char* in, PLGNStatus** status);
 extern GoUint8 PLGNProfileID(char** jsonResponse, char* in, PLGNStatus** status);
+
+// PLGNAtomicQuerySigV2Inputs returns the inputs for the
+// credentialAtomicQuerySigV2 with optional selective disclosure.
+//
+// Additional configuration may be required for Reverse Hash Service
+// revocation validation. In other case cfg may be nil.
+//
+// The configuration example may be found in the [README.md] file.
+//
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
+//
 extern GoUint8 PLGNAtomicQuerySigV2Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNSigV2Inputs returns the inputs for the Sig circuit v2 with
+// optional selective disclosure.
+//
+// Deprecated: Does not support Reverse Hash Service credential status
+// validation! Use PLGNAtomicQuerySigV2Inputs method with configuration instead.
+//
 extern GoUint8 PLGNSigV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
+
+// PLGNAtomicQueryMtpV2Inputs returns the inputs for the
+// credentialAtomicQueryMTPV2 with optional selective disclosure.
+//
+// Additional configuration may be required for Reverse Hash Service
+// revocation validation. In other case cfg may be nil.
+//
+// The configuration example may be found in the [README.md] file.
+//
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
+//
 extern GoUint8 PLGNAtomicQueryMtpV2Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNMtpV2Inputs returns the inputs for the MTP circuit v2 with
+// optional selective disclosure.
+//
+// Deprecated: Does not support Reverse Hash Service credential status
+// validation! Use PLGNAtomicQueryMtpV2Inputs method with configuration instead.
+//
 extern GoUint8 PLGNMtpV2Inputs(char** jsonResponse, char* in, PLGNStatus** status);
+
+// PLGNAtomicQuerySigV2OnChainInputs returns the inputs for the
+// credentialAtomicQuerySigV2OnChain circuit with optional selective disclosure.
+//
+// Additional configuration may be required for Reverse Hash Service
+// revocation validation. In other case cfg may be nil.
+//
+// The configuration example may be found in the [README.md] file.
+//
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
+//
 extern GoUint8 PLGNAtomicQuerySigV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAtomicQueryMtpV2OnChainInputs returns the inputs for the
+// credentialAtomicQueryMTPV2OnChain circuit with optional selective disclosure.
+//
+// Additional configuration may be required for Reverse Hash Service
+// revocation validation. In other case cfg may be nil.
+//
+// The configuration example may be found in the [README.md] file.
+//
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
+//
 extern GoUint8 PLGNAtomicQueryMtpV2OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAtomicQueryV3Inputs returns the inputs for the credentialAtomicQueryV3
+// circuit with optional selective disclosure.
+//
 extern GoUint8 PLGNAtomicQueryV3Inputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAtomicQueryV3OnChainInputs returns the inputs for the
+// credentialAtomicQueryV3OnChain circuit with optional selective disclosure.
+//
 extern GoUint8 PLGNAtomicQueryV3OnChainInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNALinkedMultiQueryInputs returns the inputs for the
+// linkedMultiQuery10-beta.1 circuit.
+//
 extern GoUint8 PLGNALinkedMultiQueryInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAGenerateInputs returns the inputs for the circuit based on the
+// request.circuitId field.
+//
 extern GoUint8 PLGNAGenerateInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNACredentialStatusCheck(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern void PLGNFreeStatus(PLGNStatus* status);
+
+// Deprecated: Use PLGNCleanCache2 instead. We need to support consistent path
+// to the cache directory. This function supposed the cache directory is empty
+// and should be calculated based on user's $HOME directory.
+//
 extern GoUint8 PLGNCleanCache(PLGNStatus** status);
 extern GoUint8 PLGNCleanCache2(char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNCacheCredentials(char* in, char* cfg, PLGNStatus** status);
+
+// PLGNW3CCredentialFromOnchainHex returns a verifiable credential from an onchain data hex string.
+//
+// Sample input:
+//
+//	{
+//	   "issuerDID": "did:polygonid:polygon:mumbai:2qCU58EJgrEMJvPfhUCnFCwuKQTkX8VmJX2sJCH6C8",
+//	   "hexdata": "0x0...",
+//	   "version": "0.0.1"
+//	}
+//
+// The configuration example may be found in the [README.md] file.
+//
+// [README.md]: https://github.com/0xPolygonID/c-polygonid/blob/main/README.md#configuration
+//
 extern GoUint8 PLGNW3CCredentialFromOnchainHex(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNW3CCredentialFromAnonAadhaarInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNW3CCredentialFromPassportInputs(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNDescribeID parses ID and return it in different representations.
+// Request example:
+//
+// {"id":"31Akw5AB2xBrwqmbDUA2XoSGCfTepz52q9jmFE4mXA"}
+//
+// {"idAsInt":"24460059377712687587111979692736628604804094576108957842967948238113620738"}
+//
+// There is possible to pass both id & idAsInt fields in the request. But if the
+// resulted ID would not be equal, error returns.
+//
+// Response example:
+//
+//	{
+//	  "did":     "did:polygonid:linea:testnet:31Akw5AB2xBrwqmbDUA2XoSGCfTepz52q9jmFE4mXA",
+//	  "id":      "31Akw5AB2xBrwqmbDUA2XoSGCfTepz52q9jmFE4mXA",
+//	  "idAsInt": "24460059377712687587111979692736628604804094576108957842967948238113620738",
+//	}
+//
 extern GoUint8 PLGNDescribeID(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNBabyJubJubSignPoseidon(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNBabyJubJubVerifyPoseidon(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
@@ -150,12 +278,37 @@ extern GoUint8 PLGNBabyJubJubPrivate2Public(char** jsonResponse, char* in, char*
 extern GoUint8 PLGNBabyJubJubPublicUncompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNBabyJubJubPublicCompress(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 extern GoUint8 PLGNValidateAttestationDocument(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAAnonPack creates a JWE token for the input data.
+//
 extern GoUint8 PLGNAAnonPack(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAAnonUnpack decrypts a JWE message to an iden3comm basic message.
+//
 extern GoUint8 PLGNAAnonUnpack(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNDecryptJWE decrypts a JWE token.
+//
 extern GoUint8 PLGNDecryptJWE(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNDecryptEncryptedCredential decrypts an encrypted verifiable credential.
+//
 extern GoUint8 PLGNDecryptEncryptedCredential(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNVerifyProof verifies a W3C credential's proofs (BJJSignature2021, etc.).
+//
 extern GoUint8 PLGNVerifyProof(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNVerifyAuthResponse verifies an authentication response.
+//
 extern GoUint8 PLGNVerifyAuthResponse(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNAuthFullVerify performs a full authentication verification (wrapper + inside proof verification).
+//
+extern GoUint8 PLGNAuthFullVerify(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
+
+// PLGNVerifyAnonAadhaarQR verifies an AnonAadhaar QR code.
+//
 extern GoUint8 PLGNVerifyAnonAadhaarQR(char** jsonResponse, char* in, char* cfg, PLGNStatus** status);
 
 #ifdef __cplusplus
