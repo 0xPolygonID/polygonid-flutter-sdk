@@ -32,6 +32,7 @@ class PolygonIdCoreProof extends PolygonIdCore {
       config: config,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNAGenerateInputs,
       methodName: 'PLGNAGenerateInputs',
+      onError: _stacktraceManager.addError,
       parse: (result) {
         return GenerateInputsResponse.fromJson(jsonDecode(result));
       },

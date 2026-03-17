@@ -23,11 +23,6 @@ typedef GenericPolygonIdFunction =
 
 const _kLibraryName = 'libpolygonid';
 
-/// Pre-built lookup from int value → [PLGNStatusCode] for O(1) resolution.
-final Map<int, PLGNStatusCode> _statusCodeByValue = {
-  for (final code in PLGNStatusCode.values) code.value: code,
-};
-
 @injectable
 class PolygonIdCore {
   static late String _envConfigJson;
@@ -63,7 +58,6 @@ class PolygonIdCore {
     String? config,
     required GenericPolygonIdFunction function,
     required String methodName,
-    void Function(PLGNStatusCode)? statusCodeHandler,
     void Function(String errorMessage)? onError,
     required T Function(String) parse,
   }) {
@@ -83,7 +77,6 @@ class PolygonIdCore {
         resultCode: resultCode,
         status: status,
         methodName: methodName,
-        statusCodeHandler: statusCodeHandler,
         onError: onError,
       );
 
@@ -154,32 +147,58 @@ class PolygonIdCore {
     return function(response, inputPointer, cfgPointer, status);
   }
 
-  /// Resolves [resultCode] to a [PLGNStatusCode] and throws on error.
+  /// Status codes that indicate a credential status resolve error.
+  static const _credentialStatusResolveStatusCodes = {
+    PLGNStatusCode.PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_RESOLVE_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_MT_STATE_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_USER_CREDENTIAL_STATUS_REVOKED_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_EXTRACTION_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_RESOLVE_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_BUILD_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_MT_STATE_ERROR,
+    PLGNStatusCode.PLGNSTATUSCODE_ISSUER_CREDENTIAL_STATUS_REVOKED_ERROR,
+  };
+
+  /// Checks the native [resultCode] and throws [CoreLibraryException] on
+  /// failure.
+  ///
+  /// Native functions return `0` for error and non-zero for success.
+  /// The detailed [PLGNStatusCode] is extracted from the [status] struct.
+  ///
+  /// Throws [CredentialStatusResolveException] for credential-status-related
+  /// errors (codes 2–11), and [CoreLibraryException] for all other errors.
   void _handleStatusCode({
     required int resultCode,
     required ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
     required String methodName,
-    void Function(PLGNStatusCode)? statusCodeHandler,
     void Function(String errorMessage)? onError,
   }) {
-    final statusCode = _statusCodeByValue[resultCode];
+    if (resultCode == PLGNStatusCode.PLGNSTATUSCODE_NIL_POINTER.value) {
+      return; // success
+    }
 
-    if (statusCode == PLGNStatusCode.PLGNSTATUSCODE_ERROR) {
-      final consumed = _consumeStatus(status);
-      final errorMsg =
-          '$_kLibraryName - $methodName: [${consumed.statusCode}] - ${consumed.message}';
-      onError?.call(errorMsg);
-      throw CoreLibraryException(
+    final consumed = _consumeStatus(status);
+    final errorMsg =
+        '$_kLibraryName - $methodName: [${consumed.statusCode}] - ${consumed.message}';
+    onError?.call(errorMsg);
+
+    if (_credentialStatusResolveStatusCodes.contains(consumed.statusCode)) {
+      throw CredentialStatusResolveException(
         coreLibraryName: _kLibraryName,
-        methodName: 'callCoreFunction.$methodName',
+        methodName: methodName,
         errorMessage: consumed.message,
         statusCode: consumed.statusCode,
       );
     }
 
-    if (statusCode != null) {
-      statusCodeHandler?.call(statusCode);
-    }
+    throw CoreLibraryException(
+      coreLibraryName: _kLibraryName,
+      methodName: methodName,
+      errorMessage: consumed.message,
+      statusCode: consumed.statusCode,
+    );
   }
 
   /// Decodes the native response pointer into a Dart string and passes it

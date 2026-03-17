@@ -71,6 +71,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
           .nativePolygonIdCoreLib
           .PLGNW3CCredentialFromAnonAadhaarInputs,
       methodName: 'PLGNW3CCredentialFromAnonAadhaarInputs',
+      onError: _stacktraceManager.addError,
       parse: (o) => o,
     );
   }
@@ -82,6 +83,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
           .nativePolygonIdCoreLib
           .PLGNW3CCredentialFromPassportInputs,
       methodName: 'PLGNW3CCredentialFromPassportInputs',
+      onError: _stacktraceManager.addError,
       parse: (o) => o,
     );
   }
@@ -103,6 +105,7 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       input: () => input,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNACredentialStatusCheck,
       methodName: 'PLGNACredentialStatusCheck',
+      onError: _stacktraceManager.addError,
       parse: (result) {
         return jsonDecode(result)['valid'] as bool? ?? false;
       },

@@ -33,3 +33,24 @@ class CoreLibraryException extends PolygonIdSDKException {
     return "[$coreLibraryName] [$methodName] [$statusCode] $errorMessage";
   }
 }
+
+/// Thrown when the native core library reports a credential status resolve
+/// error (status codes 2–11).
+///
+/// These cover user/issuer credential status extraction, resolve, merkle-tree
+/// build, merkle-tree state, and revocation errors.
+class CredentialStatusResolveException extends CoreLibraryException {
+  CredentialStatusResolveException({
+    required super.coreLibraryName,
+    required super.methodName,
+    required super.errorMessage,
+    required super.statusCode,
+    super.error,
+  });
+
+  @override
+  String toString() {
+    return "CredentialStatusResolveException: [$coreLibraryName] [$methodName] [$statusCode] $errorMessage";
+  }
+}
+

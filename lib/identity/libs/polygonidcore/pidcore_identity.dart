@@ -15,7 +15,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       config: config,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNNewGenesisID,
       methodName: 'PLGNNewGenesisID',
-      onError: _stacktraceManager.logError,
+      onError: _stacktraceManager.addError,
       parse: (result) => result,
     );
   }
@@ -27,7 +27,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       config: config,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNNewGenesisIDFromEth,
       methodName: 'PLGNNewGenesisIDFromEth',
-      onError: _stacktraceManager.logError,
+      onError: _stacktraceManager.addError,
       parse: (result) => result,
     );
   }
@@ -43,7 +43,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
             status,
           ),
       methodName: 'PLGNProfileID',
-      onError: _stacktraceManager.logError,
+      onError: _stacktraceManager.addError,
       parse: (result) => result,
     );
   }
@@ -62,7 +62,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
         );
       },
       methodName: 'PLGNIDToInt',
-      onError: _stacktraceManager.logError,
+      onError: _stacktraceManager.addError,
       parse: (result) => result,
     );
   }
@@ -74,7 +74,7 @@ class PolygonIdCoreIdentity extends PolygonIdCore {
       config: config,
       function: PolygonIdCore.nativePolygonIdCoreLib.PLGNDescribeID,
       methodName: 'PLGNDescribeID',
-      onError: _stacktraceManager.logError,
+      onError: _stacktraceManager.addError,
       parse: (result) => result,
     );
   }
