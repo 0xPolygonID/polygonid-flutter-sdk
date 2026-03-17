@@ -9,7 +9,6 @@ import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
-import 'package:polygonid_flutter_sdk/common/utils/collection_utils.dart';
 
 import 'native_polygonidcore.dart';
 
@@ -23,12 +22,12 @@ typedef GenericPolygonIdFunction =
       ffi.Pointer<ffi.Pointer<PLGNStatus>>,
     );
 
-ConsumedStatusResult _createConsumedStatusResult(
-  PLGNStatusCode statusCode,
-  String message,
-) {
-  return (statusCode: statusCode, message: message);
-}
+const _kLibraryName = 'libpolygonid';
+
+/// Pre-built lookup from int value → [PLGNStatusCode] for O(1) resolution.
+final Map<int, PLGNStatusCode> _statusCodeByValue = {
+  for (final code in PLGNStatusCode.values) code.value: code,
+};
 
 @injectable
 class PolygonIdCore {
@@ -36,28 +35,27 @@ class PolygonIdCore {
 
   static NativePolygonIdCoreLib? _nativePolygonIdCoreLib;
 
-  static NativePolygonIdCoreLib get nativePolygonIdCoreLib {
-    final instance = _nativePolygonIdCoreLib;
-    if (instance != null) {
-      return instance;
-    }
+  static NativePolygonIdCoreLib get nativePolygonIdCoreLib =>
+      _nativePolygonIdCoreLib ??= _loadNativeLib();
 
-    _nativePolygonIdCoreLib = Platform.isAndroid
-        ? NativePolygonIdCoreLib(ffi.DynamicLibrary.open("libpolygonid.so"))
-        : NativePolygonIdCoreLib(ffi.DynamicLibrary.process());
-
-    return _nativePolygonIdCoreLib!;
+  static NativePolygonIdCoreLib _loadNativeLib() {
+    final lib = Platform.isAndroid
+        ? ffi.DynamicLibrary.open('$_kLibraryName.so')
+        : ffi.DynamicLibrary.process();
+    return NativePolygonIdCoreLib(lib);
   }
 
   static void setEnvConfig(EnvConfigEntity envConfig) {
     _envConfigJson = jsonEncode(envConfig.toJson());
   }
 
-  // Expose env config for isolate usage
+  /// Expose env config for isolate usage.
   static String get envConfigJson => _envConfigJson;
 
   PolygonIdCore();
 
+  /// Calls a native core [function], handles errors, and returns the parsed
+  /// result of type [T].
   T callGenericCoreFunction<T>({
     required String Function() input,
     String? config,
@@ -68,88 +66,127 @@ class PolygonIdCore {
   }) {
     final response = malloc<ffi.Pointer<ffi.Char>>();
     final status = malloc<ffi.Pointer<PLGNStatus>>();
-    freeAllocatedMemory() {
+
+    try {
+      final resultCode = _invokeNative(
+        response: response,
+        status: status,
+        input: input(),
+        config: config ?? _envConfigJson,
+        function: function,
+      );
+
+      _handleStatusCode(
+        resultCode: resultCode,
+        status: status,
+        methodName: methodName,
+        statusCodeHandler: statusCodeHandler,
+      );
+
+      return _parseResponse(response, methodName, parse);
+    } finally {
       malloc.free(response);
       malloc.free(status);
     }
+  }
 
-    final inputPointer = input().toNativeUtf8().cast<ffi.Char>();
-    final cfgPointer = (config ?? _envConfigJson)
-        .toNativeUtf8()
-        .cast<ffi.Char>();
+  // ---------------------------------------------------------------------------
+  // Private helpers
+  // ---------------------------------------------------------------------------
 
-    final res = function(response, inputPointer, cfgPointer, status);
+  /// Invokes the native FFI [function] and returns the raw integer status code.
+  int _invokeNative({
+    required ffi.Pointer<ffi.Pointer<ffi.Char>> response,
+    required ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+    required String input,
+    required String config,
+    required GenericPolygonIdFunction function,
+  }) {
+    final inputPointer = input.toNativeUtf8().cast<ffi.Char>();
+    final cfgPointer = config.toNativeUtf8().cast<ffi.Char>();
+    return function(response, inputPointer, cfgPointer, status);
+  }
 
-    final PLGNStatusCode? statusCode = PLGNStatusCode.values.firstWhereOrNull(
-      (e) => e.value == res,
-    );
+  /// Resolves [resultCode] to a [PLGNStatusCode] and throws on error.
+  void _handleStatusCode({
+    required int resultCode,
+    required ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+    required String methodName,
+    void Function(PLGNStatusCode)? statusCodeHandler,
+  }) {
+    final statusCode = _statusCodeByValue[resultCode];
 
-    /// Handle error status codes
     if (statusCode == PLGNStatusCode.PLGNSTATUSCODE_ERROR) {
-      final consumedStatus = consumeStatus(status);
-      freeAllocatedMemory();
-      // TODO Should we track this here?
-      // _trackError(consumedStatus, "callCoreFunction");
+      final consumed = consumeStatus(status);
       throw CoreLibraryException(
-        coreLibraryName: "libpolygonid",
-        methodName: "callCoreFunction.$methodName",
-        errorMessage: consumedStatus.message,
-        statusCode: consumedStatus.statusCode,
+        coreLibraryName: _kLibraryName,
+        methodName: 'callCoreFunction.$methodName',
+        errorMessage: consumed.message,
+        statusCode: consumed.statusCode,
       );
-    } else if (statusCode != null && statusCodeHandler != null) {
-      statusCodeHandler(statusCode);
     }
 
-    /// Parse the response
-    T result;
-    ffi.Pointer<ffi.Char> jsonResponse = response.value;
-    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
-    if (jsonString != ffi.nullptr) {
-      result = parse(jsonString.toDartString());
-    } else {
+    if (statusCode != null) {
+      statusCodeHandler?.call(statusCode);
+    }
+  }
+
+  /// Decodes the native response pointer into a Dart string and passes it
+  /// through [parse].
+  T _parseResponse<T>(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> response,
+    String methodName,
+    T Function(String) parse,
+  ) {
+    final jsonString = response.value.cast<Utf8>();
+    if (jsonString == ffi.nullptr) {
       throw CoreLibraryException(
-        coreLibraryName: "libpolygonid",
-        methodName: "callCoreFunction",
-        errorMessage: "Unable to parse response",
+        coreLibraryName: _kLibraryName,
+        methodName: 'callCoreFunction.$methodName',
+        errorMessage: 'Unable to parse response',
         statusCode: PLGNStatusCode.PLGNSTATUSCODE_ERROR,
       );
     }
-
-    freeAllocatedMemory();
-    return result;
+    return parse(jsonString.toDartString());
   }
 
+  /// Extracts and frees the native [PLGNStatus], returning a Dart-friendly
+  /// result.
   ConsumedStatusResult consumeStatus(
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {
-      _logError("unable to allocate status");
-
-      return _createConsumedStatusResult(
-        PLGNStatusCode.PLGNSTATUSCODE_ERROR,
-        "unable to allocate status",
+      _logError('unable to allocate status');
+      return (
+        statusCode: PLGNStatusCode.PLGNSTATUSCODE_ERROR,
+        message: 'unable to allocate status',
       );
     }
 
-    String errorMessage = status.value.ref.status.toString();
-    PLGNStatusCode statusCode = status.value.ref.status;
+    final ref = status.value.ref;
+    final statusCode = ref.status;
+    final errorMessage = _extractErrorMessage(ref);
 
-    if (status.value.ref.error_msg == ffi.nullptr) {
-      _logError(status.value.ref.status.toString());
-    } else {
-      ffi.Pointer<ffi.Char> json = status.value.ref.error_msg;
-      ffi.Pointer<Utf8> jsonString = json.cast<Utf8>();
-      try {
-        errorMessage = jsonString.toDartString();
-        _logError(
-          "${status.value.ref.status.toString()} - Error: $errorMessage",
-        );
-      } catch (e) {
-        _logError(status.value.ref.status.toString());
-      }
-    }
     _freeStatus(status);
-    return _createConsumedStatusResult(statusCode, errorMessage);
+    return (statusCode: statusCode, message: errorMessage);
+  }
+
+  /// Reads the error message from a [PLGNStatus] reference, falling back to
+  /// the status code string representation.
+  String _extractErrorMessage(PLGNStatus ref) {
+    if (ref.error_msg == ffi.nullptr) {
+      _logError(ref.status.toString());
+      return ref.status.toString();
+    }
+
+    try {
+      final message = ref.error_msg.cast<Utf8>().toDartString();
+      _logError('${ref.status} - Error: $message');
+      return message;
+    } catch (_) {
+      _logError(ref.status.toString());
+      return ref.status.toString();
+    }
   }
 
   void _freeStatus(ffi.Pointer<ffi.Pointer<PLGNStatus>> status) {
