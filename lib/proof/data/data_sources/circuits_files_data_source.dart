@@ -27,41 +27,44 @@ class CircuitsFilesDataSource {
   // --- Public API ---
 
   Future<Uint8List> loadGraphFile(String circuitId) async {
-    // Try registry/resolver first
+    // Scan the default directory first to preserve backwards compatibility
+    final local = _readFileIfExists(circuitId, 'wcd', _graphFallbacks);
+    if (local != null) return local.readAsBytesSync();
+
+    // Bundled asset
+    try {
+      final data = await rootBundle.load('assets/$circuitId.wcd');
+      return data.buffer.asUint8List();
+    } catch (_) {
+      // asset not found – continue to registry
+    }
+
+    // Fallback: try registry/resolver
     final source = await _resolveCircuit(circuitId);
     if (source != null) {
       final result = await _loadGraphFromSource(circuitId, source);
       if (result != null) return result;
     }
 
-    // Fallback: scan the default directory
-    final local = _readFileIfExists(circuitId, 'wcd', _graphFallbacks);
-    if (local != null) return local.readAsBytesSync();
-
-    // Last resort: bundled asset
-    try {
-      final data = await rootBundle.load('assets/$circuitId.wcd');
-      return data.buffer.asUint8List();
-    } catch (_) {
-      throw CircuitNotDownloadedException(
-        circuit: circuitId,
-        errorMessage:
-            'Circuit $circuitId not found at assets path "assets/$circuitId.wcd"',
-      );
-    }
+    throw CircuitNotDownloadedException(
+      circuit: circuitId,
+      errorMessage:
+          'Circuit $circuitId not found at assets path "assets/$circuitId.wcd"',
+    );
   }
 
   Future<String> getZkeyFilePath(String circuitId) async {
-    // Try registry/resolver first
+    // Scan the default directory first to preserve backwards compatibility
+    final local = _readFileIfExists(circuitId, 'zkey', _zkeyFallbacks);
+    if (local != null) return local.path;
+
+    // Fallback: try registry/resolver
     final source = await _resolveCircuit(circuitId);
     if (source != null) {
       final result = await _resolveZkeyFromSource(circuitId, source);
       if (result != null) return result;
     }
 
-    // Fallback: scan the default directory
-    final local = _readFileIfExists(circuitId, 'zkey', _zkeyFallbacks);
-    if (local != null) return local.path;
 
     throw CircuitNotDownloadedException(
       circuit: circuitId,
