@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:ffi' as ffi;
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
@@ -16,10 +15,10 @@ typedef ConsumedStatusResult = ({PLGNStatusCode statusCode, String message});
 
 typedef GenericPolygonIdFunction =
     int Function(
-      ffi.Pointer<ffi.Pointer<ffi.Char>>,
-      ffi.Pointer<ffi.Char>,
-      ffi.Pointer<ffi.Char>,
-      ffi.Pointer<ffi.Pointer<PLGNStatus>>,
+      ffi.Pointer<ffi.Pointer<ffi.Char>> response,
+      ffi.Pointer<ffi.Char> input,
+      ffi.Pointer<ffi.Char> config,
+      ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
     );
 
 const _kLibraryName = 'libpolygonid';
@@ -56,12 +55,16 @@ class PolygonIdCore {
 
   /// Calls a native core [function], handles errors, and returns the parsed
   /// result of type [T].
+  ///
+  /// If [onError] is provided it is called with the error message just before
+  /// the [CoreLibraryException] is thrown (useful for logging/tracking).
   T callGenericCoreFunction<T>({
     required String Function() input,
     String? config,
     required GenericPolygonIdFunction function,
     required String methodName,
     void Function(PLGNStatusCode)? statusCodeHandler,
+    void Function(String errorMessage)? onError,
     required T Function(String) parse,
   }) {
     final response = malloc<ffi.Pointer<ffi.Char>>();
@@ -81,6 +84,7 @@ class PolygonIdCore {
         status: status,
         methodName: methodName,
         statusCodeHandler: statusCodeHandler,
+        onError: onError,
       );
 
       return _parseResponse(response, methodName, parse);
@@ -90,9 +94,52 @@ class PolygonIdCore {
     }
   }
 
+  /// Calls a native core function that has no response pointer (void return
+  /// semantics). Throws [CoreLibraryException] on error.
+  ///
+  /// [input] and [config] are optional Dart strings that are automatically
+  /// converted to native pointers (or `nullptr` when `null`) and passed to
+  /// the [function] callback so subclasses never need to import `dart:ffi`.
+  void callVoidCoreFunction({
+    String? input,
+    String? config,
+    required int Function(
+      ffi.Pointer<ffi.Char> input,
+      ffi.Pointer<ffi.Char> config,
+      ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
+    )
+    function,
+    required String methodName,
+    void Function(String errorMessage)? onError,
+  }) {
+    final status = malloc<ffi.Pointer<PLGNStatus>>();
+
+    try {
+      final resultCode = function(
+        _toNativeChar(input),
+        _toNativeChar(config),
+        status,
+      );
+
+      _handleStatusCode(
+        resultCode: resultCode,
+        status: status,
+        methodName: methodName,
+        onError: onError,
+      );
+    } finally {
+      malloc.free(status);
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Private helpers
   // ---------------------------------------------------------------------------
+
+  /// Converts a nullable Dart [String] to a native `Pointer<Char>`.
+  /// Returns `nullptr` when [value] is `null`.
+  static ffi.Pointer<ffi.Char> _toNativeChar(String? value) =>
+      value == null ? ffi.nullptr : value.toNativeUtf8().cast<ffi.Char>();
 
   /// Invokes the native FFI [function] and returns the raw integer status code.
   int _invokeNative({
@@ -113,11 +160,15 @@ class PolygonIdCore {
     required ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
     required String methodName,
     void Function(PLGNStatusCode)? statusCodeHandler,
+    void Function(String errorMessage)? onError,
   }) {
     final statusCode = _statusCodeByValue[resultCode];
 
     if (statusCode == PLGNStatusCode.PLGNSTATUSCODE_ERROR) {
-      final consumed = consumeStatus(status);
+      final consumed = _consumeStatus(status);
+      final errorMsg =
+          '$_kLibraryName - $methodName: [${consumed.statusCode}] - ${consumed.message}';
+      onError?.call(errorMsg);
       throw CoreLibraryException(
         coreLibraryName: _kLibraryName,
         methodName: 'callCoreFunction.$methodName',
@@ -152,7 +203,7 @@ class PolygonIdCore {
 
   /// Extracts and frees the native [PLGNStatus], returning a Dart-friendly
   /// result.
-  ConsumedStatusResult consumeStatus(
+  ConsumedStatusResult _consumeStatus(
     ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
   ) {
     if (status == ffi.nullptr || status.value == ffi.nullptr) {

@@ -1,12 +1,7 @@
 import 'dart:convert';
-import 'dart:ffi' as ffi;
-import 'dart:ffi';
 
-import 'package:ffi/ffi.dart';
 import 'package:injectable/injectable.dart';
-import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/native_polygonidcore.dart';
 import 'package:polygonid_flutter_sdk/common/libs/polygonidcore/pidcore_base.dart';
 
 @injectable
@@ -16,150 +11,54 @@ class PolygonIdCoreCredential extends PolygonIdCore {
   PolygonIdCoreCredential(this._stacktraceManager);
 
   String createClaim(String input) {
-    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
-        malloc<ffi.Pointer<ffi.Char>>();
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-        malloc<ffi.Pointer<PLGNStatus>>();
-
-    freeAllocatedMemory() {
-      malloc.free(response);
-      malloc.free(status);
-    }
-
-    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNCreateClaim(
-      response,
-      in1,
-      status,
+    return callGenericCoreFunction(
+      input: () => input,
+      function: (response, in1, cfg, status) =>
+          PolygonIdCore.nativePolygonIdCoreLib.PLGNCreateClaim(
+            response,
+            in1,
+            status,
+          ),
+      methodName: 'PLGNCreateClaim',
+      onError: _stacktraceManager.addError,
+      parse: (result) => result,
     );
-
-    // res 0 means error
-    if (res == 0) {
-      ConsumedStatusResult consumedStatus = consumeStatus(status);
-      freeAllocatedMemory();
-      _trackError(consumedStatus, "PLGNCreateClaim");
-      throw CoreLibraryException(
-        coreLibraryName: "libpolygonid",
-        methodName: "PLGNCreateClaim",
-        errorMessage: consumedStatus.message,
-        statusCode: consumedStatus.statusCode,
-      );
-    }
-
-    // parse the response
-    String result = "";
-    ffi.Pointer<ffi.Char> jsonResponse = response.value;
-    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
-    if (jsonString != ffi.nullptr) {
-      result = jsonString.toDartString();
-    }
-
-    freeAllocatedMemory();
-
-    return result;
   }
 
   bool cacheCredential(String input, String? config) {
-    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
-    if (config != null) {
-      cfg = config.toNativeUtf8().cast<ffi.Char>();
-    }
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-        malloc<ffi.Pointer<PLGNStatus>>();
-    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNCacheCredentials(
-      in1,
-      cfg,
-      status,
+    callVoidCoreFunction(
+      input: input,
+      config: config,
+      function: PolygonIdCore.nativePolygonIdCoreLib.PLGNCacheCredentials,
+      methodName: 'PLGNCacheCredentials',
+      onError: _stacktraceManager.addError,
     );
-
-    // it means success
-    if (res != 0) {
-      malloc.free(status);
-      return true;
-    }
-
-    // in case of error throw exception with error message and status code
-    ConsumedStatusResult consumedStatus = consumeStatus(status);
-    malloc.free(status);
-    _trackError(consumedStatus, "PLGNCacheCredentials");
-    throw CoreLibraryException(
-      coreLibraryName: "libpolygonid",
-      methodName: "PLGNCacheCredentials",
-      errorMessage: consumedStatus.message,
-      statusCode: consumedStatus.statusCode,
-    );
+    return true;
   }
 
   void cleanCache(String? config) {
-    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
-    if (config != null) {
-      cfg = config.toNativeUtf8().cast<ffi.Char>();
-    }
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-        malloc<ffi.Pointer<PLGNStatus>>();
-    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNCleanCache2(cfg, status);
-
-    // it means success
-    if (res != 0) {
-      malloc.free(status);
-      return;
-    }
-
-    // in case of error throw exception with error message and status code
-    ConsumedStatusResult consumedStatus = consumeStatus(status);
-    malloc.free(status);
-    _trackError(consumedStatus, "PLGNCacheCredentials");
-    throw CoreLibraryException(
-      coreLibraryName: "libpolygonid",
-      methodName: "PLGNCacheCredentials",
-      errorMessage: consumedStatus.message,
-      statusCode: consumedStatus.statusCode,
+    callVoidCoreFunction(
+      config: config,
+      function: (in1, cfg, status) =>
+          PolygonIdCore.nativePolygonIdCoreLib.PLGNCleanCache2(
+            cfg,
+            status,
+          ),
+      methodName: 'PLGNCleanCache2',
+      onError: _stacktraceManager.addError,
     );
   }
 
   String getW3CCredentialFromOnchainHex(String input, String? config) {
-    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
-    if (config != null) {
-      cfg = config.toNativeUtf8().cast<ffi.Char>();
-    }
-    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
-        malloc<ffi.Pointer<ffi.Char>>();
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-        malloc<ffi.Pointer<PLGNStatus>>();
-
-    freeAllocatedMemory() {
-      malloc.free(response);
-      malloc.free(status);
-    }
-
-    int res = PolygonIdCore.nativePolygonIdCoreLib
-        .PLGNW3CCredentialFromOnchainHex(response, in1, cfg, status);
-
-    // res 0 means error
-    if (res == 0) {
-      final ConsumedStatusResult consumedStatus = consumeStatus(status);
-      freeAllocatedMemory();
-      _trackError(consumedStatus, "PLGNW3CCredentialFromOnchainHex");
-      throw CoreLibraryException(
-        coreLibraryName: "libpolygonid",
-        methodName: "PLGNW3CCredentialFromOnchainHex",
-        errorMessage: consumedStatus.message,
-        statusCode: consumedStatus.statusCode,
-      );
-    }
-
-    // parse the response
-    String result = "";
-    ffi.Pointer<ffi.Char> jsonResponse = response.value;
-    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
-    if (jsonString != ffi.nullptr) {
-      result = jsonString.toDartString();
-    }
-
-    freeAllocatedMemory();
-    return result;
+    return callGenericCoreFunction(
+      input: () => input,
+      config: config,
+      function:
+          PolygonIdCore.nativePolygonIdCoreLib.PLGNW3CCredentialFromOnchainHex,
+      methodName: 'PLGNW3CCredentialFromOnchainHex',
+      onError: _stacktraceManager.addError,
+      parse: (result) => result,
+    );
   }
 
   String createW3CCredentialFromAnonAadhaarInputs(
@@ -188,51 +87,15 @@ class PolygonIdCoreCredential extends PolygonIdCore {
   }
 
   String createCoreClaimFromW3CCredential(String input, String? config) {
-    ffi.Pointer<ffi.Char> in1 = input.toNativeUtf8().cast<ffi.Char>();
-    ffi.Pointer<ffi.Char> cfg = ffi.nullptr;
-    if (config != null) {
-      cfg = config.toNativeUtf8().cast<ffi.Char>();
-    }
-    ffi.Pointer<ffi.Pointer<ffi.Char>> response =
-        malloc<ffi.Pointer<ffi.Char>>();
-    ffi.Pointer<ffi.Pointer<PLGNStatus>> status =
-        malloc<ffi.Pointer<PLGNStatus>>();
-
-    freeAllocatedMemory() {
-      malloc.free(response);
-      malloc.free(status);
-    }
-
-    int res = PolygonIdCore.nativePolygonIdCoreLib.PLGNW3CCredentialToCoreClaim(
-      response,
-      in1,
-      cfg,
-      status,
+    return callGenericCoreFunction(
+      input: () => input,
+      config: config,
+      function:
+          PolygonIdCore.nativePolygonIdCoreLib.PLGNW3CCredentialToCoreClaim,
+      methodName: 'PLGNW3CCredentialToCoreClaim',
+      onError: _stacktraceManager.addError,
+      parse: (result) => result,
     );
-
-    // res 0 means error
-    if (res == 0) {
-      final ConsumedStatusResult consumedStatus = consumeStatus(status);
-      freeAllocatedMemory();
-      _trackError(consumedStatus, "PLGNW3CCredentialToCoreClaim");
-      throw CoreLibraryException(
-        coreLibraryName: "libpolygonid",
-        methodName: "PLGNW3CCredentialToCoreClaim",
-        errorMessage: consumedStatus.message,
-        statusCode: consumedStatus.statusCode,
-      );
-    }
-
-    // parse the response
-    String result = "";
-    ffi.Pointer<ffi.Char> jsonResponse = response.value;
-    ffi.Pointer<Utf8> jsonString = jsonResponse.cast<Utf8>();
-    if (jsonString != ffi.nullptr) {
-      result = jsonString.toDartString();
-    }
-
-    freeAllocatedMemory();
-    return result;
   }
 
   bool credentialStatusCheck(String input, String? config) {
@@ -243,12 +106,6 @@ class PolygonIdCoreCredential extends PolygonIdCore {
       parse: (result) {
         return jsonDecode(result)['valid'] as bool? ?? false;
       },
-    );
-  }
-
-  void _trackError(ConsumedStatusResult consumedStatus, String methodName) {
-    _stacktraceManager.addError(
-      "libpolygonid - $methodName: [${consumedStatus.statusCode}] - ${consumedStatus.message}",
     );
   }
 }
