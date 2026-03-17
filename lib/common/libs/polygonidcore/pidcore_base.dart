@@ -108,10 +108,12 @@ class PolygonIdCore {
     final status = malloc<ffi.Pointer<PLGNStatus>>();
 
     try {
-      final resultCode = function(
-        _toNativeChar(input),
-        _toNativeChar(config),
-        status,
+      final resultCode = using(
+        (arena) => function(
+          _toNativeChar(input, arena),
+          _toNativeChar(config, arena),
+          status,
+        ),
       );
 
       _handleStatusCode(
@@ -129,12 +131,18 @@ class PolygonIdCore {
   // Private helpers
   // ---------------------------------------------------------------------------
 
-  /// Converts a nullable Dart [String] to a native `Pointer<Char>`.
-  /// Returns `nullptr` when [value] is `null`.
-  static ffi.Pointer<ffi.Char> _toNativeChar(String? value) =>
-      value == null ? ffi.nullptr : value.toNativeUtf8().cast<ffi.Char>();
+  /// Converts a nullable Dart [String] to a native `Pointer<Char>` using
+  /// [allocator]. Returns `nullptr` when [value] is `null`.
+  static ffi.Pointer<ffi.Char> _toNativeChar(
+    String? value,
+    ffi.Allocator allocator,
+  ) => value == null
+      ? ffi.nullptr
+      : value.toNativeUtf8(allocator: allocator).cast<ffi.Char>();
 
   /// Invokes the native FFI [function] and returns the raw integer status code.
+  /// All intermediate native allocations are freed via an [Arena] after the
+  /// call returns.
   int _invokeNative({
     required ffi.Pointer<ffi.Pointer<ffi.Char>> response,
     required ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
@@ -142,9 +150,13 @@ class PolygonIdCore {
     required String config,
     required GenericPolygonIdFunction function,
   }) {
-    final inputPointer = input.toNativeUtf8().cast<ffi.Char>();
-    final cfgPointer = config.toNativeUtf8().cast<ffi.Char>();
-    return function(response, inputPointer, cfgPointer, status);
+    return using((arena) {
+      final inputPointer = input
+          .toNativeUtf8(allocator: arena)
+          .cast<ffi.Char>();
+      final cfgPointer = config.toNativeUtf8(allocator: arena).cast<ffi.Char>();
+      return function(response, inputPointer, cfgPointer, status);
+    });
   }
 
   /// Status codes that indicate a credential status resolve error.
@@ -164,7 +176,7 @@ class PolygonIdCore {
   /// Checks the native [resultCode] and throws [CoreLibraryException] on
   /// failure.
   ///
-  /// Native functions return `0` for error and non-zero for success.
+  /// Native functions return `1` for success and other codes for error.
   /// The detailed [PLGNStatusCode] is extracted from the [status] struct.
   ///
   /// Throws [CredentialStatusResolveException] for credential-status-related
