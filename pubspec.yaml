@@ -20,10 +20,14 @@ dependencies:
   http_cache_hive_store: ^5.0.0
 
   # Web3
-  web3dart: ^2.7.3
+  web3dart: ^3.0.1
+  # Using fork because it supports pointycastle 4.0.0
+  bip32_plus: ^1.0.0
+  wallet: ^0.0.18
 
   # Crypto
   crypto: ^3.0.1
+  encrypt: 5.0.3
   pointycastle: ^4.0.0
   ninja_prime: ^2.0.0
   ed25519_edwards: ^0.3.1
@@ -40,7 +44,7 @@ dependencies:
   ffi: ^2.1.2
 
   # DI
-  get_it: ^8.2.0
+  get_it: 8.2.0
   injectable: ^2.5.1
 
   # Storage
@@ -67,11 +71,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  json_serializable: 6.11.1
+  json_serializable: ^6.11.3
   injectable_generator: ^2.8.1
   build_runner: ^2.7.0
   ffigen: ^19.1.0
   mockito: ^5.3.2
+  # Using fork because it uses newer build and dart_analyze packages
+  web3dart_builders:
+    path: packages/web3dart_builders
 
 dependency_overrides:
   pointycastle: 4.0.0

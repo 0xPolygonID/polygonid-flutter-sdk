@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/eddsa_babyjub.dart';
-import 'package:web3dart/crypto.dart';
 
 @injectable
 class WalletDataSource {
@@ -18,15 +18,15 @@ class WalletDataSource {
   }) async {
     Uint8List messHash;
     if (message.toLowerCase().startsWith("0x")) {
-      message = strip0x(message);
-      messHash = hexToBytes(message);
+      message = message.strip0x();
+      messHash = message.hexToBytes();
     } else {
       var hex = BigInt.parse(message, radix: 10).toRadixString(16);
       hex = hex.length.isEven ? hex : "0$hex";
-      messHash = hexToBytes(hex);
+      messHash = hex.hexToBytes();
     }
     final bjjKey = BjjPrivateKey(privateKey);
     final signature = bjjKey.sign(messHash);
-    return bytesToHex(signature);
+    return signature.bytesToHex();
   }
 }

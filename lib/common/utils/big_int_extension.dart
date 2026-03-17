@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:web3dart/crypto.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 
 extension BigIntQ on BigInt {
   static BigInt Q = BigInt.parse(
-      "21888242871839275222246405745257275088548364400416034343698204186575808495617");
+    "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+  );
 
   bool checkBigIntInField() {
     return this < Q;
@@ -19,6 +20,8 @@ extension BigIntQ on BigInt {
   }
 
   Uint8List toBytes() {
-    return hexToBytes(toRadixString(16));
+    final hex = toRadixString(16);
+    final normalizedHex = hex.length.isOdd ? '0$hex' : hex;
+    return normalizedHex.hexToBytes();
   }
 }

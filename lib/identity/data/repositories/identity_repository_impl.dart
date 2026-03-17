@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/db_destination_path_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/encryption_db_data_source.dart';
 import 'package:polygonid_flutter_sdk/identity/data/data_sources/lib_pidcore_identity_data_source.dart';
@@ -26,7 +27,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/exceptions/identity_except
 import 'package:polygonid_flutter_sdk/identity/domain/repositories/identity_repository.dart';
 import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj_wallet.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:web3dart/crypto.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
   final WalletDataSource _walletDataSource;
@@ -60,12 +60,12 @@ class IdentityRepositoryImpl extends IdentityRepository {
     logger().i("CREATE_WALLET_CALLED");
     final bytes = _privateKeyMapper.mapFrom(secret);
     final wallet = await BjjWallet.createBjjWallet(secret: bytes);
-    return bytesToHex(wallet.privateKey);
+    return wallet.privateKey.bytesToHex();
   }
 
   @override
   List<String> getPublicKeys({required String bjjPrivateKey}) {
-    final wallet = BjjWallet(hexToBytes(bjjPrivateKey));
+    final wallet = BjjWallet(bjjPrivateKey.hexToBytes());
     final pubKeys = wallet.publicKey;
     return pubKeys;
   }
@@ -155,7 +155,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
     required String message,
   }) async {
     try {
-      final Uint8List hexPrivateKey = hexToBytes(privateKey);
+      final Uint8List hexPrivateKey = privateKey.hexToBytes();
       final String signedMessage = await _walletDataSource.signMessage(
         privateKey: hexPrivateKey,
         message: message,

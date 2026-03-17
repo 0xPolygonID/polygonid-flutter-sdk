@@ -4,12 +4,10 @@ import 'package:hex/hex.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/private_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/public_key.dart';
 import 'package:polygonid_flutter_sdk/common/kms/keys/types.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/identity/libs/bjj/bjj.dart';
 import 'package:poseidon/poseidon.dart';
-import 'package:web3dart/crypto.dart';
-
-import '../../../common/utils/hex_utils.dart';
-import '../../../common/utils/uint8_list_utils.dart';
-import 'bjj.dart';
 
 typedef Point = ({BigInt x, BigInt y});
 
@@ -34,15 +32,17 @@ class BjjSignature {
 
     final pointsSublist = buf.sublist(0, 32);
     // uncompressPoint is used to unpack R8 X and Y
-    final unpackedPoint =
-        bjjLib.uncompressPoint(HEX.encode(pointsSublist.toList()));
+    final unpackedPoint = bjjLib.uncompressPoint(
+      HEX.encode(pointsSublist.toList()),
+    );
 
     final x = BigInt.parse(unpackedPoint[0]);
     final y = BigInt.parse(unpackedPoint[1]);
 
     // S is decoded manually
     BigInt s = Uint8ArrayUtils.beBuff2int(
-        Uint8List.fromList(buf.sublist(32, 64).reversed.toList()));
+      Uint8List.fromList(buf.sublist(32, 64).reversed.toList()),
+    );
     return BjjSignature((x: x, y: y), s);
   }
 
@@ -79,9 +79,7 @@ class BjjPublicKey extends PublicKey {
   /// @returns {Uint8List} - point compressed into a buffer
   Uint8List compress() {
     BabyjubjubLib bjjLib = BabyjubjubLib();
-    return HexUtils.hexToBytes(
-      bjjLib.compressPoint(p.x.toString(), p.y.toString()),
-    );
+    return bjjLib.compressPoint(p.x.toString(), p.y.toString()).hexToBytes();
   }
 
   bool verify(String messageHash, BjjSignature signature) {
@@ -103,7 +101,7 @@ class BjjPrivateKey extends PrivateKey {
 
   /// Create a PrivateKey from a 32 byte Buffer
   /// @param {Uint8List} buf - private key
-  BjjPrivateKey(Uint8List bytes) : super(hex: bytesToHex(bytes)) {
+  BjjPrivateKey(Uint8List bytes) : super(hex: bytes.bytesToHex()) {
     if (bytes.length != 32) {
       throw ArgumentError('buf must be 32 bytes');
     }
@@ -120,7 +118,7 @@ class BjjPrivateKey extends PrivateKey {
 
   @override
   Uint8List sign(Uint8List message) {
-    final messageHashBytes = bytesToHex(message);
+    final messageHashBytes = message.bytesToHex();
 
     final messageHashBigInt = BigInt.parse(messageHashBytes, radix: 16);
 
@@ -130,7 +128,7 @@ class BjjPrivateKey extends PrivateKey {
       messageHashBigInt.toString(),
     );
 
-    return hexToBytes(signature);
+    return signature.hexToBytes();
   }
 }
 

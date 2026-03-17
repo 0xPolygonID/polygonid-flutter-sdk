@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
-import 'package:web3dart/crypto.dart';
-
-import '../../../common/utils/uint8_list_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/hex_utils.dart';
+import 'package:polygonid_flutter_sdk/common/utils/uint8_list_utils.dart';
 
 //part 'hash_dto.g.dart';
 
@@ -43,11 +42,11 @@ class HashEntity extends Equatable {
     }
   }
 
-  HashEntity.fromHex(String h) : data = Uint8List(32) {
-    if (h.length != 64) {
+  HashEntity.fromHex(String hex) : data = Uint8List(32) {
+    if (hex.length != 64) {
       throw ArgumentError("Hex string must be 64 characters long");
     }
-    hexToBytes(h).asMap().forEach((i, b) {
+    hex.hexToBytes().asMap().forEach((i, b) {
       data[i] = b;
     });
   }

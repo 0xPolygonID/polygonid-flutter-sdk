@@ -58,8 +58,9 @@ class GistProofCache {
     }
 
     DateTime gistProofTimestamp = gistProofMap["timestamp"];
-    DateTime cacheExpirationDiff =
-        DateTime.now().subtract(const Duration(minutes: 5));
+    DateTime cacheExpirationDiff = DateTime.now().subtract(
+      const Duration(minutes: 5),
+    );
     if (gistProofTimestamp.isBefore(cacheExpirationDiff)) {
       return null;
     }
@@ -90,7 +91,7 @@ class GistProofCache {
   }) async {
     String? cachedGistProof = await _getGistProofCached(
       id: id,
-      contractAddress: deployedContract.address.hex,
+      contractAddress: deployedContract.address.with0x,
       env: envEntity,
     );
 
@@ -114,8 +115,9 @@ class GistProofCache {
       );
 
       if (result.isNotEmpty && result[0] is List && result[0].length == 8) {
-        var siblings =
-            (result[0][2] as List).map((bigInt) => bigInt.toString()).toList();
+        var siblings = (result[0][2] as List)
+            .map((bigInt) => bigInt.toString())
+            .toList();
 
         final String resultString = jsonEncode({
           "root": result[0][0].toString(),
@@ -132,7 +134,7 @@ class GistProofCache {
         try {
           await _saveGistProof(
             id: id,
-            contractAddress: deployedContract.address.hex,
+            contractAddress: deployedContract.address.with0x,
             gistProofString: gistProof,
           );
         } catch (_) {

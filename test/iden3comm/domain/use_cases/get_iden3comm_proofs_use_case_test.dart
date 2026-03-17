@@ -68,12 +68,12 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   StacktraceManager,
   RefreshCredentialUseCase,
 ])
-void main() {
-  final claim = CredentialMocks.claim.copyWith(
-    info: {
-      'credentialSubject': {'id': IdentityMocks.did.did},
+main() {
+  final claim = CredentialMocks.claim.copyWith(info: {
+    'credentialSubject': {
+      'id': IdentityMocks.did.did,
     },
-  );
+  });
 
   setUp(() {
     reset(getMessageRequestsAndCredsUseCase);
@@ -88,8 +88,14 @@ void main() {
       getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
     ).thenAnswer(
       (realInvocation) async => [
-        (request: Iden3commMocks.proofScopeRequest, credentials: [claim]),
-        (request: Iden3commMocks.proofScopeRequest, credentials: [claim]),
+        (
+          request: Iden3commMocks.proofScopeRequest,
+          credentials: [claim],
+        ),
+        (
+          request: Iden3commMocks.proofScopeRequest,
+          credentials: [claim],
+        ),
       ],
     );
 
