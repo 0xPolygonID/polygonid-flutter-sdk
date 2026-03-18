@@ -54,3 +54,19 @@ class CredentialStatusResolveException extends CoreLibraryException {
   }
 }
 
+/// Thrown when the native core library reports an invalid Aadhaar signature
+/// error (PLGNSTATUSCODE_INVALID_AADHAAR_SIGNATURE).
+class InvalidAadhaarSignatureException extends CoreLibraryException {
+  InvalidAadhaarSignatureException({
+    required super.coreLibraryName,
+    required super.methodName,
+    required super.errorMessage,
+    required super.statusCode,
+    super.error,
+  });
+
+  @override
+  String toString() {
+    return "InvalidAadhaarSignatureException: [$coreLibraryName] [$methodName] [$statusCode] $errorMessage";
+  }
+}

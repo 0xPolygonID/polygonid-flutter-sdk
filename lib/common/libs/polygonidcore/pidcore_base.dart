@@ -196,6 +196,16 @@ class PolygonIdCore {
         '$_kLibraryName - $methodName: [${consumed.statusCode}] - ${consumed.message}';
     onError?.call(errorMsg);
 
+    if (consumed.statusCode ==
+        PLGNStatusCode.PLGNSTATUSCODE_INVALID_AADHAAR_SIGNATURE) {
+      throw InvalidAadhaarSignatureException(
+        coreLibraryName: _kLibraryName,
+        methodName: methodName,
+        errorMessage: consumed.message,
+        statusCode: consumed.statusCode,
+      );
+    }
+
     if (_credentialStatusResolveStatusCodes.contains(consumed.statusCode)) {
       throw CredentialStatusResolveException(
         coreLibraryName: _kLibraryName,
