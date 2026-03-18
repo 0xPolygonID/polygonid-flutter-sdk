@@ -74,7 +74,7 @@ dev_dependencies:
   json_serializable: ^6.11.3
   injectable_generator: ^2.8.1
   build_runner: ^2.7.0
-  ffigen: ^19.1.0
+  ffigen: ^20.1.1
   mockito: ^5.3.2
   # Using fork because it uses newer build and dart_analyze packages
   web3dart_builders:
@@ -83,26 +83,7 @@ dev_dependencies:
 dependency_overrides:
   pointycastle: 4.0.0
 
-ffigen:
-  # dart run ffigen
-
-  name: NativePolygonIdCoreLib
-  description: Bindings to `ios/Classes/libpolygonid.h`.
-  output: 'lib/common/libs/polygonidcore/native_polygonidcore.dart'
-  headers:
-    entry-points:
-      - 'ios/polygonid_flutter_sdk/Frameworks/libpolygonid.xcframework/libpolygonid.h'
-  functions:
-    include:
-      - PLGN.*
-  structs:
-    include:
-      - PLGN.*
-  preamble: |
-    // ignore_for_file: camel_case_types, non_constant_identifier_names, unused_element, unused_field, unused_local_variable
-  compiler-opts-automatic:
-    macos:
-      include-c-standard-library: true
+# ffigen: run `dart run :ffigen` (see bin/ffigen.dart)
 
 flutter:
   plugin:
