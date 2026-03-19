@@ -13,7 +13,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_p
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_identity_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/use_cases/is_proof_circuit_supported_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/infrastructure/proof_generation_stream_manager.dart';
 
@@ -46,7 +45,6 @@ class GetIden3commProofParam {
 
 class GetIden3commProofUseCase
     extends FutureUseCase<GetIden3commProofParam, Iden3commProofEntity> {
-  final ProofRepository _proofRepository;
   final GetMessageRequestsAndCredsUseCase _getMessageRequestsAndCredsUseCase;
   final GenerateIden3commProofUseCase _generateIden3commProofUseCase;
   final GenerateAuthProofUseCase _generateAuthProofUseCase;
@@ -58,7 +56,6 @@ class GetIden3commProofUseCase
   final RefreshCredentialUseCase _refreshCredentialUseCase;
 
   GetIden3commProofUseCase(
-    this._proofRepository,
     this._getMessageRequestsAndCredsUseCase,
     this._generateIden3commProofUseCase,
     this._generateAuthProofUseCase,
@@ -112,8 +109,6 @@ class GetIden3commProofUseCase
         );
       }
 
-      final circuitData = await _proofRepository.loadCircuitFiles(circuitId);
-
       var identityEntity = await _getIdentityUseCase.execute(
         param: GetIdentityParam(
           genesisDid: param.genesisDid,
@@ -138,7 +133,6 @@ class GetIden3commProofUseCase
         claimSubjectProfileNonce: claimSubjectProfileNonce,
         credential: credential,
         request: request,
-        circuitData: circuitData,
         privateKey: param.privateKey,
         challenge: param.challenge,
         config: param.config,

@@ -192,7 +192,6 @@ class Authenticate {
   }) async {
     final nonce = authClaimNonce ?? DEFAULT_AUTH_CLAIM_NONCE;
     try {
-      final proofRepository = await getItSdk.getAsync<ProofRepository>();
       _proofGenerationStepsStreamManager =
           getItSdk<ProofGenerationStepsStreamManager>();
       _stacktraceManager = getItSdk<StacktraceManager>();
@@ -280,7 +279,6 @@ class Authenticate {
           env: env,
           verifierDid: message.from,
           transactionData: transactionData,
-          proofRepo: proofRepository,
         );
       }
 
@@ -330,7 +328,6 @@ class Authenticate {
         treeState: authClaimCompanionObject.treeState!,
         authClaimNode: authClaimCompanionObject.authClaimNode!,
         gistProofEntity: authClaimCompanionObject.gistProofEntity!,
-        proofRepository: proofRepository,
         circuitId: circuitId,
         env: env,
       );
@@ -375,7 +372,6 @@ class Authenticate {
     required EnvEntity env,
     required String? verifierDid,
     required Map<String, dynamic>? transactionData,
-    required ProofRepository proofRepo,
   }) async {
     final proofs = <Iden3commProofEntity>[];
 
@@ -462,8 +458,6 @@ class Authenticate {
           }
         }
 
-        final circuitData = await proofRepo.loadCircuitFiles(request.circuitId);
-
         proof = await generateProofUseCase.execute(
           param: GenerateIden3commProofParam(
             did: genesisDid,
@@ -471,7 +465,6 @@ class Authenticate {
             claimSubjectProfileNonce: credentialSubjectNonce,
             credential: credential,
             request: request,
-            circuitData: circuitData,
             privateKey: privateKey,
             challenge: challenge,
             config: env.config,
@@ -508,10 +501,11 @@ class Authenticate {
     required MTProofEntity nonRevProof,
     required Map<String, dynamic> treeState,
     required GistMTProofEntity gistProofEntity,
-    required ProofRepository proofRepository,
     required CircuitId circuitId,
     required EnvEntity env,
   }) async {
+    final proofRepository = await getItSdk.getAsync<ProofRepository>();
+
     JWZHeader header = JWZHeader(
       circuitId: circuitId.id,
       crit: ["circuitId"],
@@ -554,7 +548,11 @@ class Authenticate {
       config: env.config.toJson(),
     );
 
-    final circuitData = await proofRepository.loadCircuitFiles(circuitId.id);
+    final optimizedCircuitId = inputsResponse.circuitId ?? circuitId.id;
+
+    final circuitData = await proofRepository.loadCircuitFiles(
+      optimizedCircuitId,
+    );
 
     Uint8List witnessBytes = await proofRepository.calculateWitness(
       circuitData: circuitData,

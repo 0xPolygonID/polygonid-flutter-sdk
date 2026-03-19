@@ -63,8 +63,11 @@ class GenerateAuthProofUseCase
 
       logger().logTimestamp(stopwatch, "generateInputsResponse", tag: _tag);
 
+      final optimizedCircuitId =
+          generateInputsResponse.circuitId ?? param.circuitId;
+
       final circuitData = await _proofRepository.loadCircuitFiles(
-        param.circuitId,
+        optimizedCircuitId,
       );
 
       logger().logTimestamp(stopwatch, "loadCircuitFiles", tag: _tag);
