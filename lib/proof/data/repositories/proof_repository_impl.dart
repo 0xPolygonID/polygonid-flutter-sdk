@@ -37,7 +37,7 @@ class ProofRepositoryImpl extends ProofRepository {
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
   final CircuitsFilesDataSource _circuitsFilesDS;
-  final CircuitRegistry? _circuitRegistry;
+  final CircuitRegistry _circuitRegistry;
   final GetEnvUseCase _getEnvUseCase;
 
   final StacktraceManager _stacktraceManager;
@@ -257,10 +257,8 @@ class ProofRepositoryImpl extends ProofRepository {
     }
 
     // Check registry for dynamically registered circuits
-    if (_circuitRegistry != null) {
-      final source = await _circuitRegistry.resolveCircuit(circuitId);
-      if (source != null) return true;
-    }
+    final source = await _circuitRegistry.resolveCircuit(circuitId);
+    if (source != null) return true;
 
     return false;
   }

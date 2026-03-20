@@ -13,7 +13,7 @@ import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_e
 @injectable
 class CircuitsFilesDataSource {
   final Directory directory;
-  final CircuitRegistry? circuitRegistry;
+  final CircuitRegistry circuitRegistry;
   final ZipDecoder _zipDecoder;
   final Dio _client;
 
@@ -111,7 +111,7 @@ class CircuitsFilesDataSource {
 
   /// Resolves the circuit source from the registry (if available).
   Future<CircuitFileSource?> _resolveCircuit(String circuitId) =>
-      circuitRegistry?.resolveCircuit(circuitId) ?? Future.value(null);
+      circuitRegistry.resolveCircuit(circuitId);
 
   /// Searches for a file using standard naming conventions:
   /// 1. `<basePath>/$circuitId.<ext>`

@@ -24,7 +24,6 @@ import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/get_ide
 import 'package:polygonid_flutter_sdk/identity/domain/use_cases/identity/sign_message_use_case.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/gist_mtproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/mtproof_dto.dart';
-import 'package:polygonid_flutter_sdk/proof/domain/entities/circuit_data_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/zkproof_entity.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/exceptions/proof_generation_exceptions.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/repositories/proof_repository.dart';
@@ -37,7 +36,6 @@ class GenerateIden3commProofParam {
   final BigInt claimSubjectProfileNonce;
   final CredentialEntity credential;
   final ZeroKnowledgeProofRequest request;
-  final CircuitDataEntity circuitData;
   final String privateKey;
   final String? challenge;
 
@@ -54,7 +52,6 @@ class GenerateIden3commProofParam {
     required this.claimSubjectProfileNonce,
     required this.credential,
     required this.request,
-    required this.circuitData,
     required this.privateKey,
     this.challenge,
     this.config,
@@ -245,14 +242,9 @@ class GenerateIden3commProofUseCase
     final inputs = json.encode(generateInputsResponse.inputs);
 
     final circuitId =
-        generateInputsResponse.circuitId ?? param.circuitData.circuitId;
+        generateInputsResponse.circuitId ?? param.request.circuitId;
 
-    final CircuitDataEntity circuitData;
-    if (circuitId != param.circuitData.circuitId) {
-      circuitData = await _proofRepository.loadCircuitFiles(circuitId);
-    } else {
-      circuitData = param.circuitData;
-    }
+    final circuitData = await _proofRepository.loadCircuitFiles(circuitId);
 
     if (kDebugMode) {
       //just for debug
