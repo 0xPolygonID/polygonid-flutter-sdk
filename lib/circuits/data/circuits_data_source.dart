@@ -45,7 +45,16 @@ class CircuitsDataSource {
     try {
       String path = directory.path;
       var file = File('$path/$fileName');
-      final bool fileExists = await file.exists();
+      var fileExists = await file.exists();
+
+      // Also check inside a subfolder named after the circuit, which is
+      // where CircuitsFilesDataSource.downloadAndExtractZip places files.
+      if (!fileExists) {
+        final baseName = pathLib.basenameWithoutExtension(fileName);
+        file = File('$path/$baseName/$fileName');
+        fileExists = await file.exists();
+      }
+
       if (!fileExists) {
         return false;
       }
