@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 
@@ -6,8 +7,17 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 typedef CircuitResolver = Future<CircuitFileSource?> Function(String circuitId);
 
 /// A callback that downloads and extracts a zip archive for a circuit.
+///
+/// [forceDownload] bypasses the on-disk existence check and always
+/// re-downloads. [cancelToken] allows the caller to cancel an in-flight
+/// download.
 typedef CircuitDownloader =
-    Future<void> Function(String circuitId, String zipUrl);
+    Future<void> Function(
+      String circuitId,
+      String zipUrl, {
+      bool forceDownload,
+      CancelToken? cancelToken,
+    });
 
 /// Manages explicit circuit file registrations and an optional dynamic
 /// resolver for circuit IDs that are not known ahead of time.
@@ -33,14 +43,27 @@ class CircuitRegistry {
   /// If [source] is a [UrlCircuitFileSource] with
   /// [UrlCircuitFileSource.downloadImmediately] set to `true` and a
   /// downloader has been configured via [setDownloader], the zip archive
-  /// is downloaded and extracted immediately.
-  Future<void> register(String circuitId, CircuitFileSource source) async {
+  /// is downloaded and extracted immediately — unless the circuit files are
+  /// already present on disk (skipped when [UrlCircuitFileSource.forceDownload]
+  /// is `false`).
+  ///
+  /// [cancelToken] can be used to cancel an in-flight download.
+  Future<void> register(
+    String circuitId,
+    CircuitFileSource source, {
+    CancelToken? cancelToken,
+  }) async {
     _registrations[circuitId] = source;
 
     if (source is UrlCircuitFileSource &&
         source.downloadImmediately &&
         _downloader != null) {
-      await _downloader!(circuitId, source.zipUrl);
+      await _downloader!(
+        circuitId,
+        source.zipUrl,
+        forceDownload: source.forceDownload,
+        cancelToken: cancelToken,
+      );
     }
   }
 

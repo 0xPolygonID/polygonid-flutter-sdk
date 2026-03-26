@@ -368,7 +368,7 @@ class ProofRepositoryImpl extends ProofRepository {
 
   ///
   @override
-  Future<void> initCircuitsDownloadFromServer({
+  Future<void> initCircuitsDownload({
     required List<CircuitsToDownloadParam> circuitsToDownload,
   }) async {
     for (int i = 0; i < circuitsToDownload.length; i++) {

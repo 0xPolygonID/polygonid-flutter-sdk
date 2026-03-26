@@ -472,14 +472,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
-    gh.factoryAsync<_i540.CircuitsFilesDataSource>(
-      () async => _i540.CircuitsFilesDataSource(
-        await getAsync<_i497.Directory>(),
-        gh<_i819.CircuitRegistry>(),
-        gh<_i71.ZipDecoder>(),
-        gh<_i361.Dio>(),
-      ),
-    );
     gh.factory<_i328.PolygonIdCoreCredential>(
       () => _i328.PolygonIdCoreCredential(gh<_i267.StacktraceManager>()),
     );
@@ -572,6 +564,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i294.CredentialMapper(
         gh<_i497.CredentialStateMapper>(),
         gh<_i894.CredentialInfoMapper>(),
+      ),
+    );
+    gh.factoryAsync<_i540.CircuitsFilesDataSource>(
+      () async => _i540.CircuitsFilesDataSource(
+        await getAsync<_i497.Directory>(),
+        gh<_i819.CircuitRegistry>(),
+        gh<_i71.ZipDecoder>(),
+        gh<_i361.Dio>(),
       ),
     );
     gh.factoryParamAsync<_i310.Database, String?, String?>(

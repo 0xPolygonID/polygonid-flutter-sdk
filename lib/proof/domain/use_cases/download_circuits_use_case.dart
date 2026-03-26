@@ -31,7 +31,7 @@ class DownloadCircuitsUseCase
     }
 
     // intentionally not awaited
-    _proofRepository.initCircuitsDownloadFromServer(
+    _proofRepository.initCircuitsDownload(
       circuitsToDownload: missingCircuits,
     );
     yield* _proofRepository.circuitsDownloadInfoStream(

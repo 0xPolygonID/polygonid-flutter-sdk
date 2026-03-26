@@ -35,12 +35,10 @@ class CircuitsFilesDataSource {
     try {
       final data = await rootBundle.load('assets/$circuitId.wcd');
       return data.buffer.asUint8List();
-    } catch (_) {
-      // asset not found – continue to registry
-    }
+    } catch (_) {} // asset not found – continue to registry
 
     // Fallback: try registry/resolver
-    final source = await _resolveCircuit(circuitId);
+    final source = await circuitRegistry.resolveCircuit(circuitId);
     if (source != null) {
       final result = await _loadGraphFromSource(circuitId, source);
       if (result != null) return result;
@@ -59,12 +57,11 @@ class CircuitsFilesDataSource {
     if (local != null) return local.path;
 
     // Fallback: try registry/resolver
-    final source = await _resolveCircuit(circuitId);
+    final source = await circuitRegistry.resolveCircuit(circuitId);
     if (source != null) {
       final result = await _resolveZkeyFromSource(circuitId, source);
       if (result != null) return result;
     }
-
 
     throw CircuitNotDownloadedException(
       circuit: circuitId,
@@ -89,9 +86,7 @@ class CircuitsFilesDataSource {
   void deleteFile(String pathToFile) {
     try {
       File(pathToFile).deleteSync();
-    } catch (_) {
-      // file not found — nothing to clean up
-    }
+    } catch (_) {} // file not found — nothing to clean up
   }
 
   // --- Private helpers ---
@@ -108,10 +103,6 @@ class CircuitsFilesDataSource {
     final name = '${circuitsFileName.trim()}$suffix.zip';
     return File(pathLib.join(directory.path, name));
   }
-
-  /// Resolves the circuit source from the registry (if available).
-  Future<CircuitFileSource?> _resolveCircuit(String circuitId) =>
-      circuitRegistry.resolveCircuit(circuitId);
 
   /// Searches for a file using standard naming conventions:
   /// 1. `<basePath>/$circuitId.<ext>`
@@ -157,8 +148,12 @@ class CircuitsFilesDataSource {
           _graphFallbacks,
           basePath: directoryPath,
         )?.readAsBytesSync();
-      case UrlCircuitFileSource(:final zipUrl):
-        await downloadAndExtractZip(circuitId, zipUrl);
+      case UrlCircuitFileSource():
+        await downloadAndExtractZip(
+          circuitId,
+          source.zipUrl,
+          forceDownload: source.forceDownload,
+        );
         return _readFileIfExists(
           circuitId,
           'wcd',
@@ -182,8 +177,12 @@ class CircuitsFilesDataSource {
           _zkeyFallbacks,
           basePath: directoryPath,
         )?.path;
-      case UrlCircuitFileSource(:final zipUrl):
-        await downloadAndExtractZip(circuitId, zipUrl);
+      case UrlCircuitFileSource():
+        await downloadAndExtractZip(
+          circuitId,
+          source.zipUrl,
+          forceDownload: source.forceDownload,
+        );
         return _readFileIfExists(circuitId, 'zkey', _zkeyFallbacks)?.path;
       case AssetCircuitFileSource(:final zkeyAssetPath):
         if (zkeyAssetPath == null) return null;
@@ -219,11 +218,22 @@ class CircuitsFilesDataSource {
   /// prevents a partially-extracted directory (caused by e.g. an app kill or
   /// disk-full condition) from being mistaken for a valid extraction on
   /// subsequent calls.
-  Future<void> downloadAndExtractZip(String circuitId, String zipUrl) async {
+  ///
+  /// When [forceDownload] is `false` (the default) the download is skipped if
+  /// the circuit files are already present on disk.  Pass `true` to always
+  /// re-download and re-extract.
+  ///
+  /// [cancelToken] can be used to cancel the in-flight Dio download.
+  Future<void> downloadAndExtractZip(
+    String circuitId,
+    String zipUrl, {
+    bool forceDownload = false,
+    CancelToken? cancelToken,
+  }) async {
     final circuitDir = Directory(pathLib.join(directory.path, circuitId));
 
     // Skip only when the expected circuit files are already present.
-    if (_circuitFilesValid(circuitId, circuitDir)) return;
+    if (!forceDownload && _circuitFilesValid(circuitId, circuitDir)) return;
 
     // If the directory exists but is incomplete, remove it so we start fresh.
     if (circuitDir.existsSync()) {
@@ -232,11 +242,14 @@ class CircuitsFilesDataSource {
 
     final zipPath = pathLib.join(directory.path, '$circuitId.zip');
     final tempDir = Directory(
-      pathLib.join(directory.path, '${circuitId}_tmp_${DateTime.now().millisecondsSinceEpoch}'),
+      pathLib.join(
+        directory.path,
+        '${circuitId}_tmp_${DateTime.now().millisecondsSinceEpoch}',
+      ),
     );
 
     try {
-      await _client.download(zipUrl, zipPath);
+      await _client.download(zipUrl, zipPath, cancelToken: cancelToken);
 
       await tempDir.create(recursive: true);
       await extractZipToDirectory(

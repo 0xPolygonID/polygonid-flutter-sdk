@@ -51,7 +51,7 @@ abstract class ProofRepository {
 
   Future<bool> circuitsFilesExist({required String circuitsFileName});
 
-  Future<void> initCircuitsDownloadFromServer({
+  Future<void> initCircuitsDownload({
     required List<CircuitsToDownloadParam> circuitsToDownload,
   });
 

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_model.dart';
@@ -38,8 +39,17 @@ abstract class PolygonIdSdkCircuits {
   ///
   /// If [source] is a [UrlCircuitFileSource] with
   /// [UrlCircuitFileSource.downloadImmediately] set to `true`, the zip
-  /// archive is downloaded and extracted before this method returns.
-  Future<void> registerCircuitFile(String circuitId, CircuitFileSource source);
+  /// archive is downloaded and extracted before this method returns —
+  /// unless the files are already present and [UrlCircuitFileSource.forceDownload]
+  /// is `false`.
+  ///
+  /// [cancelToken] can be used to cancel an in-flight download triggered by
+  /// [UrlCircuitFileSource.downloadImmediately].
+  Future<void> registerCircuitFile(
+    String circuitId,
+    CircuitFileSource source, {
+    CancelToken? cancelToken,
+  });
 
   /// Remove a previously registered circuit file source.
   void unregisterCircuitFile(String circuitId);
@@ -113,8 +123,11 @@ class Circuits implements PolygonIdSdkCircuits {
 
   @override
   Future<void> registerCircuitFile(
-      String circuitId, CircuitFileSource source) async {
-    await _circuitRegistry.register(circuitId, source);
+    String circuitId,
+    CircuitFileSource source, {
+    CancelToken? cancelToken,
+  }) async {
+    await _circuitRegistry.register(circuitId, source, cancelToken: cancelToken);
   }
 
   @override

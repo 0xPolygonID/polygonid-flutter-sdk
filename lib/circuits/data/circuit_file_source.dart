@@ -23,9 +23,15 @@ class UrlCircuitFileSource extends CircuitFileSource {
   /// generation.
   final bool downloadImmediately;
 
+  /// When `true`, re-downloads and re-extracts the zip archive even if the
+  /// circuit files are already present on disk. Has no effect unless
+  /// [downloadImmediately] is also `true`, or the circuit is fetched lazily.
+  final bool forceDownload;
+
   const UrlCircuitFileSource({
     required this.zipUrl,
     this.downloadImmediately = false,
+    this.forceDownload = false,
   });
 }
 
