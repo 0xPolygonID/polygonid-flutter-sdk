@@ -19,6 +19,8 @@ import 'package:http/http.dart' as _i519;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:logger/logger.dart' as _i974;
 import 'package:package_info_plus/package_info_plus.dart' as _i655;
+import 'package:polygonid_flutter_sdk/circuits/data/circuit_download_service.dart'
+    as _i1100;
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart'
     as _i819;
 import 'package:polygonid_flutter_sdk/circuits/data/circuits_data_source.dart'
@@ -566,12 +568,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i894.CredentialInfoMapper>(),
       ),
     );
+    gh.factoryAsync<_i1100.CircuitDownloadService>(
+      () async => _i1100.CircuitDownloadService(
+        await getAsync<_i497.Directory>(),
+        gh<_i71.ZipDecoder>(),
+        gh<_i361.Dio>(),
+      ),
+    );
     gh.factoryAsync<_i540.CircuitsFilesDataSource>(
       () async => _i540.CircuitsFilesDataSource(
         await getAsync<_i497.Directory>(),
         gh<_i819.CircuitRegistry>(),
-        gh<_i71.ZipDecoder>(),
-        gh<_i361.Dio>(),
+        await getAsync<_i1100.CircuitDownloadService>(),
       ),
     );
     gh.factoryParamAsync<_i310.Database, String?, String?>(
@@ -802,7 +810,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i352.CircuitsDownloadDataSource>(),
         gh<_i294.CredentialMapper>(),
         await getAsync<_i540.CircuitsFilesDataSource>(),
-        gh<_i819.CircuitRegistry>(),
         gh<_i626.GetEnvUseCase>(),
         gh<_i267.StacktraceManager>(),
       ),
@@ -908,7 +915,7 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i37.CancelCircuitsDownloadUseCase>(),
         await getAsync<_i737.RemoveCircuitsUseCase>(),
         gh<_i819.CircuitRegistry>(),
-        await getAsync<_i540.CircuitsFilesDataSource>(),
+        await getAsync<_i1100.CircuitDownloadService>(),
       ),
     );
     gh.factory<_i734.GetAuthChallengeUseCase>(

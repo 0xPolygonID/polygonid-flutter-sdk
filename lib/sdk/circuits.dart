@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:polygonid_flutter_sdk/circuits/data/circuit_download_service.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_model.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart';
@@ -8,7 +9,6 @@ import 'package:polygonid_flutter_sdk/circuits/domain/cancel_circuits_download_u
 import 'package:polygonid_flutter_sdk/circuits/domain/check_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/download_circuits_use_case.dart';
 import 'package:polygonid_flutter_sdk/circuits/domain/remove_circuits_use_case.dart';
-import 'package:polygonid_flutter_sdk/proof/data/data_sources/circuits_files_data_source.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 
 abstract class PolygonIdSdkCircuits {
@@ -70,6 +70,7 @@ class Circuits implements PolygonIdSdkCircuits {
   final CancelCircuitsDownloadUseCase _cancelCircuitsDownloadUseCase;
   final RemoveCircuitsUseCase _removeCircuitsUseCase;
   final CircuitRegistry _circuitRegistry;
+  final CircuitDownloadService _circuitDownloadService;
 
   Circuits(
     this._downloadCircuitsUseCase,
@@ -77,10 +78,8 @@ class Circuits implements PolygonIdSdkCircuits {
     this._cancelCircuitsDownloadUseCase,
     this._removeCircuitsUseCase,
     this._circuitRegistry,
-    CircuitsFilesDataSource circuitsFilesDataSource,
-  ) {
-    _circuitRegistry.setDownloader(circuitsFilesDataSource.downloadAndExtractZip);
-  }
+    this._circuitDownloadService,
+  );
 
   @override
   Stream<DownloadInfo> initCircuitsDownloadAndGetInfoStream({
@@ -127,7 +126,18 @@ class Circuits implements PolygonIdSdkCircuits {
     CircuitFileSource source, {
     CancelToken? cancelToken,
   }) async {
-    await _circuitRegistry.register(circuitId, source, cancelToken: cancelToken);
+    // Store the source so resolveCircuit can find it later.
+    _circuitRegistry.register(circuitId, source);
+
+    // If the caller wants an eager download, kick it off now before returning.
+    if (source is UrlCircuitFileSource && source.downloadImmediately) {
+      await _circuitDownloadService.downloadAndExtractZip(
+        circuitId,
+        source.zipUrl,
+        forceDownload: source.forceDownload,
+        cancelToken: cancelToken,
+      );
+    }
   }
 
   @override

@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart';
@@ -19,130 +16,25 @@ void main() {
   group('register', () {
     test('stores the source so resolveCircuit returns it', () async {
       final source = LocalPathCircuitFileSource(directoryPath: '/x');
-      await registry.register('id', source);
+      registry.register('id', source);
       expect(await registry.resolveCircuit('id'), same(source));
     });
 
-    test('does not call downloader for LocalPathCircuitFileSource', () async {
-      var called = false;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => called = true,
-      );
-      await registry.register('id', LocalPathCircuitFileSource(directoryPath: '/x'));
-      expect(called, isFalse);
+    test('overwrites a previous registration for the same circuitId', () async {
+      final first = LocalPathCircuitFileSource(directoryPath: '/a');
+      final second = LocalPathCircuitFileSource(directoryPath: '/b');
+      registry.register('id', first);
+      registry.register('id', second);
+      expect(await registry.resolveCircuit('id'), same(second));
     });
 
-    test('does not call downloader when downloadImmediately is false', () async {
-      var called = false;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => called = true,
-      );
-      await registry.register('id', UrlCircuitFileSource(zipUrl: 'http://x'));
-      expect(called, isFalse);
-    });
-
-    test('does not call downloader for AssetCircuitFileSource', () async {
-      var called = false;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => called = true,
-      );
-      await registry.register(
-        'id',
-        AssetCircuitFileSource(wcdAssetPath: 'assets/circuit.wcd'),
-      );
-      expect(called, isFalse);
-    });
-
-    test('calls downloader with correct circuitId and zipUrl when downloadImmediately=true', () async {
-      String? capturedId, capturedUrl;
-      registry.setDownloader((id, url, {forceDownload = false, cancelToken}) async {
-        capturedId = id;
-        capturedUrl = url;
-      });
-      await registry.register(
-        'myCircuit',
-        UrlCircuitFileSource(zipUrl: 'http://z.zip', downloadImmediately: true),
-      );
-      expect(capturedId, 'myCircuit');
-      expect(capturedUrl, 'http://z.zip');
-    });
-
-    test('forwards forceDownload=false (default) to downloader', () async {
-      bool? capturedForce;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => capturedForce = forceDownload,
-      );
-      await registry.register(
-        'id',
-        UrlCircuitFileSource(zipUrl: 'http://x', downloadImmediately: true),
-      );
-      expect(capturedForce, isFalse);
-    });
-
-    test('forwards forceDownload=true to downloader', () async {
-      bool? capturedForce;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => capturedForce = forceDownload,
-      );
-      await registry.register(
-        'id',
-        UrlCircuitFileSource(
-          zipUrl: 'http://x',
-          downloadImmediately: true,
-          forceDownload: true,
-        ),
-      );
-      expect(capturedForce, isTrue);
-    });
-
-    test('forwards cancelToken to downloader', () async {
-      CancelToken? capturedToken;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => capturedToken = cancelToken,
-      );
-      final token = CancelToken();
-      await registry.register(
-        'id',
-        UrlCircuitFileSource(zipUrl: 'http://x', downloadImmediately: true),
-        cancelToken: token,
-      );
-      expect(capturedToken, same(token));
-    });
-
-    test('does not throw when downloadImmediately=true but no downloader is set', () async {
-      await expectLater(
-        registry.register(
-          'id',
-          UrlCircuitFileSource(zipUrl: 'http://x', downloadImmediately: true),
-        ),
-        completes,
-      );
-      // Source was still stored
-      expect(await registry.resolveCircuit('id'), isNotNull);
-    });
-
-    test('awaits downloader before returning', () async {
-      final completer = Completer<void>();
-      var downloaderFinished = false;
-      registry.setDownloader((id, url, {forceDownload = false, cancelToken}) async {
-        await completer.future;
-        downloaderFinished = true;
-      });
-
-      var registerDone = false;
-      final registerFuture = registry
-          .register('id', UrlCircuitFileSource(zipUrl: 'http://x', downloadImmediately: true))
-          .then((_) => registerDone = true);
-
-      // Not yet done — downloader is blocked.
-      await Future.microtask(() {});
-      expect(downloaderFinished, isFalse);
-      expect(registerDone, isFalse);
-
-      completer.complete();
-      await registerFuture;
-      expect(downloaderFinished, isTrue);
-      expect(registerDone, isTrue);
+    test('registering multiple different ids works independently', () async {
+      final s1 = LocalPathCircuitFileSource(directoryPath: '/a');
+      final s2 = UrlCircuitFileSource(zipUrl: 'http://b.zip');
+      registry.register('id1', s1);
+      registry.register('id2', s2);
+      expect(await registry.resolveCircuit('id1'), same(s1));
+      expect(await registry.resolveCircuit('id2'), same(s2));
     });
   });
 
@@ -152,7 +44,7 @@ void main() {
 
   group('unregister', () {
     test('removes a previously registered source', () async {
-      await registry.register('id', LocalPathCircuitFileSource(directoryPath: '/x'));
+      registry.register('id', LocalPathCircuitFileSource(directoryPath: '/x'));
       registry.unregister('id');
       expect(await registry.resolveCircuit('id'), isNull);
     });
@@ -173,13 +65,13 @@ void main() {
 
     test('returns the registered source', () async {
       final source = LocalPathCircuitFileSource(directoryPath: '/a');
-      await registry.register('id', source);
+      registry.register('id', source);
       expect(await registry.resolveCircuit('id'), same(source));
     });
 
     test('does not call resolver when circuit is registered', () async {
       var resolverCalled = false;
-      await registry.register('id', LocalPathCircuitFileSource(directoryPath: '/a'));
+      registry.register('id', LocalPathCircuitFileSource(directoryPath: '/a'));
       registry.setCircuitResolver((_) async {
         resolverCalled = true;
         return null;
@@ -209,21 +101,33 @@ void main() {
   });
 
   // ---------------------------------------------------------------------------
-  // setDownloader
+  // setCircuitResolver
   // ---------------------------------------------------------------------------
 
-  group('setDownloader', () {
-    test('setting null disables immediate download', () async {
-      var called = false;
-      registry.setDownloader(
-        (id, url, {forceDownload = false, cancelToken}) async => called = true,
+  group('setCircuitResolver', () {
+    test('resolver is called with the correct circuitId', () async {
+      String? receivedId;
+      registry.setCircuitResolver((id) async {
+        receivedId = id;
+        return null;
+      });
+      await registry.resolveCircuit('myCircuit');
+      expect(receivedId, 'myCircuit');
+    });
+
+    test('resolver result is returned', () async {
+      final source = AssetCircuitFileSource(wcdAssetPath: 'assets/c.wcd');
+      registry.setCircuitResolver((_) async => source);
+      expect(await registry.resolveCircuit('any'), same(source));
+    });
+
+    test('replacing resolver replaces the callback', () async {
+      registry.setCircuitResolver(
+        (_) async => LocalPathCircuitFileSource(directoryPath: '/first'),
       );
-      registry.setDownloader(null);
-      await registry.register(
-        'id',
-        UrlCircuitFileSource(zipUrl: 'http://x', downloadImmediately: true),
-      );
-      expect(called, isFalse);
+      final second = LocalPathCircuitFileSource(directoryPath: '/second');
+      registry.setCircuitResolver((_) async => second);
+      expect(await registry.resolveCircuit('id'), same(second));
     });
   });
 }

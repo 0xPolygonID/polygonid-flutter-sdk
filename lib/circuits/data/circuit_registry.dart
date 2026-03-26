@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 
@@ -6,65 +5,27 @@ import 'package:polygonid_flutter_sdk/circuits/data/circuit_file_source.dart';
 /// at runtime. Return `null` to fall back to the default resolution behavior.
 typedef CircuitResolver = Future<CircuitFileSource?> Function(String circuitId);
 
-/// A callback that downloads and extracts a zip archive for a circuit.
-///
-/// [forceDownload] bypasses the on-disk existence check and always
-/// re-downloads. [cancelToken] allows the caller to cancel an in-flight
-/// download.
-typedef CircuitDownloader =
-    Future<void> Function(
-      String circuitId,
-      String zipUrl, {
-      bool forceDownload,
-      CancelToken? cancelToken,
-    });
-
 /// Manages explicit circuit file registrations and an optional dynamic
 /// resolver for circuit IDs that are not known ahead of time.
+///
+/// This is a pure lookup store — it has no knowledge of how files are
+/// downloaded or extracted. Download side-effects for [UrlCircuitFileSource]
+/// with [UrlCircuitFileSource.downloadImmediately] are orchestrated by the
+/// caller (see [Circuits.registerCircuitFile]).
 @lazySingleton
 class CircuitRegistry {
   final Map<String, CircuitFileSource> _registrations = {};
   CircuitResolver? _resolver;
-  CircuitDownloader? _downloader;
 
   CircuitRegistry();
 
-  /// Inject the downloader that performs zip download + extraction.
-  ///
-  /// This is called once during SDK initialisation so that [register] can
-  /// trigger an immediate download for [UrlCircuitFileSource] sources that
-  /// have [UrlCircuitFileSource.downloadImmediately] set to `true`.
-  void setDownloader(CircuitDownloader? downloader) {
-    _downloader = downloader;
-  }
-
   /// Register a [CircuitFileSource] for the given [circuitId].
   ///
-  /// If [source] is a [UrlCircuitFileSource] with
-  /// [UrlCircuitFileSource.downloadImmediately] set to `true` and a
-  /// downloader has been configured via [setDownloader], the zip archive
-  /// is downloaded and extracted immediately — unless the circuit files are
-  /// already present on disk (skipped when [UrlCircuitFileSource.forceDownload]
-  /// is `false`).
-  ///
-  /// [cancelToken] can be used to cancel an in-flight download.
-  Future<void> register(
-    String circuitId,
-    CircuitFileSource source, {
-    CancelToken? cancelToken,
-  }) async {
+  /// To trigger an immediate download for [UrlCircuitFileSource] sources with
+  /// [UrlCircuitFileSource.downloadImmediately] set to `true`, use
+  /// [Circuits.registerCircuitFile] instead of calling this method directly.
+  void register(String circuitId, CircuitFileSource source) {
     _registrations[circuitId] = source;
-
-    if (source is UrlCircuitFileSource &&
-        source.downloadImmediately &&
-        _downloader != null) {
-      await _downloader!(
-        circuitId,
-        source.zipUrl,
-        forceDownload: source.forceDownload,
-        cancelToken: cancelToken,
-      );
-    }
   }
 
   /// Remove a previously registered circuit file source.

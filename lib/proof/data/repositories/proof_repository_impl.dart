@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:polygonid_flutter_sdk/circuits/data/circuit_registry.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_cases/get_env_use_case.dart';
@@ -37,7 +36,6 @@ class ProofRepositoryImpl extends ProofRepository {
   final LocalContractFilesDataSource _localContractFilesDataSource;
   final CircuitsDownloadDataSource _circuitsDownloadDataSource;
   final CircuitsFilesDataSource _circuitsFilesDS;
-  final CircuitRegistry _circuitRegistry;
   final GetEnvUseCase _getEnvUseCase;
 
   final StacktraceManager _stacktraceManager;
@@ -54,7 +52,6 @@ class ProofRepositoryImpl extends ProofRepository {
     this._circuitsDownloadDataSource,
     this._claimMapper,
     this._circuitsFilesDS,
-    this._circuitRegistry,
     this._getEnvUseCase,
     this._stacktraceManager,
   );
@@ -256,11 +253,9 @@ class ProofRepositoryImpl extends ProofRepository {
       return true;
     }
 
-    // Check registry for dynamically registered circuits
-    final source = await _circuitRegistry.resolveCircuit(circuitId);
-    if (source != null) return true;
-
-    return false;
+    // Check registry for dynamically registered circuits via the data source,
+    // avoiding a direct dependency on CircuitRegistry in this layer.
+    return _circuitsFilesDS.canResolveCircuit(circuitId);
   }
 
   @override
@@ -347,7 +342,9 @@ class ProofRepositoryImpl extends ProofRepository {
     for (final param in circuitsToDownload) {
       final path = param.downloadPath;
       if (path != null) {
-        _circuitsFilesDS.deleteFile(path);
+        try {
+          File(path).deleteSync();
+        } catch (_) {} // file not found — nothing to clean up
       }
     }
   }
@@ -376,7 +373,9 @@ class ProofRepositoryImpl extends ProofRepository {
       final path = _circuitsFilesDS.getPathToCircuitZipFileTemp(
         circuitsFileName: param.circuitsName,
       );
-      _circuitsFilesDS.deleteFile(path);
+      try {
+        File(path).deleteSync();
+      } catch (_) {} // file not found — nothing to clean up
       circuitsToDownload[i].downloadPath = path;
     }
     return _circuitsDownloadDataSource.initStreamedResponseFromServer(
