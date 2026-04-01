@@ -98,8 +98,8 @@ class ResourcePermissionsListBody with EquatableMixin implements JsonEncodable {
       'granted': granted.map((e) => e.toJson()).toList(),
       'pending': pending.map((e) => e.toJson()).toList(),
       'rejected': rejected.map((e) => e.toJson()).toList(),
-      'revoked': revoked?.map((e) => e.toJson()).toList(),
-      'deleted': deleted?.map((e) => e.toJson()).toList(),
+      if (revoked != null) 'revoked': revoked?.map((e) => e.toJson()).toList(),
+      if (deleted != null) 'deleted': deleted?.map((e) => e.toJson()).toList(),
     };
   }
 
