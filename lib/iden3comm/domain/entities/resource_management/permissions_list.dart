@@ -104,7 +104,7 @@ class ResourcePermissionsListBody with EquatableMixin implements JsonEncodable {
   }
 
   @override
-  String toString() => jsonEncode(toJson());
+  String toString() => '[ResourcePermissionsListBody] ${jsonEncode(toJson())}';
 }
 
 class Permission with EquatableMixin {
