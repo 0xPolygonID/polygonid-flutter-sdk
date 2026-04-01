@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/attachment.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
@@ -50,11 +52,15 @@ class ResourcePermissionsListBody with EquatableMixin implements JsonEncodable {
   final List<Permission> granted;
   final List<Permission> pending;
   final List<Permission> rejected;
+  final List<Permission>? revoked;
+  final List<Permission>? deleted;
 
   ResourcePermissionsListBody({
     required this.granted,
     required this.pending,
     required this.rejected,
+    this.revoked,
+    this.deleted,
   });
 
   factory ResourcePermissionsListBody.fromJson(Map<String, dynamic> json) {
@@ -74,11 +80,17 @@ class ResourcePermissionsListBody with EquatableMixin implements JsonEncodable {
               ?.map((e) => Permission.fromJson(e))
               .toList() ??
           [],
+      revoked: (json['revoked'] as List<dynamic>?)
+          ?.map((e) => Permission.fromJson(e))
+          .toList(),
+      deleted: (json['deleted'] as List<dynamic>?)
+          ?.map((e) => Permission.fromJson(e))
+          .toList(),
     );
   }
 
   @override
-  List<Object?> get props => [granted, pending, rejected];
+  List<Object?> get props => [granted, pending, rejected, revoked, deleted];
 
   @override
   Map<String, dynamic> toJson() {
@@ -86,8 +98,13 @@ class ResourcePermissionsListBody with EquatableMixin implements JsonEncodable {
       'granted': granted.map((e) => e.toJson()).toList(),
       'pending': pending.map((e) => e.toJson()).toList(),
       'rejected': rejected.map((e) => e.toJson()).toList(),
+      'revoked': revoked?.map((e) => e.toJson()).toList(),
+      'deleted': deleted?.map((e) => e.toJson()).toList(),
     };
   }
+
+  @override
+  String toString() => jsonEncode(toJson());
 }
 
 class Permission with EquatableMixin {
