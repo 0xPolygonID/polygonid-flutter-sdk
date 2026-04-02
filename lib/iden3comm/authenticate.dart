@@ -30,6 +30,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
@@ -433,7 +434,33 @@ class Authenticate {
         final generateProofUseCase = await getItSdk
             .getAsync<GenerateIden3commProofUseCase>();
 
-        final credential = credentials.first;
+        final refreshed =
+            await getItSdk<CheckAndRefreshExpiredCredentialUseCase>().execute(
+              param: CheckAndRefreshExpiredCredentialParam(
+                credentials: credentials,
+                genesisDid: genesisDid,
+                privateKey: privateKey,
+              ),
+            );
+
+        if (refreshed == null) {
+          // Credential is expired and cannot be refreshed.
+          if (request.isOptional) {
+            continue;
+          } else {
+            _stacktraceManager.addError(
+              "[Authenticate] Credential expired for request: ${request.id}",
+            );
+            throw ExpiredCredentialException(
+              credential: credentials.firstOrNull,
+              proofRequest: request,
+              errorMessage:
+                  "Credential is expired and cannot be refreshed for request: ${request.id}",
+            );
+          }
+        }
+
+        final credential = refreshed;
 
         final credentialSubjectDid = credential.credentialSubject['id'];
         final profileEntries = identityEntity.profiles.entries;

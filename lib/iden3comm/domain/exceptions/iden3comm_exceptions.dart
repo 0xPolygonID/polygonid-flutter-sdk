@@ -1,4 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/domain/error_exception.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_request_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
@@ -151,6 +152,22 @@ class NoCredentialsFoundException extends PolygonIdSDKException {
   });
 }
 
+
+/// Thrown when all matching credentials for a proof request are expired and
+/// none could be refreshed via a `refreshService`.
+class ExpiredCredentialException extends PolygonIdSDKException {
+  final ZeroKnowledgeProofRequest? proofRequest;
+
+  /// The expired credential that was last attempted (or the first candidate).
+  final CredentialEntity? credential;
+
+  ExpiredCredentialException({
+    this.proofRequest,
+    this.credential,
+    required super.errorMessage,
+    super.error,
+  });
+}
 
 class UnsupportedCircuitException extends PolygonIdSDKException {
   final ZeroKnowledgeProofRequest proofRequest;

@@ -152,6 +152,8 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_
     as _i1012;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart'
     as _i411;
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart'
+    as _i684;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
     as _i505;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart'
@@ -472,14 +474,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => databaseModule.keyValueStore,
       instanceName: 'keyValueStore',
     );
-    gh.factoryAsync<_i540.CircuitsFilesDataSource>(
-      () async => _i540.CircuitsFilesDataSource(
-        await getAsync<_i497.Directory>(),
-        gh<_i819.CircuitRegistry>(),
-        gh<_i71.ZipDecoder>(),
-        gh<_i361.Dio>(),
-      ),
-    );
     gh.factory<_i328.PolygonIdCoreCredential>(
       () => _i328.PolygonIdCoreCredential(gh<_i267.StacktraceManager>()),
     );
@@ -572,6 +566,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i294.CredentialMapper(
         gh<_i497.CredentialStateMapper>(),
         gh<_i894.CredentialInfoMapper>(),
+      ),
+    );
+    gh.factoryAsync<_i540.CircuitsFilesDataSource>(
+      () async => _i540.CircuitsFilesDataSource(
+        await getAsync<_i497.Directory>(),
+        gh<_i819.CircuitRegistry>(),
+        gh<_i71.ZipDecoder>(),
+        gh<_i361.Dio>(),
       ),
     );
     gh.factoryParamAsync<_i310.Database, String?, String?>(
@@ -1493,6 +1495,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i635.SaveClaimsUseCase>(),
       ),
     );
+    gh.factoryAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(
+      () async => _i684.CheckAndRefreshExpiredCredentialUseCase(
+        await getAsync<_i143.RefreshCredentialUseCase>(),
+        gh<_i920.ProofGenerationStepsStreamManager>(),
+      ),
+    );
     gh.factoryAsync<_i501.Credential>(
       () async => _i501.Credential(
         gh<_i635.SaveClaimsUseCase>(),
@@ -1519,7 +1527,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i743.GetIdentityUseCase>(),
         gh<_i920.ProofGenerationStepsStreamManager>(),
         gh<_i267.StacktraceManager>(),
-        await getAsync<_i143.RefreshCredentialUseCase>(),
+        await getAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(),
       ),
     );
     gh.factoryAsync<_i412.GetIden3commProofsUseCase>(
@@ -1529,7 +1537,7 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
         gh<_i920.ProofGenerationStepsStreamManager>(),
         gh<_i267.StacktraceManager>(),
-        await getAsync<_i143.RefreshCredentialUseCase>(),
+        await getAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(),
       ),
     );
     gh.factoryAsync<_i411.AuthenticateUseCase>(

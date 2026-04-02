@@ -3,9 +3,10 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
+import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proofs_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
@@ -47,8 +48,9 @@ MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
-MockRefreshCredentialUseCase refreshCredentialUseCase =
-    MockRefreshCredentialUseCase();
+MockCheckAndRefreshExpiredCredentialUseCase
+checkAndRefreshExpiredCredentialUseCase =
+    MockCheckAndRefreshExpiredCredentialUseCase();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
@@ -57,7 +59,7 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   isProofCircuitSupportedUseCase,
   proofGenerationStepsStreamManager,
   stacktraceStreamManager,
-  refreshCredentialUseCase,
+  checkAndRefreshExpiredCredentialUseCase,
 );
 
 @GenerateMocks([
@@ -66,19 +68,22 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   IsProofCircuitSupportedUseCase,
   ProofGenerationStepsStreamManager,
   StacktraceManager,
-  RefreshCredentialUseCase,
+  CheckAndRefreshExpiredCredentialUseCase,
 ])
 main() {
-  final claim = CredentialMocks.claim.copyWith(info: {
-    'credentialSubject': {
-      'id': IdentityMocks.did.did,
+  final claim = CredentialMocks.claim.copyWith(
+    info: {
+      'credentialSubject': {
+        'id': IdentityMocks.did.did,
+      },
     },
-  });
+  );
 
   setUp(() {
     reset(getMessageRequestsAndCredsUseCase);
     reset(getIden3commProofUseCase);
     reset(isProofCircuitSupportedUseCase);
+    reset(checkAndRefreshExpiredCredentialUseCase);
 
     when(
       isProofCircuitSupportedUseCase.execute(param: anyNamed('param')),
@@ -102,6 +107,13 @@ main() {
     when(getIden3commProofUseCase.execute(param: anyNamed('param'))).thenAnswer(
       (realInvocation) => Future.value(Iden3commMocks.iden3commSDProof),
     );
+
+    // Default: credential is valid (non-expired)
+    when(
+      checkAndRefreshExpiredCredentialUseCase.execute(
+        param: anyNamed('param'),
+      ),
+    ).thenAnswer((_) => Future.value(claim));
   });
 
   test(
@@ -182,6 +194,179 @@ main() {
       );
     },
   );
+
+  group('expired credentials', () {
+    test(
+      'given a non-optional scope whose credential is expired and cannot be refreshed, '
+      'when execute is called, then ExpiredCredentialException is thrown',
+      () async {
+        // The checkAndRefreshExpiredCredentialUseCase returns null → all expired
+        when(
+          checkAndRefreshExpiredCredentialUseCase.execute(
+            param: anyNamed('param'),
+          ),
+        ).thenAnswer((_) => Future.value(null));
+
+        // proofScopeRequest has optional: false
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (_) async => [
+            (
+              request: Iden3commMocks.proofScopeRequest,
+              credentials: [claim],
+            ),
+          ],
+        );
+
+        await expectLater(
+          useCase.execute(param: param),
+          throwsA(isA<ExpiredCredentialException>()),
+        );
+
+        verifyNever(
+          getIden3commProofUseCase.execute(param: anyNamed('param')),
+        );
+      },
+    );
+
+    test(
+      'given an optional scope whose credential is expired and cannot be refreshed, '
+      'when execute is called, then the scope is skipped and an empty list is returned',
+      () async {
+        final optionalScopeRequest = ZeroKnowledgeProofRequest.fromJson({
+          'id': 1,
+          'circuitId': CommonMocks.circuitId,
+          'optional': true,
+          'query': {
+            'allowedIssuers': ['*'],
+            'context':
+                'https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld',
+            'type': 'KYCAgeCredential',
+            'credentialSubject': {
+              'birthday': {'\$lt': 20000101},
+            },
+          },
+        });
+
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (_) async => [
+            (request: optionalScopeRequest, credentials: [claim]),
+          ],
+        );
+
+        // Credential expired and cannot be refreshed
+        when(
+          checkAndRefreshExpiredCredentialUseCase.execute(
+            param: anyNamed('param'),
+          ),
+        ).thenAnswer((_) => Future.value(null));
+
+        final proofs = await useCase.execute(param: param);
+
+        expect(proofs, isEmpty);
+        verifyNever(
+          getIden3commProofUseCase.execute(param: anyNamed('param')),
+        );
+      },
+    );
+
+    test(
+      'given two scopes where first is expired (non-optional) and second is active, '
+      'when execute is called, then ExpiredCredentialException is thrown for the first scope',
+      () async {
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (_) async => [
+            (
+              request: Iden3commMocks.proofScopeRequest, // non-optional
+              credentials: [claim],
+            ),
+            (
+              request: Iden3commMocks.proofScopeRequest,
+              credentials: [claim],
+            ),
+          ],
+        );
+
+        // First call returns null (expired), second call would return claim
+        var callCount = 0;
+        when(
+          checkAndRefreshExpiredCredentialUseCase.execute(
+            param: anyNamed('param'),
+          ),
+        ).thenAnswer((_) {
+          callCount++;
+          return Future.value(callCount == 1 ? null : claim);
+        });
+
+        await expectLater(
+          useCase.execute(param: param),
+          throwsA(isA<ExpiredCredentialException>()),
+        );
+
+        // Should not have gotten to generating any proof
+        verifyNever(
+          getIden3commProofUseCase.execute(param: anyNamed('param')),
+        );
+      },
+    );
+
+    test(
+      'given two scopes where first is optional+expired and second is active, '
+      'when execute is called, then only the second proof is returned',
+      () async {
+        final optionalScopeRequest = ZeroKnowledgeProofRequest.fromJson({
+          'id': 1,
+          'circuitId': CommonMocks.circuitId,
+          'optional': true,
+          'query': {
+            'allowedIssuers': ['*'],
+            'context':
+                'https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld',
+            'type': 'KYCAgeCredential',
+            'credentialSubject': {
+              'birthday': {'\$lt': 20000101},
+            },
+          },
+        });
+
+        when(
+          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
+        ).thenAnswer(
+          (_) async => [
+            (request: optionalScopeRequest, credentials: [claim]),
+            (
+              request: Iden3commMocks.proofScopeRequest,
+              credentials: [claim],
+            ),
+          ],
+        );
+
+        // First (optional) → expired, second → active
+        var callCount = 0;
+        when(
+          checkAndRefreshExpiredCredentialUseCase.execute(
+            param: anyNamed('param'),
+          ),
+        ).thenAnswer((_) {
+          callCount++;
+          return Future.value(callCount == 1 ? null : claim);
+        });
+
+        final proofs = await useCase.execute(param: param);
+
+        expect(proofs.length, 1);
+        expect(proofs.first, Iden3commMocks.iden3commSDProof);
+        verify(
+          getIden3commProofUseCase.execute(param: anyNamed('param')),
+        ).called(1);
+      },
+    );
+  });
 
   group("agentic agent_pairing:v1 authorization request", () {
     late GetIden3commProofsParam agenticParam;
