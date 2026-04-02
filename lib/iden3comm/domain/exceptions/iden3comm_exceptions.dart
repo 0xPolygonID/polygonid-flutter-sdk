@@ -99,11 +99,13 @@ class FetchDisplayTypeException extends PolygonIdSDKException {
 
 class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
   final String type;
+  final bool refresh;
 
   UnsupportedFetchClaimTypeException({
     required this.type,
     required super.errorMessage,
     super.error,
+    this.refresh = false,
   });
 }
 
