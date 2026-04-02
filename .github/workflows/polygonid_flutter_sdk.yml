@@ -57,7 +57,7 @@ jobs:
         run: flutter analyze lib test example
 
       - name: Run tests
-        run: flutter test --coverage --reporter=github-actions
+        run: flutter test --coverage --reporter=github
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
