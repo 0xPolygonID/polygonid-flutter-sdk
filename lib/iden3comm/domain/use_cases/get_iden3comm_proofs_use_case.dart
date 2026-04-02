@@ -44,7 +44,7 @@ class GetIden3commProofsUseCase
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
   final CheckAndRefreshExpiredCredentialUseCase
-      _checkAndRefreshExpiredCredentialUseCase;
+  _checkAndRefreshExpiredCredentialUseCase;
 
   GetIden3commProofsUseCase(
     this._getMessageRequestsAndCredsUseCase,

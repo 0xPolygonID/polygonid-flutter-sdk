@@ -436,7 +436,7 @@ class Authenticate {
 
         final checkAndRefreshUseCase = await getItSdk
             .getAsync<CheckAndRefreshExpiredCredentialUseCase>();
-        final refreshed = await checkAndRefreshUseCase.execute(
+        final validCredential = await checkAndRefreshUseCase.execute(
           param: CheckAndRefreshExpiredCredentialParam(
             credentials: credentials,
             genesisDid: genesisDid,
@@ -444,7 +444,7 @@ class Authenticate {
           ),
         );
 
-        if (refreshed == null) {
+        if (validCredential == null) {
           // Credential is expired and cannot be refreshed.
           if (request.isOptional) {
             continue;
@@ -461,7 +461,7 @@ class Authenticate {
           }
         }
 
-        final credential = refreshed;
+        final credential = validCredential;
 
         final credentialSubjectDid = credential.credentialSubject['id'];
         final profileEntries = identityEntity.profiles.entries;

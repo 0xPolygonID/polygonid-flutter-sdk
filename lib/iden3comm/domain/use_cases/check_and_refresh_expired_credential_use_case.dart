@@ -47,6 +47,14 @@ class CheckAndRefreshExpiredCredentialUseCase
   Future<CredentialEntity?> execute({
     required CheckAndRefreshExpiredCredentialParam param,
   }) async {
+    // Try find non-expired credentials first
+    final nonExpiredCreds = param.credentials.where(
+      (cred) => cred.state != CredentialState.expired,
+    );
+    if (nonExpiredCreds.isNotEmpty) {
+      return nonExpiredCreds.first;
+    }
+
     for (final candidate in param.credentials) {
       final result = await _tryCandidate(
         credential: candidate,

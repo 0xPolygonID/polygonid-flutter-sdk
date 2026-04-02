@@ -52,7 +52,7 @@ class GetIden3commProofUseCase
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
   final CheckAndRefreshExpiredCredentialUseCase
-      _checkAndRefreshExpiredCredentialUseCase;
+  _checkAndRefreshExpiredCredentialUseCase;
 
   GetIden3commProofUseCase(
     this._getMessageRequestsAndCredsUseCase,
@@ -187,15 +187,16 @@ class GetIden3commProofUseCase
       }
     }
 
-    final refreshed = await _checkAndRefreshExpiredCredentialUseCase.execute(
-      param: CheckAndRefreshExpiredCredentialParam(
-        credentials: candidates,
-        genesisDid: param.genesisDid,
-        privateKey: param.privateKey,
-      ),
-    );
+    final validCredential = await _checkAndRefreshExpiredCredentialUseCase
+        .execute(
+          param: CheckAndRefreshExpiredCredentialParam(
+            credentials: candidates,
+            genesisDid: param.genesisDid,
+            privateKey: param.privateKey,
+          ),
+        );
 
-    if (refreshed == null) {
+    if (validCredential == null) {
       _stacktraceManager.addError(
         "[GetIden3commProofUseCase] All credentials expired for request: ${param.request.id}",
       );
@@ -207,6 +208,6 @@ class GetIden3commProofUseCase
       );
     }
 
-    return refreshed;
+    return validCredential;
   }
 }
