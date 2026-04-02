@@ -1495,12 +1495,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i635.SaveClaimsUseCase>(),
       ),
     );
-    gh.factoryAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(
-      () async => _i684.CheckAndRefreshExpiredCredentialUseCase(
-        await getAsync<_i143.RefreshCredentialUseCase>(),
-        gh<_i920.ProofGenerationStepsStreamManager>(),
-      ),
-    );
     gh.factoryAsync<_i501.Credential>(
       () async => _i501.Credential(
         gh<_i635.SaveClaimsUseCase>(),
@@ -1516,6 +1510,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i500.CacheCredentialsUseCase>(),
         gh<_i348.CacheCredentialUseCase>(),
         gh<_i732.CleanCredentialCacheUseCase>(),
+      ),
+    );
+    gh.factoryAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(
+      () async => _i684.CheckAndRefreshExpiredCredentialUseCase(
+        await getAsync<_i143.RefreshCredentialUseCase>(),
+        gh<_i920.ProofGenerationStepsStreamManager>(),
+        gh<_i267.StacktraceManager>(),
       ),
     );
     gh.factoryAsync<_i481.GetIden3commProofUseCase>(

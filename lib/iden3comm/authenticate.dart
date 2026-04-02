@@ -434,14 +434,15 @@ class Authenticate {
         final generateProofUseCase = await getItSdk
             .getAsync<GenerateIden3commProofUseCase>();
 
-        final refreshed =
-            await getItSdk<CheckAndRefreshExpiredCredentialUseCase>().execute(
-              param: CheckAndRefreshExpiredCredentialParam(
-                credentials: credentials,
-                genesisDid: genesisDid,
-                privateKey: privateKey,
-              ),
-            );
+        final checkAndRefreshUseCase = await getItSdk
+            .getAsync<CheckAndRefreshExpiredCredentialUseCase>();
+        final refreshed = await checkAndRefreshUseCase.execute(
+          param: CheckAndRefreshExpiredCredentialParam(
+            credentials: credentials,
+            genesisDid: genesisDid,
+            privateKey: privateKey,
+          ),
+        );
 
         if (refreshed == null) {
           // Credential is expired and cannot be refreshed.
