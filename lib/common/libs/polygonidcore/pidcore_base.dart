@@ -176,19 +176,22 @@ class PolygonIdCore {
   /// Checks the native [resultCode] and throws [CoreLibraryException] on
   /// failure.
   ///
-  /// Native functions return `1` for success and other codes for error.
-  /// The detailed [PLGNStatusCode] is extracted from the [status] struct.
+  /// Native functions return a C boolean (`unsigned char`): non-zero means
+  /// success, zero means failure. The detailed [PLGNStatusCode] is extracted
+  /// from the [status] struct on failure.
   ///
   /// Throws [CredentialStatusResolveException] for credential-status-related
-  /// errors (codes 2–11), and [CoreLibraryException] for all other errors.
+  /// errors (codes 2–11), and [CoreLibraryException] for all other errors
+  /// (including [PLGNStatusCode.PLGNSTATUSCODE_NIL_POINTER] which indicates
+  /// a null input was passed).
   void _handleStatusCode({
     required int resultCode,
     required ffi.Pointer<ffi.Pointer<PLGNStatus>> status,
     required String methodName,
     void Function(String errorMessage)? onError,
   }) {
-    if (resultCode == PLGNStatusCode.PLGNSTATUSCODE_NIL_POINTER.value) {
-      return; // success
+    if (resultCode != 0) {
+      return; // success — native function returned C boolean true
     }
 
     final consumed = _consumeStatus(status);
