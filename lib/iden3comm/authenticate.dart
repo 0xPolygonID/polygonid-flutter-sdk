@@ -30,7 +30,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/i
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/jwz_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/iden3_message_factory.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
@@ -62,6 +61,19 @@ import 'package:uuid/uuid.dart';
 class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
+
+  Authenticate();
+
+  /// Test-only constructor that allows injecting the managers directly
+  /// so [createProofForEveryProofRequest] can be exercised without the full
+  /// [getAuthResponseToken] setup.
+  @visibleForTesting
+  Authenticate.forTest({
+    required ProofGenerationStepsStreamManager
+    proofGenerationStepsStreamManager,
+    required StacktraceManager stacktraceManager,
+  }) : _proofGenerationStepsStreamManager = proofGenerationStepsStreamManager,
+       _stacktraceManager = stacktraceManager;
 
   Future<Iden3Message?> authenticate({
     required String privateKey,
@@ -383,19 +395,31 @@ class Authenticate {
       final isAuthQuery = request.circuitId.startsWith('auth');
       final credentials = requestsAndCreds[i].credentials;
 
-      // if there are no credentials for the request
-      if (credentials.isEmpty) {
-        // if the request is optional, continue to the next request
-        if (request.isOptional) {
+      // Filter out credentials whose expiration date has already passed
+      // (the persisted state field may be stale).
+      final viable = credentials.where((c) => !c.isExpiredByDate).toList();
+
+      if (viable.isEmpty) {
+        if (isAuthQuery && request.query.isEmpty) {
+          // Auth-type scope with empty query — no credential needed,
+          // fall through to auth proof generation below.
+        } else if (request.isOptional) {
           continue;
-        } else if (request.query.isEmpty && isAuthQuery) {
-          // if request query is empty and it's an auth circuit,
-          // skip credential check as auth proofs don't need credentials
         } else {
-          // if the request is not optional, throw an error
+          final isExpired = credentials.isNotEmpty;
           _stacktraceManager.addError(
-            "[Authenticate] No credentials found for request: ${request.id}",
+            "[Authenticate] "
+            "${isExpired ? 'All credentials expired' : 'No credentials found'}"
+            " for request: ${request.id}",
           );
+          if (isExpired) {
+            throw ExpiredCredentialException(
+              credential: credentials.first,
+              proofRequest: request,
+              errorMessage:
+                  "All credentials are expired for request: ${request.id}",
+            );
+          }
           throw NoCredentialsFoundException(
             proofRequest: request,
             errorMessage: "No credentials found for request: ${request.id}",
@@ -434,34 +458,7 @@ class Authenticate {
         final generateProofUseCase = await getItSdk
             .getAsync<GenerateIden3commProofUseCase>();
 
-        final checkAndRefreshUseCase = await getItSdk
-            .getAsync<CheckAndRefreshExpiredCredentialUseCase>();
-        final validCredential = await checkAndRefreshUseCase.execute(
-          param: CheckAndRefreshExpiredCredentialParam(
-            credentials: credentials,
-            genesisDid: genesisDid,
-            privateKey: privateKey,
-          ),
-        );
-
-        if (validCredential == null) {
-          // Credential is expired and cannot be refreshed.
-          if (request.isOptional) {
-            continue;
-          } else {
-            _stacktraceManager.addError(
-              "[Authenticate] Credential expired for request: ${request.id}",
-            );
-            throw ExpiredCredentialException(
-              credential: credentials.firstOrNull,
-              proofRequest: request,
-              errorMessage:
-                  "Credential is expired and cannot be refreshed for request: ${request.id}",
-            );
-          }
-        }
-
-        final credential = validCredential;
+        final credential = viable.first;
 
         final credentialSubjectDid = credential.credentialSubject['id'];
         final profileEntries = identityEntity.profiles.entries;

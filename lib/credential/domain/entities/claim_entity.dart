@@ -55,6 +55,21 @@ class CredentialEntity with EquatableMixin {
     return info["credentialSubject"];
   }
 
+  /// Whether this credential has passed its expiration date.
+  ///
+  /// Returns `false` when [expiration] is null (no expiration set) or when the
+  /// date string cannot be parsed. This is a real-time check independent of the
+  /// persisted [state] field, which may be stale.
+  bool get isExpiredByDate {
+    final exp = expiration;
+    if (exp == null) return false;
+    try {
+      return DateTime.now().toUtc().isAfter(DateTime.parse(exp));
+    } catch (_) {
+      return false;
+    }
+  }
+
   List<String> get context {
     return info["@context"];
   }

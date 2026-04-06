@@ -7,7 +7,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/util/generate_link_nonce.dart';
@@ -43,8 +42,6 @@ class GetIden3commProofsUseCase
   final IsProofCircuitSupportedUseCase _isProofCircuitSupported;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
-  final CheckAndRefreshExpiredCredentialUseCase
-  _checkAndRefreshExpiredCredentialUseCase;
 
   GetIden3commProofsUseCase(
     this._getMessageRequestsAndCredsUseCase,
@@ -52,7 +49,6 @@ class GetIden3commProofsUseCase
     this._isProofCircuitSupported,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
-    this._checkAndRefreshExpiredCredentialUseCase,
   );
 
   @override
@@ -89,55 +85,39 @@ class GetIden3commProofsUseCase
         ProofScopeRequest request = requestsAndCreds[i].request;
         List<CredentialEntity> credentials = requestsAndCreds[i].credentials;
 
-        // if there are no credentials for the request
-        if (credentials.isEmpty) {
-          // if the query is empty (e.g., auth-type scopes like authV3-8-32),
-          // allow proceeding with null credential
-          if (request.query.isEmpty) {
-            // skip throwing, credential will be null below
-          } else if (request.isOptional) {
-            continue;
-          } else {
-            // if the request is not optional, throw an error
-            _stacktraceManager.addError(
-              "[Authenticate] No credentials found for request: ${request.id}",
-            );
-            throw NoCredentialsFoundException(
-              proofRequest: request,
-              errorMessage: "No credentials found for request: ${request.id}",
-            );
-          }
-        }
+        // Filter out credentials whose expiration date has already passed
+        // (the persisted state field may be stale).
+        final viable = credentials.where((c) => !c.isExpiredByDate).toList();
 
         CredentialEntity? credential;
 
-        if (credentials.isNotEmpty) {
-          credential = await _checkAndRefreshExpiredCredentialUseCase.execute(
-            param: CheckAndRefreshExpiredCredentialParam(
-              credentials: credentials,
-              genesisDid: param.genesisDid,
-              privateKey: param.privateKey,
-            ),
+        if (viable.isNotEmpty) {
+          credential = viable.first;
+        } else if (request.query.isEmpty) {
+          // Auth-type scope (e.g. authV3-8-32) — no credential needed,
+          // proceed with null.
+        } else if (request.isOptional) {
+          continue;
+        } else {
+          // Non-optional scope with no viable credential.
+          final isExpired = credentials.isNotEmpty;
+          _stacktraceManager.addError(
+            "[GetIden3commProofsUseCase] "
+            "${isExpired ? 'All credentials expired' : 'No credentials found'}"
+            " for request: ${request.id}",
           );
-
-          if (credential == null) {
-            // All candidates were expired and could not be refreshed.
-            if (request.query.isEmpty) {
-              // Auth-type scope — no credential needed, proceed with null.
-            } else if (request.isOptional) {
-              continue;
-            } else {
-              _stacktraceManager.addError(
-                "[GetIden3commProofsUseCase] All credentials expired for request: ${request.id}",
-              );
-              throw ExpiredCredentialException(
-                proofRequest: request,
-                credential: credentials.first,
-                errorMessage:
-                    "All credentials are expired and cannot be refreshed for request: ${request.id}",
-              );
-            }
+          if (isExpired) {
+            throw ExpiredCredentialException(
+              proofRequest: request,
+              credential: credentials.first,
+              errorMessage:
+                  "All credentials are expired for request: ${request.id}",
+            );
           }
+          throw NoCredentialsFoundException(
+            proofRequest: request,
+            errorMessage: "No credentials found for request: ${request.id}",
+          );
         }
 
         bool isCircuitSupported = await _isProofCircuitSupported.execute(

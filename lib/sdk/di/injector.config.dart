@@ -1470,6 +1470,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i267.StacktraceManager>(),
       ),
     );
+    gh.factoryAsync<_i481.GetIden3commProofUseCase>(
+      () async => _i481.GetIden3commProofUseCase(
+        await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
+        await getAsync<_i340.GenerateIden3commProofUseCase>(),
+        await getAsync<_i1053.GenerateAuthProofUseCase>(),
+        await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
+        gh<_i743.GetIdentityUseCase>(),
+        gh<_i920.ProofGenerationStepsStreamManager>(),
+        gh<_i267.StacktraceManager>(),
+      ),
+    );
     gh.factoryAsync<_i709.FetchCredentialsUseCase>(
       () async => _i709.FetchCredentialsUseCase(
         gh<_i737.GetSelectedChainUseCase>(),
@@ -1520,18 +1531,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i732.CleanCredentialCacheUseCase>(),
       ),
     );
-    gh.factoryAsync<_i481.GetIden3commProofUseCase>(
-      () async => _i481.GetIden3commProofUseCase(
-        await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
-        await getAsync<_i340.GenerateIden3commProofUseCase>(),
-        await getAsync<_i1053.GenerateAuthProofUseCase>(),
-        await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
-        gh<_i743.GetIdentityUseCase>(),
-        gh<_i920.ProofGenerationStepsStreamManager>(),
-        gh<_i267.StacktraceManager>(),
-        await getAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(),
-      ),
-    );
     gh.factoryAsync<_i412.GetIden3commProofsUseCase>(
       () async => _i412.GetIden3commProofsUseCase(
         await getAsync<_i181.GetMessageRequestsAndCredsUseCase>(),
@@ -1539,7 +1538,6 @@ extension GetItInjectableX on _i174.GetIt {
         await getAsync<_i735.IsProofCircuitSupportedUseCase>(),
         gh<_i920.ProofGenerationStepsStreamManager>(),
         gh<_i267.StacktraceManager>(),
-        await getAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(),
       ),
     );
     gh.factoryAsync<_i411.AuthenticateUseCase>(

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
+import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/proof_request_filters_mapper.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_request_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_query_request.dart';
@@ -193,47 +194,72 @@ MockStacktraceManager mockStacktraceManager = MockStacktraceManager();
 ProofRequestFiltersMapper proofRequestFiltersMapper =
     ProofRequestFiltersMapper(mockStacktraceManager);
 
+/// Asserts that [filters] contains a non-equal filter on 'state' with value 'expired'.
+void _expectNonExpiredFilter(List<FilterEntity> filters) {
+  final expiredFilter = filters.where(
+    (f) =>
+        f.operator == FilterOperator.nonEqual &&
+        f.name == 'state' &&
+        f.value == CredentialState.expired.name,
+  );
+  expect(
+    expiredFilter.length,
+    1,
+    reason: 'Expected exactly one state != expired filter',
+  );
+}
+
 @GenerateMocks([StacktraceManager])
 main() {
   group("ProofRequestFiltersMapper", () {
     test("From ProofRequestEntity to List<FilterEntity> LT operator", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityLT);
-      expect(filters.length, 4);
+      // type + context + nonRevoked + nonExpired + birthday<
+      expect(filters.length, 5);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
+      _expectNonExpiredFilter(filters);
     });
 
     test("From ProofRequestEntity to List<FilterEntity> GT operator", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityGT);
-      expect(filters.length, 4);
+      // type + context + nonRevoked + nonExpired + birthday>
+      expect(filters.length, 5);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
+      _expectNonExpiredFilter(filters);
     });
 
     test("From ProofRequestEntity to List<FilterEntity> EQ", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityEQ);
-      expect(filters.length, 4);
+      // type + context + nonRevoked + nonExpired + birthday==
+      expect(filters.length, 5);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
+      _expectNonExpiredFilter(filters);
     });
 
     test("From ProofRequestEntity to List<FilterEntity> IN", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityIN);
-      expect(filters.length, 4);
+      // type + context + nonRevoked + nonExpired + birthday in [...]
+      expect(filters.length, 5);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
+      _expectNonExpiredFilter(filters);
     });
 
     test("From ProofRequestEntity to List<FilterEntity> NIN", () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNIN);
-      expect(filters.length, 5);
+      // type + context + nonRevoked + nonExpired + birthday!=v1 + birthday!=v2
+      expect(filters.length, 6);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCAgeCredential");
+      _expectNonExpiredFilter(filters);
     });
 
     test(
@@ -241,18 +267,22 @@ main() {
         () {
       List<FilterEntity> filters =
           proofRequestFiltersMapper.mapFrom(mockProofRequestEntityNINCountry);
-      expect(filters.length, 7);
+      // type + context + nonRevoked + nonExpired + countryCode!=36,120,248,804
+      expect(filters.length, 8);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCCountryOfResidenceCredential");
+      _expectNonExpiredFilter(filters);
     });
 
     test("From ProofRequestEntity to List<FilterEntity> Not supported operator",
         () {
       List<FilterEntity> filters = proofRequestFiltersMapper
           .mapFrom(mockProofRequestEntityNotSupportedOperator);
-      expect(filters.length, 3);
+      // type + context + nonRevoked + nonExpired (noop operator adds nothing)
+      expect(filters.length, 4);
       expect(filters[0].name, "credential.credentialSubject.type");
       expect(filters[0].value, "KYCCountryOfResidenceCredential");
+      _expectNonExpiredFilter(filters);
     });
   });
 }

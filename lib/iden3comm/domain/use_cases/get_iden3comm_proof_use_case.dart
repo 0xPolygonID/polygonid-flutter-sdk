@@ -7,7 +7,6 @@ import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.da
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_auth_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/generate_iden3comm_proof_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_message_requests_and_credentials.dart';
@@ -51,8 +50,6 @@ class GetIden3commProofUseCase
   final GetIdentityUseCase _getIdentityUseCase;
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
-  final CheckAndRefreshExpiredCredentialUseCase
-  _checkAndRefreshExpiredCredentialUseCase;
 
   GetIden3commProofUseCase(
     this._getMessageRequestsAndCredsUseCase,
@@ -62,7 +59,6 @@ class GetIden3commProofUseCase
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
-    this._checkAndRefreshExpiredCredentialUseCase,
   );
 
   @override
@@ -187,27 +183,21 @@ class GetIden3commProofUseCase
       }
     }
 
-    final validCredential = await _checkAndRefreshExpiredCredentialUseCase
-        .execute(
-          param: CheckAndRefreshExpiredCredentialParam(
-            credentials: candidates,
-            genesisDid: param.genesisDid,
-            privateKey: param.privateKey,
-          ),
-        );
-
-    if (validCredential == null) {
+    // Safety-net: filter out credentials whose expiration date has passed,
+    // in case the persisted state field is stale.
+    final nonExpired = candidates.where((c) => !c.isExpiredByDate).toList();
+    if (nonExpired.isEmpty) {
       _stacktraceManager.addError(
-        "[GetIden3commProofUseCase] All credentials expired for request: ${param.request.id}",
+        "[GetIden3commProofUseCase] All credentials expired by date for request: ${request.id}",
       );
       throw ExpiredCredentialException(
-        proofRequest: param.request,
+        proofRequest: request,
         credential: candidates.first,
         errorMessage:
-            "All credentials are expired and cannot be refreshed for request: ${param.request.id}",
+            "All credentials are expired for request: ${request.id}",
       );
     }
 
-    return validCredential;
+    return nonExpired.first;
   }
 }
