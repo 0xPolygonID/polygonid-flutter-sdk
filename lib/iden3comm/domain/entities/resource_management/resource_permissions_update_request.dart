@@ -50,14 +50,14 @@ class ResourcePermissionsUpdateRequestBody extends Equatable
     implements JsonEncodable {
   final String id;
   final List<String> current;
-  final List<String>? add;
-  final List<String>? remove;
+  final List<String> add;
+  final List<String> remove;
 
   ResourcePermissionsUpdateRequestBody({
     required this.id,
-    required this.current,
-    required this.add,
-    required this.remove,
+    this.current = const [],
+    this.add = const [],
+    this.remove = const [],
   });
 
   factory ResourcePermissionsUpdateRequestBody.fromJson(
@@ -68,19 +68,23 @@ class ResourcePermissionsUpdateRequestBody extends Equatable
       current: (json['current'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toList(),
-      add: (json['add'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      remove: (json['remove'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      add:
+          (json['add'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          [],
+      remove:
+          (json['remove'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'current': current,
-      if (add != null) 'add': add,
-      if (remove != null) 'remove': remove,
+      if (current.isNotEmpty) 'current': current,
+      if (add.isNotEmpty) 'add': add,
+      if (remove.isNotEmpty) 'remove': remove,
     };
   }
 
