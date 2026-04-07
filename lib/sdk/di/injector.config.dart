@@ -152,8 +152,6 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/repositories/interaction_
     as _i1012;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/authenticate_use_case.dart'
     as _i411;
-import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_and_refresh_expired_credential_use_case.dart'
-    as _i684;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/check_profile_and_did_current_env.dart'
     as _i505;
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/clean_schema_cache_use_case.dart'
@@ -1504,14 +1502,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i698.Iden3commCredentialRepository>(),
         gh<_i958.RemoveClaimsUseCase>(),
         gh<_i635.SaveClaimsUseCase>(),
-      ),
-    );
-    gh.factoryAsync<_i684.CheckAndRefreshExpiredCredentialUseCase>(
-      () async => _i684.CheckAndRefreshExpiredCredentialUseCase(
-        await getAsync<_i143.RefreshCredentialUseCase>(),
-        gh<_i168.UpdateClaimUseCase>(),
-        gh<_i920.ProofGenerationStepsStreamManager>(),
-        gh<_i267.StacktraceManager>(),
       ),
     );
     gh.factoryAsync<_i501.Credential>(
