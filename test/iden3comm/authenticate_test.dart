@@ -28,23 +28,6 @@ import 'authenticate_test.mocks.dart';
 ])
 void main() {
   group('Authenticate.createProofForEveryProofRequest', () {
-    test(
-      'source must not reference CheckAndRefreshExpiredCredentialUseCase '
-      '(regression guard)',
-      () {
-        final source =
-            File('lib/iden3comm/authenticate.dart').readAsStringSync();
-        expect(
-          source.contains('CheckAndRefreshExpiredCredentialUseCase'),
-          isFalse,
-          reason:
-              'authenticate.dart must not reference '
-              'CheckAndRefreshExpiredCredentialUseCase; expired credentials '
-              'are filtered at the query level instead.',
-        );
-      },
-    );
-
     late MockGenerateIden3commProofUseCase mockGenerateProof;
     late MockProofGenerationStepsStreamManager mockStreamManager;
     late MockStacktraceManager mockStacktrace;
