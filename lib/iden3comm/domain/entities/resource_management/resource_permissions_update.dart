@@ -48,11 +48,13 @@ class ResourcePermissionsUpdateBody extends Equatable implements JsonEncodable {
   final String id;
   final List<String> grant;
   final List<String> reject;
+  final List<String> revoke;
 
   ResourcePermissionsUpdateBody({
     required this.id,
-    required this.grant,
-    required this.reject,
+    this.grant = const [],
+    this.reject = const [],
+    this.revoke = const [],
   });
 
   factory ResourcePermissionsUpdateBody.fromJson(Map<String, dynamic> json) {
@@ -68,13 +70,28 @@ class ResourcePermissionsUpdateBody extends Equatable implements JsonEncodable {
               ?.map((e) => e.toString())
               .toList() ??
           [],
+      revoke:
+          (json['revoke'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'grant': grant, 'reject': reject};
+    return {
+      'id': id,
+      'grant': grant,
+      'reject': reject,
+      'revoke': revoke,
+    };
   }
 
   @override
-  List<Object?> get props => [id, grant, reject];
+  List<Object?> get props => [
+    id,
+    grant,
+    reject,
+    revoke,
+  ];
 }
