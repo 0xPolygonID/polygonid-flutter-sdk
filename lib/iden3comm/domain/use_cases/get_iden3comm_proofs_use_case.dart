@@ -90,8 +90,7 @@ class GetIden3commProofsUseCase
         if (credentials.isNotEmpty) {
           credential = credentials.first;
         } else if (request.query.isEmpty) {
-          // Auth-type scope (e.g. authV3-8-32) — no credential needed,
-          // proceed with null.
+          // Auth-type scope (e.g. authV3) — no credential needed, proceed.
         } else if (request.isOptional) {
           continue;
         } else {

@@ -397,12 +397,11 @@ class Authenticate {
 
       // Filter out credentials whose expiration date has already passed
       // (the persisted state field may be stale).
-      final viable = credentials.where((c) => !c.isExpiredByDate).toList();
-
-      if (viable.isEmpty && !(isAuthQuery && request.query.isEmpty)) {
-        if (request.isOptional) {
-          continue;
-        }
+      if (credentials.isEmpty && isAuthQuery && request.query.isEmpty) {
+        // Auth-type scope (e.g. authV3) — no credential needed, proceed.
+      } else if (credentials.isEmpty && request.isOptional) {
+        continue;
+      } else if (credentials.isEmpty) {
         _stacktraceManager.addError(
           "[Authenticate] No credentials found for request: ${request.id}",
         );
@@ -443,7 +442,7 @@ class Authenticate {
         final generateProofUseCase = await getItSdk
             .getAsync<GenerateIden3commProofUseCase>();
 
-        final credential = viable.first;
+        final credential = credentials.first;
 
         final credentialSubjectDid = credential.credentialSubject['id'];
         final profileEntries = identityEntity.profiles.entries;
