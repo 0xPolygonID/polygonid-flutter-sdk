@@ -6,14 +6,17 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
-# 4 jobs are configured:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 2 jobs are configured:
 # 1. common: runs setup, clean, generate, format, analyze, test and reports
-# 2. ios: runs tests on iOS devices
-# 3. android: runs tests on Android devices
-# 4. publish: publishes the package to pub.dev (only dry run)
+# 2. publish: publishes the package to pub.dev (only dry run)
 jobs:
   common:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -46,7 +49,7 @@ jobs:
       - name: Clean, dependencies and generate for Example
         env:
           DEFAULT_ENV: ${{ secrets.DEFAULT_ENV }}
-          STACKTRACE_ENCRYPTION_KEY: ${{ secrets.STACKTRACE_ENCRYPTION }}
+          STACKTRACE_ENCRYPTION_KEY: ${{ secrets.STACKTRACE_ENCRYPTION_KEY }}
           IPFS_GATEWAY_URL: ${{ secrets.IPFS_GATEWAY_URL }}
         run: cd example && flutter clean && flutter pub get && dart run build_runner build -d
 
@@ -57,16 +60,50 @@ jobs:
         run: flutter test --coverage --reporter=github
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   # job responsible for publishing the package to pub.dev
   # enable it once published for the first time on pub.dev otherwise it will fail
   #publish:
-  #  needs: [ common ] #, ios , android ]
+  #  needs: [ common ]
   #  runs-on: ubuntu-latest
   #  steps:
   #    - name: Publish dry run
   #      if: github.base_ref == 'main'
   #      run: flutter pub publish --dry-run
+
+  publish-dry-run:
+    needs: [ common ]
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Init submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive || {
+            echo "Submodule update failed, attempting fallback clone..."
+            if [ ! -d packages/web3dart_builders/lib ]; then
+              rm -rf packages/web3dart_builders || true
+              git clone --branch main https://github.com/5eeman/web3dart_builders.git packages/web3dart_builders
+            fi
+          }
+          ls -al packages/web3dart_builders/lib || (echo "web3dart_builders missing" && exit 1)
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Publish dry run
+        run: flutter pub publish --dry-run
