@@ -395,8 +395,6 @@ class Authenticate {
       final isAuthQuery = request.circuitId.startsWith('auth');
       final credentials = requestsAndCreds[i].credentials;
 
-      // Filter out credentials whose expiration date has already passed
-      // (the persisted state field may be stale).
       if (credentials.isEmpty && isAuthQuery && request.query.isEmpty) {
         // Auth-type scope (e.g. authV3) — no credential needed, proceed.
       } else if (credentials.isEmpty && request.isOptional) {
