@@ -183,21 +183,6 @@ class GetIden3commProofUseCase
       }
     }
 
-    // Safety-net: filter out credentials whose expiration date has passed,
-    // in case the persisted state field is stale.
-    final nonExpired = candidates.where((c) => !c.isExpiredByDate).toList();
-    if (nonExpired.isEmpty) {
-      _stacktraceManager.addError(
-        "[GetIden3commProofUseCase] All credentials expired by date for request: ${request.id}",
-      );
-      throw ExpiredCredentialException(
-        proofRequest: request,
-        credential: candidates.first,
-        errorMessage:
-            "All credentials are expired for request: ${request.id}",
-      );
-    }
-
-    return nonExpired.first;
+    return candidates.first;
   }
 }

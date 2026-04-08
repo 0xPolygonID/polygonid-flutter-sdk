@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -84,8 +82,9 @@ void main() {
           publicStatesInfo: ProofMocks.publicStatesInfo,
         );
 
-        when(mockGenerateProof.execute(param: anyNamed('param')))
-            .thenAnswer((_) async => expectedProof);
+        when(
+          mockGenerateProof.execute(param: anyNamed('param')),
+        ).thenAnswer((_) async => expectedProof);
 
         final requestsAndCreds = <RequestAndCredentials>[
           (
@@ -199,7 +198,8 @@ void main() {
           id: id,
           issuer: CommonMocks.issuer,
           did: CommonMocks.did,
-          state: CredentialState.active, // state is stale
+          state: CredentialState.active,
+          // state is stale
           type: CommonMocks.type,
           info: {
             'credentialSubject': {
@@ -215,7 +215,10 @@ void main() {
       test(
         'skips expired first credential and uses the next non-expired one',
         () async {
-          final expired = _makeCredential('cred-expired', '2020-01-01T00:00:00Z');
+          final expired = _makeCredential(
+            'cred-expired',
+            '2020-01-01T00:00:00Z',
+          );
           final valid = _makeCredential('cred-valid', '2099-01-01T00:00:00Z');
 
           final expectedProof = Iden3commProofEntity(
@@ -226,8 +229,9 @@ void main() {
             publicStatesInfo: ProofMocks.publicStatesInfo,
           );
 
-          when(mockGenerateProof.execute(param: anyNamed('param')))
-              .thenAnswer((_) async => expectedProof);
+          when(
+            mockGenerateProof.execute(param: anyNamed('param')),
+          ).thenAnswer((_) async => expectedProof);
 
           final requestsAndCreds = <RequestAndCredentials>[
             (
@@ -263,7 +267,7 @@ void main() {
       );
 
       test(
-        'throws ExpiredCredentialException when all credentials are '
+        'throws NoCredentialsFoundException when all credentials are '
         'expired by date for a non-optional request',
         () async {
           final expired1 = _makeCredential('cred-1', '2020-01-01T00:00:00Z');
@@ -288,7 +292,7 @@ void main() {
               verifierDid: CommonMocks.did,
               transactionData: null,
             ),
-            throwsA(isA<ExpiredCredentialException>()),
+            throwsA(isA<NoCredentialsFoundException>()),
           );
 
           verifyNever(mockGenerateProof.execute(param: anyNamed('param')));
@@ -338,4 +342,3 @@ void main() {
     });
   });
 }
-

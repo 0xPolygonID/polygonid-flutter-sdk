@@ -85,14 +85,10 @@ class GetIden3commProofsUseCase
         ProofScopeRequest request = requestsAndCreds[i].request;
         List<CredentialEntity> credentials = requestsAndCreds[i].credentials;
 
-        // Filter out credentials whose expiration date has already passed
-        // (the persisted state field may be stale).
-        final viable = credentials.where((c) => !c.isExpiredByDate).toList();
-
         CredentialEntity? credential;
 
-        if (viable.isNotEmpty) {
-          credential = viable.first;
+        if (credentials.isNotEmpty) {
+          credential = credentials.first;
         } else if (request.query.isEmpty) {
           // Auth-type scope (e.g. authV3-8-32) — no credential needed,
           // proceed with null.
@@ -100,20 +96,10 @@ class GetIden3commProofsUseCase
           continue;
         } else {
           // Non-optional scope with no viable credential.
-          final isExpired = credentials.isNotEmpty;
           _stacktraceManager.addError(
-            "[GetIden3commProofsUseCase] "
-            "${isExpired ? 'All credentials expired' : 'No credentials found'}"
-            " for request: ${request.id}",
+            "[GetIden3commProofsUseCase] No credentials found for request: ${request.id}",
           );
-          if (isExpired) {
-            throw ExpiredCredentialException(
-              proofRequest: request,
-              credential: credentials.first,
-              errorMessage:
-                  "All credentials are expired for request: ${request.id}",
-            );
-          }
+
           throw NoCredentialsFoundException(
             proofRequest: request,
             errorMessage: "No credentials found for request: ${request.id}",

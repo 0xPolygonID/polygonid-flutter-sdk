@@ -3,8 +3,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
@@ -404,116 +402,5 @@ main() {
       expect(secondScope.params!['challenge'], "<attestation_hash>");
       expect(secondScope.query.isEmpty, true);
     });
-  });
-
-  group('expired-by-date credential fallback', () {
-    CredentialEntity _makeCredential(String id, String expiration) {
-      return CredentialMocks.claim.copyWith(
-        id: id,
-        expiration: expiration,
-        info: {
-          'credentialSubject': {
-            'id': IdentityMocks.did.did,
-          },
-        },
-      );
-    }
-
-    test(
-      'skips expired first credential and uses the next non-expired one',
-      () async {
-        final expired = _makeCredential('cred-expired', '2020-01-01T00:00:00Z');
-        final valid = _makeCredential('cred-valid', '2099-01-01T00:00:00Z');
-
-        when(
-          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
-        ).thenAnswer(
-          (_) async => [
-            (
-              request: Iden3commMocks.proofScopeRequest,
-              credentials: [expired, valid],
-            ),
-          ],
-        );
-
-        await useCase.execute(param: param);
-
-        final captured = verify(
-          getIden3commProofUseCase.execute(param: captureAnyNamed('param')),
-        ).captured;
-        expect(captured.length, 1);
-        expect(
-          (captured.first as GetIden3commProofParam).credential?.id,
-          'cred-valid',
-          reason: 'Should skip expired and select the valid credential',
-        );
-      },
-    );
-
-    test(
-      'throws ExpiredCredentialException when all credentials are expired '
-      'by date for a non-optional request',
-      () async {
-        final expired1 = _makeCredential('c1', '2020-01-01T00:00:00Z');
-        final expired2 = _makeCredential('c2', '2021-01-01T00:00:00Z');
-
-        when(
-          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
-        ).thenAnswer(
-          (_) async => [
-            (
-              request: Iden3commMocks.proofScopeRequest,
-              credentials: [expired1, expired2],
-            ),
-          ],
-        );
-
-        await expectLater(
-          useCase.execute(param: param),
-          throwsA(isA<ExpiredCredentialException>()),
-        );
-
-        verifyNever(
-          getIden3commProofUseCase.execute(param: anyNamed('param')),
-        );
-      },
-    );
-
-    test(
-      'skips optional request when all credentials are expired by date',
-      () async {
-        final expired = _makeCredential('c1', '2020-01-01T00:00:00Z');
-
-        final optionalScope = ZeroKnowledgeProofRequest.fromJson({
-          'id': 1,
-          'circuitId': CommonMocks.circuitId,
-          'optional': true,
-          'query': {
-            'allowedIssuers': ['*'],
-            'context':
-                'https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld',
-            'type': 'KYCAgeCredential',
-            'credentialSubject': {
-              'birthday': {'\$lt': 20000101},
-            },
-          },
-        });
-
-        when(
-          getMessageRequestsAndCredsUseCase.execute(param: anyNamed('param')),
-        ).thenAnswer(
-          (_) async => [
-            (request: optionalScope, credentials: [expired]),
-          ],
-        );
-
-        final proofs = await useCase.execute(param: param);
-
-        expect(proofs, isEmpty);
-        verifyNever(
-          getIden3commProofUseCase.execute(param: anyNamed('param')),
-        );
-      },
-    );
   });
 }

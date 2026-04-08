@@ -399,32 +399,17 @@ class Authenticate {
       // (the persisted state field may be stale).
       final viable = credentials.where((c) => !c.isExpiredByDate).toList();
 
-      if (viable.isEmpty) {
-        if (isAuthQuery && request.query.isEmpty) {
-          // Auth-type scope with empty query — no credential needed,
-          // fall through to auth proof generation below.
-        } else if (request.isOptional) {
+      if (viable.isEmpty && !(isAuthQuery && request.query.isEmpty)) {
+        if (request.isOptional) {
           continue;
-        } else {
-          final isExpired = credentials.isNotEmpty;
-          _stacktraceManager.addError(
-            "[Authenticate] "
-            "${isExpired ? 'All credentials expired' : 'No credentials found'}"
-            " for request: ${request.id}",
-          );
-          if (isExpired) {
-            throw ExpiredCredentialException(
-              credential: credentials.first,
-              proofRequest: request,
-              errorMessage:
-                  "All credentials are expired for request: ${request.id}",
-            );
-          }
-          throw NoCredentialsFoundException(
-            proofRequest: request,
-            errorMessage: "No credentials found for request: ${request.id}",
-          );
         }
+        _stacktraceManager.addError(
+          "[Authenticate] No credentials found for request: ${request.id}",
+        );
+        throw NoCredentialsFoundException(
+          proofRequest: request,
+          errorMessage: "No credentials found for request: ${request.id}",
+        );
       }
 
       _proofGenerationStepsStreamManager.add(
