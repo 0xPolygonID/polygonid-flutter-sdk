@@ -3,7 +3,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/use_cases/get_iden3comm_proof_use_case.dart';
@@ -47,8 +46,6 @@ MockIsProofCircuitSupportedUseCase isProofCircuitSupportedUseCase =
 MockProofGenerationStepsStreamManager proofGenerationStepsStreamManager =
     MockProofGenerationStepsStreamManager();
 MockStacktraceManager stacktraceStreamManager = MockStacktraceManager();
-MockRefreshCredentialUseCase refreshCredentialUseCase =
-    MockRefreshCredentialUseCase();
 
 // Tested instance
 GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
@@ -57,7 +54,6 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   isProofCircuitSupportedUseCase,
   proofGenerationStepsStreamManager,
   stacktraceStreamManager,
-  refreshCredentialUseCase,
 );
 
 @GenerateMocks([
@@ -66,14 +62,15 @@ GetIden3commProofsUseCase useCase = GetIden3commProofsUseCase(
   IsProofCircuitSupportedUseCase,
   ProofGenerationStepsStreamManager,
   StacktraceManager,
-  RefreshCredentialUseCase,
 ])
 main() {
-  final claim = CredentialMocks.claim.copyWith(info: {
-    'credentialSubject': {
-      'id': IdentityMocks.did.did,
+  final claim = CredentialMocks.claim.copyWith(
+    info: {
+      'credentialSubject': {
+        'id': IdentityMocks.did.did,
+      },
     },
-  });
+  );
 
   setUp(() {
     reset(getMessageRequestsAndCredsUseCase);

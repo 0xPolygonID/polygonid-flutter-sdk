@@ -94,120 +94,37 @@ class RemoteIden3commDataSource {
     required String profileDid,
     required List<JsonWebKey> keys,
   }) async {
-    Uri? uri = Uri.tryParse(url);
-    if (uri == null) {
+    if (Uri.tryParse(url) == null) {
       _stacktraceManager.addError(
         'refreshCredential error: url is invalid\nurl: $url',
       );
       throw NetworkException(errorMessage: "Invalid url", statusCode: 0);
     }
 
-    try {
-      final response = await dio.post(
-        url,
-        data: authToken,
-        options: Options(
-          headers: {
-            HttpHeaders.acceptHeader: '*/*',
-            HttpHeaders.contentTypeHeader: 'text/plain',
-          },
-          receiveTimeout: const Duration(seconds: 30),
-        ),
+    final response = await _executePostRequest(
+      url: url,
+      authToken: authToken,
+      context: 'refreshCredential',
+      timeoutMessage: 'Connection timeout while refreshing credential.',
+    );
+
+    if (response.statusCode != 200) {
+      _stacktraceManager.addError(
+        'refreshCredential error: $url responded with\ncode: ${response.statusCode}\nmsg: ${response.data}',
+        log: true,
       );
-
-      if (response.statusCode != 200) {
-        _stacktraceManager.addError(
-          'refreshCredential Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}',
-          log: true,
-        );
-        throw NetworkException(
-          errorMessage: response.data,
-          statusCode: response.statusCode ?? 0,
-        );
-      } else {
-        final type = response.data['type'] as String? ?? 'unknown';
-
-        if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
-          final message = CredentialIssuanceMessage.fromJson(response.data);
-          return CredentialDTO(
-            id: message.body.credential.id,
-            issuer: message.from,
-            did: profileDid,
-            type: message.body.credential.credentialSubject.type,
-            expiration: message.body.credential.expirationDate,
-            info: message.body.credential,
-            credentialRawValue: json.encode(response.data),
-          );
-        } else if (type ==
-            ProtocolMessageType.credentialEncryptedIssuanceResponseType) {
-          final message = CredentialEncryptedIssuanceResponse.fromJson(
-            response.data,
-          );
-          final requiredKeyIds = message.body.data.recipients
-              .map((r) => r.header.keyId!)
-              .toList();
-
-          JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
-            return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
-          });
-          if (eligibleKey == null) {
-            _stacktraceManager.addError(
-              "[RemoteIden3commDataSource] refreshCredential: No eligible keys found for decryption",
-            );
-            throw Exception(
-              "No eligible keys found for decrypting the credential.",
-            );
-          }
-
-          final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
-            response.data,
-            [eligibleKey.toJson()],
-          );
-
-          final claimDTO = CredentialDTO(
-            id: decryptedCred.id,
-            issuer: message.from,
-            did: profileDid,
-            type: decryptedCred.credentialSubject.type,
-            expiration: decryptedCred.expirationDate,
-            info: decryptedCred,
-            credentialRawValue: jsonEncode(response.data),
-          );
-          logger().i(
-            "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}",
-          );
-          return claimDTO;
-        } else {
-          _stacktraceManager.addError(
-            "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException",
-          );
-          throw UnsupportedFetchClaimTypeException(
-            type: type,
-            errorMessage:
-                'Unsupported fetch claim type: $type\nShould be ${ProtocolMessageType.credentialIssuanceResponseMessageType}',
-          );
-        }
-      }
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        _stacktraceManager.addError(
-          'refreshCredential error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
-        );
-        throw NetworkException(
-          errorMessage: "Connection timeout while refreshing credential.",
-          statusCode: e.response?.statusCode ?? 0,
-        );
-      } else {
-        _stacktraceManager.addError(
-          'refreshCredential error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
-        );
-        rethrow;
-      }
-    } catch (e) {
-      logger().e('refreshCredential error: $e');
-      rethrow;
+      throw NetworkException(
+        errorMessage: response.data,
+        statusCode: response.statusCode ?? 0,
+      );
     }
+
+    return _parseCredentialResponse(
+      response: response,
+      did: profileDid,
+      keys: keys,
+      isRefresh: true,
+    );
   }
 
   Future<CredentialDTO> fetchClaim({
@@ -220,8 +137,49 @@ class RemoteIden3commDataSource {
       "[RemoteIden3commDataSource] fetchClaim: did:$did\nurl: $url\nauthToken: $authToken",
     );
 
+    final response = await _executePostRequest(
+      url: url,
+      authToken: authToken,
+      context: 'fetchClaim',
+      timeoutMessage: 'Connection timeout while fetching claim.',
+    );
+
+    _stacktraceManager.logTrace(
+      "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}",
+    );
+
+    if (response.statusCode == 200) {
+      return _parseCredentialResponse(
+        response: response,
+        did: did,
+        keys: keys,
+        isRefresh: false,
+      );
+    }
+
+    _stacktraceManager.logError(
+      'fetchClaim error: $url responded with\ncode: ${response.statusCode}\nmsg: ${response.data}',
+    );
+    throw NetworkException(
+      errorMessage: response.data,
+      statusCode: response.statusCode ?? 0,
+    );
+  }
+
+  /// Posts [authToken] to [url] using the standard `text/plain` options shared
+  /// by [refreshCredential] and [fetchClaim].
+  ///
+  /// Handles [DioException] uniformly: timeout variants are converted to a
+  /// [NetworkException] with [timeoutMessage]; all errors are recorded via
+  /// [_stacktraceManager] before being rethrown.
+  Future<Response> _executePostRequest({
+    required String url,
+    required String authToken,
+    required String context,
+    required String timeoutMessage,
+  }) async {
     try {
-      final response = await dio.post(
+      return await dio.post(
         url,
         data: authToken,
         options: Options(
@@ -232,110 +190,107 @@ class RemoteIden3commDataSource {
           receiveTimeout: const Duration(seconds: 30),
         ),
       );
-
-      _stacktraceManager.logTrace(
-        "[RemoteIden3commDataSource] fetchClaim: ${response.statusCode} ${response.data}",
-      );
-      if (response.statusCode == 200) {
-        final type =
-            (response.data['type'] as Object?)?.toString() ?? 'unknown';
-
-        if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
-          final message = CredentialIssuanceMessage.fromJson(response.data);
-          logger().i(
-            "[RemoteIden3commDataSource] fetchClaim: ${message.body.credential.toJson()}",
-          );
-          final claimDTO = CredentialDTO(
-            id: message.body.credential.id,
-            issuer: message.from,
-            did: did,
-            type: message.body.credential.credentialSubject.type,
-            expiration: message.body.credential.expirationDate,
-            info: message.body.credential,
-            credentialRawValue: jsonEncode(response.data),
-          );
-          logger().i(
-            "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}",
-          );
-          return claimDTO;
-        } else if (type ==
-            ProtocolMessageType.credentialEncryptedIssuanceResponseType) {
-          final message = CredentialEncryptedIssuanceResponse.fromJson(
-            response.data,
-          );
-
-          final requiredKeyIds = message.body.data.recipients
-              .map((r) => r.header.keyId!)
-              .toList();
-
-          JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
-            return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
-          });
-          if (eligibleKey == null) {
-            _stacktraceManager.addError(
-              "[RemoteIden3commDataSource] refreshCredential: No eligible keys found for decryption",
-            );
-            throw Exception(
-              "No eligible keys found for decrypting the credential.",
-            );
-          }
-
-          final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
-            response.data,
-            [eligibleKey.toJson()],
-          );
-
-          final claimDTO = CredentialDTO(
-            id: decryptedCred.id,
-            issuer: message.from,
-            did: did,
-            type: decryptedCred.credentialSubject.type,
-            expiration: decryptedCred.expirationDate,
-            info: decryptedCred,
-            credentialRawValue: jsonEncode(response.data),
-          );
-          logger().i(
-            "[RemoteIden3commDataSource] fetchClaim: ${claimDTO.info.toJson()}",
-          );
-          return claimDTO;
-        } else {
-          _stacktraceManager.addError(
-            "[RemoteIden3commDataSource] fetchClaim: UnsupportedFetchClaimTypeException",
-          );
-          throw UnsupportedFetchClaimTypeException(
-            type: type,
-            errorMessage:
-                'Unsupported fetch claim type: $type\nShould be ${ProtocolMessageType.credentialIssuanceResponseMessageType} or ${ProtocolMessageType.credentialEncryptedIssuanceResponseType}',
-          );
-        }
-      } else {
-        _stacktraceManager.logError(
-          'fetchClaim Error: $url response with\ncode: ${response.statusCode}\nmsg: ${response.data}',
-        );
-        throw NetworkException(
-          errorMessage: response.data,
-          statusCode: response.statusCode ?? 0,
-        );
-      }
     } on DioException catch (e) {
+      _stacktraceManager.addError(
+        '$context error: $url responded with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
+      );
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
-        _stacktraceManager.addError(
-          'fetchClaim error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
-        );
         throw NetworkException(
-          errorMessage: "Connection timeout while fetching claim.",
+          errorMessage: timeoutMessage,
           statusCode: e.response?.statusCode ?? 0,
         );
-      } else {
-        _stacktraceManager.addError(
-          'fetchClaim error: $url response with\ncode: ${e.response?.statusCode}\nmsg: ${e.response?.data}',
-        );
-        rethrow;
       }
-    } catch (e) {
-      logger().e('fetchClaim error: $e');
       rethrow;
+    } catch (e) {
+      logger().e('$context error: $e');
+      rethrow;
+    }
+  }
+
+  /// Parses a successful HTTP response into a [CredentialDTO].
+  ///
+  /// Used by both [refreshCredential] and [fetchClaim] to avoid duplication.
+  /// [isRefresh] controls the [UnsupportedFetchClaimTypeException.refresh] flag
+  /// and the log-context tag used in error/trace messages.
+  CredentialDTO _parseCredentialResponse({
+    required Response response,
+    required String did,
+    required List<JsonWebKey> keys,
+    required bool isRefresh,
+  }) {
+    final context = isRefresh ? 'refreshCredential' : 'fetchClaim';
+    final type =
+        (response.data['type'] as Object?)?.toString() ?? 'unknown';
+
+    if (type == ProtocolMessageType.credentialIssuanceResponseMessageType) {
+      final message = CredentialIssuanceMessage.fromJson(response.data);
+      logger().i(
+        "[RemoteIden3commDataSource] $context: ${message.body.credential.toJson()}",
+      );
+      final claimDTO = CredentialDTO(
+        id: message.body.credential.id,
+        issuer: message.from,
+        did: did,
+        type: message.body.credential.credentialSubject.type,
+        expiration: message.body.credential.expirationDate,
+        info: message.body.credential,
+        credentialRawValue: json.encode(response.data),
+      );
+      logger().i(
+        "[RemoteIden3commDataSource] $context: ${claimDTO.info.toJson()}",
+      );
+      return claimDTO;
+    } else if (type ==
+        ProtocolMessageType.credentialEncryptedIssuanceResponseType) {
+      final message = CredentialEncryptedIssuanceResponse.fromJson(
+        response.data,
+      );
+
+      final requiredKeyIds = message.body.data.recipients
+          .map((r) => r.header.keyId!)
+          .toList();
+
+      final JsonWebKey? eligibleKey = keys.firstWhereOrNull((k) {
+        return requiredKeyIds.any((keyId) => keyId.endsWith(k.alias));
+      });
+      if (eligibleKey == null) {
+        _stacktraceManager.addError(
+          "[RemoteIden3commDataSource] $context: No eligible keys found for decryption",
+        );
+        throw Exception(
+          "No eligible keys found for decrypting the credential.",
+        );
+      }
+
+      final decryptedCred = PolygonIdSdk.I.util.decryptEncryptedCredential(
+        response.data,
+        [eligibleKey.toJson()],
+      );
+
+      final claimDTO = CredentialDTO(
+        id: decryptedCred.id,
+        issuer: message.from,
+        did: did,
+        type: decryptedCred.credentialSubject.type,
+        expiration: decryptedCred.expirationDate,
+        info: decryptedCred,
+        credentialRawValue: jsonEncode(response.data),
+      );
+      logger().i(
+        "[RemoteIden3commDataSource] $context: ${claimDTO.info.toJson()}",
+      );
+      return claimDTO;
+    } else {
+      _stacktraceManager.addError(
+        "[RemoteIden3commDataSource] $context: UnsupportedFetchClaimTypeException",
+      );
+      throw UnsupportedFetchClaimTypeException(
+        refresh: isRefresh,
+        type: type,
+        errorMessage:
+            'Unsupported credential type: $type\nExpected ${ProtocolMessageType.credentialIssuanceResponseMessageType} or ${ProtocolMessageType.credentialEncryptedIssuanceResponseType}',
+      );
     }
   }
 

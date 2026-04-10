@@ -1,11 +1,9 @@
-import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/exceptions/iden3comm_exceptions.dart';
@@ -53,8 +51,6 @@ class GetIden3commProofUseCase
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
 
-  final RefreshCredentialUseCase _refreshCredentialUseCase;
-
   GetIden3commProofUseCase(
     this._getMessageRequestsAndCredsUseCase,
     this._generateIden3commProofUseCase,
@@ -63,7 +59,6 @@ class GetIden3commProofUseCase
     this._getIdentityUseCase,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
-    this._refreshCredentialUseCase,
   );
 
   @override
@@ -156,10 +151,12 @@ class GetIden3commProofUseCase
   Future<CredentialEntity> _getCredential({
     required GetIden3commProofParam param,
   }) async {
-    CredentialEntity credential;
+    final List<CredentialEntity> candidates;
     final request = param.request;
+
     if (param.credential case var existingCred?) {
-      credential = existingCred;
+      // Credential supplied directly by the caller — use it as the sole candidate.
+      candidates = [existingCred];
     } else {
       _proofGenerationStepsStreamManager.add("Getting proof requests");
 
@@ -173,69 +170,19 @@ class GetIden3commProofUseCase
         ),
       );
 
-      final credentials = requestsAndCreds.first.credentials;
+      candidates = requestsAndCreds.first.credentials;
 
-      /// Generate proof for each request
-      if (credentials.isEmpty) {
-        // if there are no credentials for the request - throw an error
+      if (candidates.isEmpty) {
         _stacktraceManager.addError(
-          "[Authenticate] No credentials found for request: ${request.id}",
+          "[GetIden3commProofUseCase] No credentials found for request: ${request.id}",
         );
         throw NoCredentialsFoundException(
           proofRequest: request,
           errorMessage: "No credentials found for request: ${request.id}",
         );
       }
-      credential = credentials.first;
     }
 
-    if (credential.expiration != null) {
-      credential = await _checkCredentialExpirationAndTryRefreshIfExpired(
-        claim: credential,
-        param: param,
-      );
-    }
-
-    return credential;
-  }
-
-  /// Check if the credential is expired and try to refresh it if it is
-  /// and if it has a refresh service
-  Future<CredentialEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
-    required CredentialEntity claim,
-    required GetIden3commProofParam param,
-  }) async {
-    var now = DateTime.now().toUtc();
-    DateTime expirationTime = DateFormat(
-      "yyyy-MM-ddTHH:mm:ssZ",
-    ).parse(claim.expiration!);
-
-    var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-    var expirationTimeFormatted = DateFormat(
-      "yyyy-MM-dd HH:mm:ss",
-    ).format(expirationTime);
-    bool isExpired =
-        nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == CredentialState.expired;
-
-    if (isExpired && claim.info.containsKey("refreshService")) {
-      _proofGenerationStepsStreamManager.add(
-        "Refreshing expired credential...",
-      );
-
-      CredentialEntity refreshedClaimEntity = await _refreshCredentialUseCase
-          .execute(
-            param: RefreshCredentialParam(
-              credential: claim,
-              genesisDid: param.genesisDid,
-              privateKey: param.privateKey,
-              // TODO Maybe add keys here
-              keys: [],
-            ),
-          );
-
-      claim = refreshedClaimEntity;
-    }
-    return claim;
+    return candidates.first;
   }
 }

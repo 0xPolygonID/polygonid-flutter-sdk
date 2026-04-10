@@ -65,6 +65,14 @@ class ProofRequestFiltersMapper
       );
     }
 
+    filters.add(
+      FilterEntity(
+        operator: FilterOperator.nonEqual,
+        name: 'state',
+        value: CredentialState.expired.name,
+      ),
+    );
+
     final credentialSubject = query.credentialSubject;
     if (credentialSubject != null) {
       credentialSubject.forEach((key, map) {

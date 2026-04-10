@@ -62,6 +62,19 @@ class Authenticate {
   late ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   late StacktraceManager _stacktraceManager;
 
+  Authenticate();
+
+  /// Test-only constructor that allows injecting the managers directly
+  /// so [createProofForEveryProofRequest] can be exercised without the full
+  /// [getAuthResponseToken] setup.
+  @visibleForTesting
+  Authenticate.forTest({
+    required ProofGenerationStepsStreamManager
+    proofGenerationStepsStreamManager,
+    required StacktraceManager stacktraceManager,
+  }) : _proofGenerationStepsStreamManager = proofGenerationStepsStreamManager,
+       _stacktraceManager = stacktraceManager;
+
   Future<Iden3Message?> authenticate({
     required String privateKey,
     required String genesisDid,
@@ -382,24 +395,18 @@ class Authenticate {
       final isAuthQuery = request.circuitId.startsWith('auth');
       final credentials = requestsAndCreds[i].credentials;
 
-      // if there are no credentials for the request
-      if (credentials.isEmpty) {
-        // if the request is optional, continue to the next request
-        if (request.isOptional) {
-          continue;
-        } else if (request.query.isEmpty && isAuthQuery) {
-          // if request query is empty and it's an auth circuit,
-          // skip credential check as auth proofs don't need credentials
-        } else {
-          // if the request is not optional, throw an error
-          _stacktraceManager.addError(
-            "[Authenticate] No credentials found for request: ${request.id}",
-          );
-          throw NoCredentialsFoundException(
-            proofRequest: request,
-            errorMessage: "No credentials found for request: ${request.id}",
-          );
-        }
+      if (credentials.isEmpty && isAuthQuery && request.query.isEmpty) {
+        // Auth-type scope (e.g. authV3) — no credential needed, proceed.
+      } else if (credentials.isEmpty && request.isOptional) {
+        continue;
+      } else if (credentials.isEmpty) {
+        _stacktraceManager.addError(
+          "[Authenticate] No credentials found for request: ${request.id}",
+        );
+        throw NoCredentialsFoundException(
+          proofRequest: request,
+          errorMessage: "No credentials found for request: ${request.id}",
+        );
       }
 
       _proofGenerationStepsStreamManager.add(

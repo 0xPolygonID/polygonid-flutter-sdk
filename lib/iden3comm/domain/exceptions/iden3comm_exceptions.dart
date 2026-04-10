@@ -98,11 +98,13 @@ class FetchDisplayTypeException extends PolygonIdSDKException {
 
 class UnsupportedFetchClaimTypeException extends PolygonIdSDKException {
   final String type;
+  final bool refresh;
 
   UnsupportedFetchClaimTypeException({
     required this.type,
     required super.errorMessage,
     super.error,
+    this.refresh = false,
   });
 }
 
@@ -151,7 +153,6 @@ class NoCredentialsFoundException extends PolygonIdSDKException {
   });
 }
 
-
 class UnsupportedCircuitException extends PolygonIdSDKException {
   final ZeroKnowledgeProofRequest proofRequest;
 
@@ -171,4 +172,3 @@ class NullAuthChallengeException extends PolygonIdSDKException {
     super.error,
   });
 }
-

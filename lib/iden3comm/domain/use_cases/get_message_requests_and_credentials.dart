@@ -26,6 +26,7 @@ class GetMessageRequestsAndCredsParam {
   final String genesisDid;
   final BigInt profileNonce;
   final String encryptionKey;
+  final bool skipClaimExpirationCheck;
   List<CredentialSortOrder> credentialSortOrderList;
 
   GetMessageRequestsAndCredsParam({
@@ -33,6 +34,7 @@ class GetMessageRequestsAndCredsParam {
     required this.genesisDid,
     required this.profileNonce,
     required this.encryptionKey,
+    this.skipClaimExpirationCheck = false,
     this.credentialSortOrderList = const [],
   });
 
@@ -41,6 +43,7 @@ class GetMessageRequestsAndCredsParam {
     required this.genesisDid,
     required this.profileNonce,
     required this.encryptionKey,
+    this.skipClaimExpirationCheck = false,
     this.credentialSortOrderList = const [],
   }) : message = AuthorizationRequestMessage(
          from: '',
@@ -200,6 +203,10 @@ class GetMessageRequestsAndCredsUseCase
         );
         requestCredentialPairs.add((request: request.scope, credentials: []));
         continue;
+      }
+
+      if (!param.skipClaimExpirationCheck) {
+        validCreds = validCreds.where((c) => !c.isExpiredByDate).toList();
       }
 
       requestCredentialPairs.add((

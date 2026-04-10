@@ -212,7 +212,7 @@ void main() {
     );
 
     test(
-      "Given parameters, when I call fetchClaim and an unsupported FetchClaimResponseType is returned, then I expect an UnsupportedFetchClaimTypeException to be thrown",
+      "Given parameters, when I call fetchClaim and an unsupported FetchClaimResponseType is returned, then I expect an UnsupportedFetchClaimTypeException with refresh:false to be thrown",
       () async {
         // Given
         when(
@@ -224,8 +224,9 @@ void main() {
             .fetchClaim(authToken: token, url: url, did: identifier, keys: [])
             .then((_) => expect(true, false)) // Be sure we don't succeed
             .catchError((error) {
-              expect(error, (isA<UnsupportedFetchClaimTypeException>()));
+              expect(error, isA<UnsupportedFetchClaimTypeException>());
               expect(error.error, null);
+              expect(error.refresh, false);
             });
 
         // Then
@@ -243,6 +244,30 @@ void main() {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
         });
+      },
+    );
+
+    test(
+      "Given parameters, when I call fetchClaim and a timeout occurs, then I expect a NetworkException to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenThrow(DioException(
+          requestOptions: RequestOptions(path: url),
+          type: DioExceptionType.receiveTimeout,
+        ));
+
+        // When & Then
+        await expectLater(
+          dataSource.fetchClaim(
+            authToken: token,
+            url: url,
+            did: identifier,
+            keys: [],
+          ),
+          throwsA(isA<NetworkException>()),
+        );
       },
     );
 
@@ -275,6 +300,151 @@ void main() {
           HttpHeaders.acceptHeader: '*/*',
           HttpHeaders.contentTypeHeader: 'text/plain',
         });
+      },
+    );
+  });
+
+  group("Refresh credential", () {
+    test(
+      "Given parameters, when I call refreshCredential, then I expect a CredentialDTO to be returned",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((_) => Future.value(dioResponse));
+
+        // When
+        expect(
+          await dataSource.refreshCredential(
+            authToken: token,
+            url: url,
+            profileDid: identifier,
+            keys: [],
+          ),
+          claim,
+        );
+
+        // Then
+        var captured = verify(
+          dio.post(
+            captureAny,
+            data: captureAnyNamed('data'),
+            options: captureAnyNamed('options'),
+          ),
+        ).captured;
+
+        expect(captured[0], url);
+        expect(captured[1], token);
+        expect(captured[2].headers, {
+          HttpHeaders.acceptHeader: '*/*',
+          HttpHeaders.contentTypeHeader: 'text/plain',
+        });
+      },
+    );
+
+    test(
+      "Given an invalid url, when I call refreshCredential, then I expect a NetworkException without calling the network",
+      () async {
+        // When & Then
+        await expectLater(
+          dataSource.refreshCredential(
+            authToken: token,
+            url: 'http://[', // unclosed IPv6 bracket → Uri.tryParse returns null
+            profileDid: identifier,
+            keys: [],
+          ),
+          throwsA(isA<NetworkException>()),
+        );
+      },
+    );
+
+    test(
+      "Given parameters, when I call refreshCredential and a server error occurred, then I expect a NetworkException to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((_) => Future.value(dioErrorResponse));
+
+        // When & Then
+        await expectLater(
+          dataSource.refreshCredential(
+            authToken: token,
+            url: url,
+            profileDid: identifier,
+            keys: [],
+          ),
+          throwsA(isA<NetworkException>()),
+        );
+      },
+    );
+
+    test(
+      "Given parameters, when I call refreshCredential and an unsupported type is returned, then I expect an UnsupportedFetchClaimTypeException with refresh:true to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((_) => Future.value(otherTypeResponse));
+
+        // When
+        await dataSource
+            .refreshCredential(
+              authToken: token,
+              url: url,
+              profileDid: identifier,
+              keys: [],
+            )
+            .then((_) => expect(true, false)) // Be sure we don't succeed
+            .catchError((error) {
+              expect(error, isA<UnsupportedFetchClaimTypeException>());
+              expect(error.refresh, true);
+            });
+      },
+    );
+
+    test(
+      "Given parameters, when I call refreshCredential and a timeout occurs, then I expect a NetworkException to be thrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenThrow(DioException(
+          requestOptions: RequestOptions(path: url),
+          type: DioExceptionType.receiveTimeout,
+        ));
+
+        // When & Then
+        await expectLater(
+          dataSource.refreshCredential(
+            authToken: token,
+            url: url,
+            profileDid: identifier,
+            keys: [],
+          ),
+          throwsA(isA<NetworkException>()),
+        );
+      },
+    );
+
+    test(
+      "Given parameters, when I call refreshCredential and an error occurred, then I expect the exception to be rethrown",
+      () async {
+        // Given
+        when(
+          dio.post(any, data: anyNamed('data'), options: anyNamed('options')),
+        ).thenAnswer((_) => Future.error(exception));
+
+        // When & Then
+        await expectLater(
+          dataSource.refreshCredential(
+            authToken: token,
+            url: url,
+            profileDid: identifier,
+            keys: [],
+          ),
+          throwsA(exception),
+        );
       },
     );
   });

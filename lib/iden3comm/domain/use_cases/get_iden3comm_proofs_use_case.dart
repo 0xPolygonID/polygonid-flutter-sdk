@@ -1,10 +1,8 @@
-import 'package:intl/intl.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/use_case.dart';
 import 'package:polygonid_flutter_sdk/common/infrastructure/stacktrace_stream_manager.dart';
 import 'package:polygonid_flutter_sdk/common/utils/credential_sort_order.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-import 'package:polygonid_flutter_sdk/credential/domain/use_cases/refresh_credential_use_case.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/request/proof_scope_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/proof/response/iden3comm_proof_entity.dart';
@@ -45,15 +43,12 @@ class GetIden3commProofsUseCase
   final ProofGenerationStepsStreamManager _proofGenerationStepsStreamManager;
   final StacktraceManager _stacktraceManager;
 
-  final RefreshCredentialUseCase _refreshCredentialUseCase;
-
   GetIden3commProofsUseCase(
     this._getMessageRequestsAndCredsUseCase,
     this._getIden3commProofUseCase,
     this._isProofCircuitSupported,
     this._proofGenerationStepsStreamManager,
     this._stacktraceManager,
-    this._refreshCredentialUseCase,
   );
 
   @override
@@ -90,31 +85,23 @@ class GetIden3commProofsUseCase
         ProofScopeRequest request = requestsAndCreds[i].request;
         List<CredentialEntity> credentials = requestsAndCreds[i].credentials;
 
-        // if there are no credentials for the request
-        if (credentials.isEmpty) {
-          // if the query is empty (e.g., auth-type scopes like authV3-8-32),
-          // allow proceeding with null credential
-          if (request.query.isEmpty) {
-            // skip throwing, credential will be null below
-          } else if (request.isOptional) {
-            continue;
-          } else {
-            // if the request is not optional, throw an error
-            _stacktraceManager.addError(
-              "[Authenticate] No credentials found for request: ${request.id}",
-            );
-            throw NoCredentialsFoundException(
-              proofRequest: request,
-              errorMessage: "No credentials found for request: ${request.id}",
-            );
-          }
-        }
-        CredentialEntity? credential = credentials.firstOrNull;
+        CredentialEntity? credential;
 
-        if (credential != null && credential.expiration != null) {
-          credential = await _checkCredentialExpirationAndTryRefreshIfExpired(
-            claim: credential,
-            param: param,
+        if (credentials.isNotEmpty) {
+          credential = credentials.first;
+        } else if (request.query.isEmpty) {
+          // Auth-type scope (e.g. authV3) — no credential needed, proceed.
+        } else if (request.isOptional) {
+          continue;
+        } else {
+          // Non-optional scope with no viable credential.
+          _stacktraceManager.addError(
+            "[GetIden3commProofsUseCase] No credentials found for request: ${request.id}",
+          );
+
+          throw NoCredentialsFoundException(
+            proofRequest: request,
+            errorMessage: "No credentials found for request: ${request.id}",
           );
         }
 
@@ -179,45 +166,5 @@ class GetIden3commProofsUseCase
       _stacktraceManager.logError("[GetIden3commProofsUseCase] Exception: $e");
       rethrow;
     }
-  }
-
-  /// Check if the credential is expired and try to refresh it if it is
-  /// and if it has a refresh service
-  Future<CredentialEntity> _checkCredentialExpirationAndTryRefreshIfExpired({
-    required CredentialEntity claim,
-    required GetIden3commProofsParam param,
-  }) async {
-    var now = DateTime.now().toUtc();
-    DateTime expirationTime = DateFormat(
-      "yyyy-MM-ddTHH:mm:ssZ",
-    ).parse(claim.expiration!);
-
-    var nowFormatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(now);
-    var expirationTimeFormatted = DateFormat(
-      "yyyy-MM-dd HH:mm:ss",
-    ).format(expirationTime);
-    bool isExpired =
-        nowFormatted.compareTo(expirationTimeFormatted) > 0 ||
-        claim.state == CredentialState.expired;
-
-    if (isExpired && claim.info.containsKey("refreshService")) {
-      _proofGenerationStepsStreamManager.add(
-        "Refreshing expired credential...",
-      );
-
-      CredentialEntity refreshedClaimEntity = await _refreshCredentialUseCase
-          .execute(
-            param: RefreshCredentialParam(
-              credential: claim,
-              genesisDid: param.genesisDid,
-              privateKey: param.privateKey,
-              // TODO Maybe add keys here
-              keys: [],
-            ),
-          );
-
-      claim = refreshedClaimEntity;
-    }
-    return claim;
   }
 }
