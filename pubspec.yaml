@@ -1,13 +1,13 @@
 name: polygonid_flutter_sdk
 description: PolygonID Flutter SDK (https://polygon.technology/polygon-id). This plugin provides a cross-platform tool (iOS, Android) to integrate the PolygonID solution.
-version: 2.4.0
+version: 2.4.1
 homepage: https://polygon.technology/polygon-id
 repository: https://github.com/0xPolygonID/polygonid-flutter-sdk
 issue_tracker: https://github.com/0xPolygonID/polygonid-flutter-sdk/issues
 documentation: https://0xpolygonid.github.io/tutorials/
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -27,7 +27,6 @@ dependencies:
 
   # Crypto
   crypto: ^3.0.1
-  encrypt: 5.0.3
   pointycastle: ^4.0.0
   ninja_prime: ^2.0.0
   ed25519_edwards: ^0.3.1
@@ -79,9 +78,6 @@ dev_dependencies:
   # Using fork because it uses newer build and dart_analyze packages
   web3dart_builders:
     path: packages/web3dart_builders
-
-dependency_overrides:
-  pointycastle: 4.0.0
 
 # ffigen: run `dart run :ffigen` (see bin/ffigen.dart)
 
